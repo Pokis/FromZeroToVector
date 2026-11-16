@@ -504,36 +504,36 @@
     <!-- ================================================================== -->
     <section id="tab-gotchas" class="tab-panel">
       <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
-          <div>
-            <h2 style="font-size:20px;">Where Embeddings Lie — And How Hybrid Search Fixes It</h2>
-            <p style="font-size:14px; color:var(--text-1);">
-              Embeddings group things by <strong>general topic</strong>, which means they are blind to <strong>"NOT / WITHOUT" (negation)</strong> and <strong>exact error numbers</strong>. Pick a scenario below, then flip from <strong>Pure Vector Search</strong> to <strong>Hybrid Search</strong>!
-            </p>
-          </div>
+        <div>
+          <h2 style="font-size:20px;">Vector vs Keyword vs Hybrid — No Single Search Wins Everywhere</h2>
+          <p style="font-size:14px; color:var(--text-1);">
+            Every document below has <strong>two real scores</strong>: how close its <em>meaning</em> is (vector) and how many <em>exact words</em> it shares (keyword/BM25). The slider blends them: <code>score = (1 − w) × vector + w × keyword</code>. Drag it and watch who wins — <strong>different scenarios need different mixes.</strong>
+          </p>
         </div>
 
-        <!-- STEP 1: PICK ONE OF 3 DRAMATIC FAILURE SCENARIOS -->
         <div>
-          <label>Step 1: Choose a Real-World Trap</label>
-          <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:8px;">
+          <label>Step 1: Choose a Scenario</label>
+          <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:8px;">
             <div class="step-pill active" id="scen-btn-0" onclick="selectHybridScenario(0)">
-              <div class="step-num">Trap #1 • Negation ("WITHOUT")</div>
-              <div class="step-title">🥜 "Peanut Allergy — Snacks WITHOUT Peanuts"</div>
+              <div class="step-num">Vector fails • Keyword saves</div>
+              <div class="step-title">🔐 "Permanently DISABLE MFA"</div>
             </div>
             <div class="step-pill" id="scen-btn-1" onclick="selectHybridScenario(1)">
-              <div class="step-num">Trap #2 • Opposite Action</div>
-              <div class="step-title">🔐 "How Do I Permanently DISABLE MFA?"</div>
+              <div class="step-num">Vector fails • Keyword saves</div>
+              <div class="step-title">🚨 "HTTP Error 504"</div>
             </div>
             <div class="step-pill" id="scen-btn-2" onclick="selectHybridScenario(2)">
-              <div class="step-num">Trap #3 • Exact Error Code</div>
-              <div class="step-title">🚨 "Fix HTTP Error 504 Gateway Timeout"</div>
+              <div class="step-num">Keyword fails • Vector saves</div>
+              <div class="step-title">💻 "Screen is flickering"</div>
+            </div>
+            <div class="step-pill" id="scen-btn-3" onclick="selectHybridScenario(3)">
+              <div class="step-num">Vector fails • Keyword saves</div>
+              <div class="step-title">🥜 "Snacks WITHOUT peanuts"</div>
             </div>
           </div>
         </div>
 
         <div class="two-col" style="margin-top:6px;">
-          <!-- LEFT COLUMN: MODE SWITCHER & EXPLANATION -->
           <div style="display:flex; flex-direction:column; gap:14px;">
             <div style="background:var(--bg-0); border:1px solid var(--border); border-radius:10px; padding:16px;">
               <label>User's Search Query</label>
@@ -541,51 +541,32 @@
             </div>
 
             <div style="background:var(--bg-0); border:1px solid var(--border); border-radius:10px; padding:16px;">
-              <label>Step 2: Switch Mode or Drag the Hybrid Weight Slider</label>
-              <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:10px;">
-                <button class="btn btn-secondary active-mode" id="modeBtnVector" onclick="setHybridSliderValue(0)" style="padding:12px; font-size:13.5px; border-width:2px;">
-                  ❌ 1. Pure Vector Search (0% Keyword)<br/>
-                  <span style="font-size:11px; font-weight:400; color:var(--text-2);">(Looks at general topic only)</span>
-                </button>
-                <button class="btn btn-secondary" id="modeBtnHybrid" onclick="setHybridSliderValue(55)" style="padding:12px; font-size:13.5px; border-width:2px;">
-                  ✅ 2. Hybrid Search (Vector + Keyword)<br/>
-                  <span style="font-size:11px; font-weight:400; color:var(--text-2);">(Combines Meaning + Exact Words)</span>
-                </button>
+              <label>Step 2: Blend Vector Meaning with Keyword Match</label>
+              <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:10px;">
+                <button class="btn btn-secondary" id="modeBtnVector" onclick="setHybridSliderValue(0)" style="padding:10px; font-size:12.5px; border-width:2px;">Pure Vector<br/><span style="font-size:10.5px; font-weight:400; color:var(--text-2);">(0% keyword)</span></button>
+                <button class="btn btn-secondary" id="modeBtnHybrid" onclick="setHybridSliderValue(30)" style="padding:10px; font-size:12.5px; border-width:2px;">Hybrid<br/><span style="font-size:10.5px; font-weight:400; color:var(--text-2);">(30% keyword)</span></button>
+                <button class="btn btn-secondary" id="modeBtnKeyword" onclick="setHybridSliderValue(100)" style="padding:10px; font-size:12.5px; border-width:2px;">Keyword Only<br/><span style="font-size:10.5px; font-weight:400; color:var(--text-2);">(100% keyword)</span></button>
               </div>
 
               <div style="margin-top:14px; padding-top:12px; border-top:1px solid var(--border);">
                 <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:700;">
-                  <span style="color:var(--danger);">0% (Pure Vector)</span>
-                  <span style="color:var(--accent-3);" id="hybridMixLabel">Current Mix: 100% Vector + 0% Keyword</span>
+                  <span style="color:var(--accent);">0% (Pure Vector)</span>
+                  <span style="color:var(--accent-3);" id="hybridMixLabel">Mix: 100% Vector + 0% Keyword</span>
                   <span style="color:var(--warn);">100% (Keyword Only)</span>
                 </div>
                 <input type="range" id="hybridMixSlider" min="0" max="100" value="0" oninput="onHybridSliderChange(this.value)" style="width:100%; margin-top:6px;" />
+                <div style="font-size:11px; color:var(--text-2); margin-top:6px;">🟩 = right answer is #1 at that mix &nbsp; 🟥 = wrong answer is #1</div>
+                <div id="winZoneStrip" style="display:flex; height:16px; border-radius:4px; overflow:hidden; border:1px solid var(--border); margin-top:4px;"></div>
               </div>
             </div>
 
             <div id="scenExplanationBox" style="border-radius:10px; padding:15px; font-size:13.5px; line-height:1.58;"></div>
-
-            <details style="background:var(--bg-0); border:1px solid rgba(56,189,248,0.35); border-radius:10px; padding:12px 14px;">
-              <summary style="cursor:pointer; font-weight:700; font-size:13px; color:var(--accent);">
-                💻 Click to Show How Hybrid Search Is Coded in C# &amp; Postgres (If Asked)
-              </summary>
-              <pre class="mono" style="font-size:12px; color:#e2e8f0; margin-top:10px; line-height:1.5; overflow-x:auto;">
-// 1. Run Vector Search (Meaning) + Keyword Search (BM25 Exact Words)
-// 2. Merge their rank positions (#1, #2, #3...) using Reciprocal Rank Fusion (RRF):
-double vectorWeight  = 1.0 - keywordSlider;
-double keywordWeight = keywordSlider;
-
-double hybridScore = (vectorWeight  / (60 + doc.VectorRank))
-                   + (keywordWeight / (60 + doc.KeywordRank));
-// In Postgres (pgvector + tsvector), Elastic, or Azure AI Search, this is built-in!</pre>
-            </details>
           </div>
 
-          <!-- RIGHT COLUMN: ANIMATED SEARCH RESULTS RANKING -->
           <div>
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-              <label id="resultsHeaderLabel">Search Results Ranking</label>
-              <span style="font-size:12px; color:var(--text-2);">Drag slider or click mode buttons to watch #1 flip!</span>
+              <label>Search Results Ranking (Live)</label>
+              <span style="font-size:12px; color:var(--text-2);">Each card shows both real scores</span>
             </div>
             <div id="hybridCardsContainer"></div>
           </div>
@@ -1433,65 +1414,61 @@ double hybridScore = (vectorWeight  / (60 + doc.VectorRank))
     // ========================================================================
     const HYBRID_SCENARIOS = [
       {
-        query: "I am allergic to peanuts — show me snacks WITHOUT peanuts",
-        vectorExplanation: `
-          <strong style="color:var(--danger);">❌ Why Pure Vector Search Failed Here:</strong><br/>
-          The embedding model sees the words <em>"allergic"</em>, <em>"peanuts"</em>, and <em>"snacks"</em> and maps the whole sentence into the <strong>Peanut Snacks neighborhood</strong>! It does not execute boolean <code>NOT</code> logic, so it puts <strong>Crunchy Peanut Butter Bars at #1 (94% match!)</strong> while burying the safe nut-free granola at #4.
-        `,
-        hybridExplanation: `
-          <strong style="color:var(--accent-3);">✅ How Hybrid Search Rescued #1:</strong><br/>
-          Hybrid Search combines <strong>Vector Meaning</strong> (user wants snacks/allergy-safe food) with <strong>Exact Keyword Matching</strong> (which matches <code>"Nut-Free"</code> / <code>"WITHOUT peanuts"</code> and penalizes items containing peanuts). Watch how <strong>Safe Nut-Free Berry Granola</strong> jumps from <strong>#4 → ★ #1 WINNER</strong>!
-        `,
+        query: "how do I permanently DISABLE and turn off MFA",
+        takeaway: "Meaning alone can't tell ENABLE from DISABLE, but the exact words 'disable' / 'turn off' can. Keyword search or a hybrid mix works here.",
         docs: [
-          { title: "🥜 Crunchy Roasted Peanut Butter Bars (Contains Peanuts)", isCorrect: false, vecRank: 1, vecScore: 94, kwRank: 4, kwNote: "Penalized: contains 'Peanuts'", hybridRank: 4, hybridScore: 31 },
-          { title: "🥜 Honey Salted Virginia Peanuts Snack Pack", isCorrect: false, vecRank: 2, vecScore: 91, kwRank: 3, kwNote: "Penalized: contains 'Peanuts'", hybridRank: 3, hybridScore: 35 },
-          { title: "🥨 Classic Sea-Salt Pretzel Twists (Facility processes nuts)", isCorrect: false, vecRank: 3, vecScore: 82, kwRank: 2, kwNote: "Partial keyword match", hybridRank: 2, hybridScore: 68 },
-          { title: "🍓 Safe Nut-Free Oat & Berry Granola — 100% WITHOUT Peanuts", isCorrect: true, vecRank: 4, vecScore: 79, kwRank: 1, kwNote: "Exact match: 'WITHOUT Peanuts', 'Nut-Free'", hybridRank: 1, hybridScore: 96 }
+          { title: "DOC-101: Getting Started — How to ENABLE MFA on Your Account", correct: false, vec: 95, kw: 25, note: "Shares only 'MFA'" },
+          { title: "DOC-102: How to Reset Your MFA Authenticator Recovery Codes", correct: false, vec: 91, kw: 22, note: "Shares only 'MFA'" },
+          { title: "DOC-103: Danger Zone — Permanently DISABLE and Turn Off MFA", correct: true, vec: 88, kw: 96, note: "Shares 'permanently', 'disable', 'turn off', 'MFA'" },
+          { title: "DOC-104: Single Sign-On (SSO) Password Policies", correct: false, vec: 55, kw: 5, note: "No shared words" }
         ]
       },
       {
-        query: "How do I permanently DISABLE and turn off MFA on my account?",
-        vectorExplanation: `
-          <strong style="color:var(--danger);">❌ Why Pure Vector Search Failed Here:</strong><br/>
-          <code>"How to ENABLE MFA"</code> and <code>"How to DISABLE MFA"</code> are 95% identical in topic (account security, login, MFA). Because the "Enable MFA" guide is longer and uses more general account words, Pure Vector Search ranks <strong>ENABLE MFA at #1</strong> and buries the actual <strong>DISABLE MFA</strong> guide at #3!
-        `,
-        hybridExplanation: `
-          <strong style="color:var(--accent-3);">✅ How Hybrid Search Rescued #1:</strong><br/>
-          When we turn on Hybrid Search (Reciprocal Rank Fusion), the keyword engine spots the exact words <code>"DISABLE"</code>, <code>"permanently"</code>, and <code>"turn off"</code> in Document C—promoting it from <strong>#3 → ★ #1 WINNER</strong>!
-        `,
+        query: "payment gateway HTTP Error 504 timeout",
+        takeaway: "To a vector, 502/503/504 are all 'gateway errors'. An exact token like 504 only matches by keyword. Keyword or hybrid works here.",
         docs: [
-          { title: "DOC-101: Getting Started — How to ENABLE MFA on Your Account", isCorrect: false, vecRank: 1, vecScore: 95, kwRank: 3, kwNote: "Misses 'DISABLE' & 'turn off'", hybridRank: 2, hybridScore: 74 },
-          { title: "DOC-102: How to Reset Your MFA Authenticator Recovery Codes", isCorrect: false, vecRank: 2, vecScore: 91, kwRank: 4, kwNote: "Misses 'DISABLE' & 'turn off'", hybridRank: 3, hybridScore: 65 },
-          { title: "DOC-103: Danger Zone — Permanently DISABLE and Turn Off MFA", isCorrect: true, vecRank: 3, vecScore: 88, kwRank: 1, kwNote: "Exact match: 'DISABLE', 'turn off'", hybridRank: 1, hybridScore: 97 },
-          { title: "DOC-104: Configuring Single Sign-On (SSO) Password Policies", isCorrect: false, vecRank: 4, vecScore: 62, kwRank: 2, kwNote: "Low match", hybridRank: 4, hybridScore: 42 }
+          { title: "RUNBOOK-503: Payment Gateway HTTP Error 503 Service Unavailable", correct: false, vec: 93, kw: 45, note: "Shares 'payment gateway http error' but not '504'" },
+          { title: "RUNBOOK-502: Checkout HTTP Error 502 Bad Gateway", correct: false, vec: 90, kw: 35, note: "Shares 'http error' only" },
+          { title: "RUNBOOK-504: Upstream HTTP Error 504 Gateway Timeout", correct: true, vec: 86, kw: 92, note: "Exact code '504' + 'timeout'" },
+          { title: "RUNBOOK-401: API Key Unauthorized HTTP 401", correct: false, vec: 49, kw: 12, note: "Shares 'http'" }
         ]
       },
       {
-        query: "Fix payment gateway HTTP Error 504 timeout",
-        vectorExplanation: `
-          <strong style="color:var(--danger);">❌ Why Pure Vector Search Failed Here:</strong><br/>
-          To an embedding model, numbers like <code>502</code>, <code>503</code>, and <code>504</code> are all just "500-series gateway errors." Document A talks a lot about payment gateways, so Pure Vector Search ranks <strong>HTTP Error 503 at #1</strong> even though you specifically asked for <strong>Error 504</strong>!
-        `,
-        hybridExplanation: `
-          <strong style="color:var(--accent-3);">✅ How Hybrid Search Rescued #1:</strong><br/>
-          BM25 Keyword Search treats rare numbers and error codes (<code>"504"</code>) as high-value exact identifiers. Merging Vector + Keyword rankings immediately promotes the <strong>HTTP Error 504 Runbook from #3 → ★ #1 WINNER</strong>!
-        `,
+        query: "my laptop screen is flickering",
+        takeaway: "Reverse case! The right article uses different words (zero overlap), while a useless candle article shares the word 'flickering'. Keyword-only picks the candle. Pure vector wins; too much keyword weight breaks it.",
         docs: [
-          { title: "RUNBOOK-503: Payment Gateway HTTP Error 503 Service Unavailable", isCorrect: false, vecRank: 1, vecScore: 93, kwRank: 3, kwNote: "Wrong error number (503 != 504)", hybridRank: 2, hybridScore: 76 },
-          { title: "RUNBOOK-502: Checkout Credit Card HTTP Error 502 Bad Gateway", isCorrect: false, vecRank: 2, vecScore: 90, kwRank: 4, kwNote: "Wrong error number (502 != 504)", hybridRank: 3, hybridScore: 68 },
-          { title: "RUNBOOK-504: Upstream Database HTTP Error 504 Gateway Timeout", isCorrect: true, vecRank: 3, vecScore: 86, kwRank: 1, kwNote: "Exact code match: '504' + 'Timeout'", hybridRank: 1, hybridScore: 98 },
-          { title: "RUNBOOK-401: API Key Unauthorized HTTP 401 Token Expired", isCorrect: false, vecRank: 4, vecScore: 49, kwRank: 2, kwNote: "Low match", hybridRank: 4, hybridScore: 39 }
+          { title: "Troubleshooting display refresh glitches on external monitors", correct: true, vec: 90, kw: 0, note: "Zero shared words (synonyms only)" },
+          { title: "Why does my candle keep flickering? Wick trimming tips", correct: false, vec: 40, kw: 70, note: "Shares the word 'flickering'" },
+          { title: "Laptop battery drains fast after Windows update", correct: false, vec: 62, kw: 35, note: "Shares 'laptop'" },
+          { title: "Screen time limits for kids: a parent's guide", correct: false, vec: 30, kw: 40, note: "Shares 'screen'" }
+        ]
+      },
+      {
+        query: "I am allergic to peanuts, show me snacks WITHOUT peanuts",
+        takeaway: "The vector only sees 'peanuts' + 'snacks' and returns peanut snacks, because it can't tell 'with' from 'without'. Keyword search notices the rare word 'WITHOUT' (and 'peanut-free') in exactly one product, so a blend lifts it to #1. Caveat: this only works because the safe product literally says 'without peanuts' in its text.",
+        docs: [
+          { title: "Crunchy Roasted Peanut Butter Bars (Contains Peanuts)", correct: false, vec: 94, kw: 55, note: "Shares 'peanuts'" },
+          { title: "Honey Salted Virginia Peanuts Snack Pack", correct: false, vec: 91, kw: 60, note: "Shares 'peanuts', 'snacks'" },
+          { title: "Classic Sea-Salt Pretzel Twists (Facility processes nuts)", correct: false, vec: 82, kw: 15, note: "Weak overlap" },
+          { title: "Peanut-Free Oat & Berry Granola — made WITHOUT peanuts", correct: true, vec: 79, kw: 95, note: "Shares 'peanuts' and the rare word 'WITHOUT'" }
         ]
       }
     ];
 
     let currentScenIdx = 0;
-    let currentKeywordWeightPct = 0; // 0 = Pure Vector, 55 = Hybrid, 100 = Pure Keyword
+    let currentKeywordWeightPct = 0;
+
+    function rankDocsAt(scen, kwPct) {
+      const kwW = kwPct / 100, vecW = 1 - kwW;
+      return scen.docs
+        .map(d => ({ ...d, live: vecW * d.vec + kwW * d.kw }))
+        .sort((a, b) => b.live - a.live);
+    }
 
     function selectHybridScenario(idx) {
       currentScenIdx = idx;
-      [0, 1, 2].forEach(i => document.getElementById('scen-btn-' + i).classList.toggle('active', i === idx));
-      setHybridSliderValue(0); // Start on 0% (Pure Vector) so speaker shows failure first, then slides/clicks Hybrid!
+      [0, 1, 2, 3].forEach(i => document.getElementById('scen-btn-' + i).classList.toggle('active', i === idx));
+      setHybridSliderValue(0);
     }
 
     function setHybridSliderValue(val) {
@@ -1501,11 +1478,11 @@ double hybridScore = (vectorWeight  / (60 + doc.VectorRank))
 
     function onHybridSliderChange(val) {
       currentKeywordWeightPct = parseInt(val) || 0;
-      const vecPct = 100 - currentKeywordWeightPct;
-      document.getElementById('modeBtnVector').classList.toggle('active-mode', currentKeywordWeightPct < 25);
-      document.getElementById('modeBtnHybrid').classList.toggle('active-mode', currentKeywordWeightPct >= 25);
+      document.getElementById('modeBtnVector').classList.toggle('active-mode', currentKeywordWeightPct === 0);
+      document.getElementById('modeBtnHybrid').classList.toggle('active-mode', currentKeywordWeightPct > 0 && currentKeywordWeightPct < 100);
+      document.getElementById('modeBtnKeyword').classList.toggle('active-mode', currentKeywordWeightPct === 100);
       document.getElementById('hybridMixLabel').textContent =
-        `Current Mix: ${vecPct}% Vector Meaning + ${currentKeywordWeightPct}% Exact Keyword`;
+        `Mix: ${100 - currentKeywordWeightPct}% Vector + ${currentKeywordWeightPct}% Keyword`;
       renderHybridScenario();
     }
 
@@ -1513,71 +1490,54 @@ double hybridScore = (vectorWeight  / (60 + doc.VectorRank))
       const scen = HYBRID_SCENARIOS[currentScenIdx];
       document.getElementById('scenQueryDisplay').textContent = `"${scen.query}"`;
 
-      const isHybridActive = currentKeywordWeightPct >= 25;
-      const expBox = document.getElementById('scenExplanationBox');
-      if (!isHybridActive) {
-        expBox.style.background = 'rgba(248, 113, 113, 0.1)';
-        expBox.style.border = '1px solid rgba(248, 113, 113, 0.45)';
-        expBox.innerHTML = scen.vectorExplanation;
-      } else {
-        expBox.style.background = 'rgba(52, 211, 153, 0.1)';
-        expBox.style.border = '1px solid rgba(52, 211, 153, 0.45)';
-        expBox.innerHTML = scen.hybridExplanation;
+      const strip = document.getElementById('winZoneStrip');
+      strip.innerHTML = '';
+      let anyWin = false;
+      for (let p = 0; p <= 100; p += 2) {
+        const win = rankDocsAt(scen, p)[0].correct;
+        anyWin = anyWin || win;
+        const cell = document.createElement('div');
+        cell.style.flex = '1';
+        cell.style.background = win ? 'rgba(52,211,153,0.85)' : 'rgba(248,113,113,0.7)';
+        cell.title = `${p}% keyword: ${win ? 'right answer is #1' : 'wrong answer is #1'}`;
+        strip.appendChild(cell);
       }
 
-      const kwW = currentKeywordWeightPct / 100;
-      const vecW = 1 - kwW;
+      const ranked = rankDocsAt(scen, currentKeywordWeightPct);
+      const rightWins = ranked[0].correct;
 
-      const scoredDocs = scen.docs.map(doc => {
-        // Interpolate smoothly between pure vector score (vecScore) and full hybrid/keyword target score
-        const kwTargetScore = doc.isCorrect ? 99 : Math.max(15, doc.hybridScore - 25);
-        const liveScore = Math.round(vecW * doc.vecScore + kwW * kwTargetScore);
-        return { ...doc, liveScore };
-      }).sort((a, b) => b.liveScore - a.liveScore);
+      const expBox = document.getElementById('scenExplanationBox');
+      const verdict = rightWins
+        ? `<strong style="color:var(--accent-3);">✅ At this mix the right answer is #1.</strong>`
+        : `<strong style="color:var(--danger);">❌ At this mix the WRONG answer is #1.</strong>`;
+      expBox.style.background = rightWins ? 'rgba(52,211,153,0.1)' : 'rgba(248,113,113,0.1)';
+      expBox.style.border = rightWins ? '1px solid rgba(52,211,153,0.45)' : '1px solid rgba(248,113,113,0.45)';
+      expBox.innerHTML = `${verdict}<br/>${scen.takeaway}`;
 
       const container = document.getElementById('hybridCardsContainer');
       container.innerHTML = '';
-
-      scoredDocs.forEach((doc, idx) => {
+      ranked.forEach((doc, idx) => {
         const rank = idx + 1;
         const isTop = rank === 1;
         const card = document.createElement('div');
-        card.className = 'doc-rank-card ' + (isTop ? (doc.isCorrect ? 'winner-good' : 'winner-bad') : '');
-
-        let movementBadge = '';
-        const diff = doc.vecRank - rank;
-        if (currentKeywordWeightPct > 0 && diff > 0) {
-          movementBadge = `<span style="background:rgba(52,211,153,0.2); color:var(--accent-3); padding:3px 8px; border-radius:6px; font-size:11.5px; font-weight:700;">▲ Jumped +${diff} spots!</span>`;
-        } else if (currentKeywordWeightPct > 0 && diff < 0) {
-          movementBadge = `<span style="background:rgba(248,113,113,0.18); color:var(--danger); padding:3px 8px; border-radius:6px; font-size:11.5px; font-weight:700;">▼ Dropped ${diff} spots</span>`;
-        } else if (isTop && !doc.isCorrect) {
-          movementBadge = `<span style="background:rgba(248,113,113,0.25); color:#fecaca; padding:3px 8px; border-radius:6px; font-size:11.5px; font-weight:700;">⚠ WRONG ANSWER AT #1!</span>`;
-        } else if (doc.isCorrect && !isTop) {
-          movementBadge = `<span style="background:rgba(251,191,36,0.2); color:var(--warn); padding:3px 8px; border-radius:6px; font-size:11.5px; font-weight:700;">Buried at #${rank} in Vector Search</span>`;
-        }
-
-        const scoreLabel = currentKeywordWeightPct === 0
-          ? `${doc.vecScore}% Vector Match`
-          : `${doc.liveScore}% Combined Score`;
-
+        card.className = 'doc-rank-card ' + (isTop ? (doc.correct ? 'winner-good' : 'winner-bad') : '');
+        const col = isTop ? (doc.correct ? 'var(--accent-3)' : 'var(--danger)') : 'var(--text-1)';
+        const tag = doc.correct
+          ? `<span style="background:rgba(52,211,153,0.2); color:var(--accent-3); padding:2px 7px; border-radius:6px; font-size:11px; font-weight:700;">✔ the right answer</span>`
+          : '';
         card.innerHTML = `
           <div style="display:flex; align-items:center; gap:12px;">
-            <div class="rank-circle" style="color:${isTop ? (doc.isCorrect ? 'var(--accent-3)' : 'var(--danger)') : 'var(--text-1)'}">
-              #${rank}
-            </div>
+            <div class="rank-circle" style="color:${col}">#${rank}</div>
             <div>
-              <div style="font-size:14.5px; font-weight:700; color:#fff;">${doc.title}</div>
-              <div style="font-size:12px; color:var(--text-2); margin-top:4px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-                <span>Pure Vector Rank: <strong>#${doc.vecRank} (${doc.vecScore}%)</strong></span>
-                <span>•</span>
-                <span>Keyword Check: <strong>${doc.kwNote}</strong></span>
-                ${movementBadge}
+              <div style="font-size:14px; font-weight:700; color:#fff;">${doc.title}</div>
+              <div style="font-size:12px; color:var(--text-2); margin-top:4px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                <span>Vector match: <strong>${doc.vec}%</strong></span>
+                <span>Keyword match: <strong>${doc.kw}%</strong> (${doc.note})</span>
+                ${tag}
               </div>
             </div>
           </div>
-          <div class="mono" style="font-size:13px; font-weight:700; color:${isTop ? (doc.isCorrect ? 'var(--accent-3)' : 'var(--danger)') : 'var(--text-1)'}; text-align:right; flex-shrink:0;">
-            ${scoreLabel}
-          </div>
+          <div class="mono" style="font-size:14px; font-weight:700; color:${col}; flex-shrink:0; text-align:right;">${doc.live.toFixed(0)}% Combined</div>
         `;
         container.appendChild(card);
       });

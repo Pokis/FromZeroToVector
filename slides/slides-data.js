@@ -868,7 +868,7 @@ Console.WriteLine(<span class="st">$"Match ({best.Score:P0}): {best.Ticket}"</sp
 
         <div class="v-card step-item" data-step="3" style="border-color:var(--accent-3); background:rgba(52,211,153,0.1);">
           <h3 style="color:var(--accent-3);">✅ The Production Fix: Hybrid Search (Vectors + Keywords)</h3>
-          <p>Run <strong>Vector Search</strong> (for meaning &amp; synonyms) AND <strong>Keyword Search (BM25)</strong> (for exact words &amp; numbers) side-by-side, then combine their top rankings!</p>
+          <p>Run <strong>Vector Search</strong> (meaning &amp; synonyms) AND <strong>Keyword Search (BM25)</strong> (exact words &amp; numbers), then blend. Neither alone is always right, so blend them.</p>
         </div>
       </div>
     `,
@@ -889,17 +889,17 @@ Console.WriteLine(<span class="st">$"Match ({best.Score:P0}): {best.Ticket}"</sp
   {
     id: "demo-hybrid-search",
     type: "demo",
-    title: "🎬 Live Demo: Watching Hybrid Search Rescue #1",
-    subtitle: "Interactive slider, rank animations & C# / Postgres code snippet",
+    title: "🎬 Live Demo: Vector vs Keyword vs Hybrid",
+    subtitle: "Vector vs keyword vs hybrid: who actually wins, and when nobody does",
     stepsCount: 1,
     demoUrl: "../visualizer/index.html?tab=tab-gotchas",
     stageCue: "Open Visualizer Tab 4 ('4. Where Vectors Fail & Hybrid Fix'). Drag the Hybrid Slider from 0% (Pure Vector) to 50%+ (Hybrid) to watch #1 flip live, and toggle the 'Show C# & SQL Code' drawer if someone asks how it's coded!",
     html: `
       <div class="demo-hero step-item" data-step="1">
         <div class="demo-badge">🎬 INTERACTIVE VISUALIZER • TAB 4</div>
-        <h2>See Pure Vectors Fail — Then Drag the Hybrid Search Slider</h2>
+        <h2>No Single Search Wins Everywhere — Drag the Slider and See</h2>
         <p style="max-width:780px; margin: 12px auto 24px; color:var(--text-1); font-size:17.5px; line-height:1.55;">
-          In Tab 4 of the Visualizer, we can test the <strong>Peanut Allergy</strong>, <strong>Disable MFA</strong>, and <strong>Error 504</strong> traps, drag the <strong>Hybrid Balance Slider</strong> to see the exact point where the right answer takes ★ #1, and inspect the C# &amp; Postgres code!
+          Four scenarios, each with a vector and a keyword score per document. Three are rescued by keyword weight (DISABLE MFA, Error 504, WITHOUT peanuts), and one is won by vector (keyword-only picks a candle article!). A green/red strip shows exactly which slider positions pick the right answer.
         </p>
         <div class="demo-actions">
           <a class="btn-launch" href="../visualizer/index.html?tab=tab-gotchas" target="EmbeddingsVisualizerWindow">
@@ -908,22 +908,22 @@ Console.WriteLine(<span class="st">$"Match ({best.Score:P0}): {best.Ticket}"</sp
         </div>
         <div class="cards-3" style="margin-top:26px; text-align:left;">
           <div class="v-card">
-            <h3>1. Pick Any of 3 Traps</h3>
-            <p>See why Pure Vector Search (0% slider) puts the wrong document at #1.</p>
+            <h3>1. Vector Fails, Keyword Saves</h3>
+            <p>DISABLE vs ENABLE MFA and Error 504 vs 503: exact words rescue the answer.</p>
           </div>
           <div class="v-card">
-            <h3>2. Drag the Hybrid Slider</h3>
-            <p>Watch live as adding Keyword (BM25) weight promotes the right answer to <strong>★ #1 WINNER</strong>.</p>
+            <h3>2. Keyword Fails, Vector Saves</h3>
+            <p>"Screen is flickering" vs a candle article: keyword-only picks the wrong one, so a hybrid mix wins.</p>
           </div>
           <div class="v-card">
-            <h3>3. Built-In Code View</h3>
-            <p>Click <em>"Show How This Is Coded in C# &amp; SQL"</em> right inside the demo tab!</p>
+            <h3>3. Negation: "WITHOUT peanuts"</h3>
+            <p>Vector only sees "peanuts" and returns peanut snacks. Keyword catches the rare word "WITHOUT", so a blend lifts the safe product to #1.</p>
           </div>
         </div>
       </div>
     `,
     speakerNotes: [
-      "Let's open Tab 4 of the Visualizer and watch what happens when we drag the search slider from Pure Vector Search over to Hybrid Search."
+      "Let's open Tab 4 and drag the slider. Notice there is no setting that wins every time: for DISABLE MFA and Error 504 keyword weight rescues the answer, but for the flickering screen too much keyword weight breaks it. That's why a balanced mix is the safe default."
     ],
     glossary: [
       ["How Hybrid Search Is Used in Practice", "In PostgreSQL (pgvector) or Azure AI Search / Qdrant, you run one query that fetches the Top 20 by vector cosine distance and Top 20 by full-text keyword search, and merges them with RRF in 3 milliseconds."]
