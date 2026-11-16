@@ -173,7 +173,6 @@
       padding: 16px;
     }
 
-    /* Expandable Detail Drawer inside Slides */
     details.slide-expand {
       margin-top: 10px;
       background: rgba(5, 8, 17, 0.75);
@@ -345,10 +344,10 @@
   <div class="deck-topbar">
     <div><strong>Coordinates for Meaning</strong></div>
     <div style="display:flex; gap:10px; align-items:center;">
-      <button class="top-btn" onclick="openPresenterWindow()" title="Opens your private speaker notes & glossary in a separate window for your 2nd screen!">
+      <button class="top-btn" onclick="openPresenterWindow(); this.blur();" title="Opens your private speaker notes & glossary in a separate window for your 2nd screen!">
         🎤 Pop Out Speaker Screen (2nd Monitor)
       </button>
-      <a class="top-btn" href="../visualizer/index.html" target="_blank">
+      <a class="top-btn" href="../visualizer/index.html" target="EmbeddingsVisualizerWindow">
         🌌 Open Interactive Visualizer
       </a>
     </div>
@@ -366,89 +365,88 @@
       <span id="stepHintLabel" style="font-size:12px; color:var(--accent);"></span>
     </div>
     <div style="display:flex; gap:8px;">
-      <button class="nav-btn" onclick="stepBackward()">← Back</button>
-      <button class="nav-btn" onclick="revealAllStepsOnSlide()" title="Reveal all steps on current slide (Down Arrow)">Show All Steps (↓)</button>
-      <button class="nav-btn" onclick="stepForward()" style="background:rgba(56,189,248,0.2); border-color:var(--accent);">Next Step / Slide →</button>
+      <button class="nav-btn" onclick="this.blur(); stepBackward();">← Back</button>
+      <button class="nav-btn" onclick="this.blur(); revealAllStepsOnSlide();" title="Reveal all steps on current slide (Down Arrow)">Show All Steps (↓)</button>
+      <button class="nav-btn" onclick="this.blur(); stepForward();" style="background:rgba(56,189,248,0.2); border-color:var(--accent);">Next Step / Slide →</button>
     </div>
   </div>
 
-  <script src="slides-data.js"></script>
+  <script src="slides-data.js?v=3"></script>
   <script>
     const slides = window.TALK_SLIDES;
     let currentSlideIdx = 0;
-    let currentStep = 0;
-    let lastProcessedCmdId = 0;
+    let currentStep = 1;
+    let lastNavTimestamp = 0;
 
-    // Cross-window sync for Dual-Screen Presenter Console
+    // Cross-window sync using exact target state (idempotent — can never double-increment!)
     const syncChannel = ('BroadcastChannel' in window) ? new BroadcastChannel('embeddings_talk_sync') : null;
 
-    function broadcastState() {
+    function broadcastExactState() {
       const payload = {
-        type: 'SLIDE_STATE',
+        type: 'SET_EXACT_STATE',
         slideIdx: currentSlideIdx,
         step: currentStep,
-        timestamp: Date.now()
+        ts: Date.now()
       };
       if (syncChannel) syncChannel.postMessage(payload);
-      try { localStorage.setItem('embeddings_talk_state', JSON.stringify(payload)); } catch {}
+      try { localStorage.setItem('embeddings_talk_exact_state', JSON.stringify(payload)); } catch {}
     }
 
-    function handleRemoteCommand(cmd) {
-      if (!cmd || (cmd.cmdId && cmd.cmdId === lastProcessedCmdId)) return;
-      if (cmd.cmdId) lastProcessedCmdId = cmd.cmdId;
-
-      if (cmd.action === 'NEXT') stepForward();
-      else if (cmd.action === 'PREV') stepBackward();
-      else if (cmd.action === 'REVEAL_ALL') revealAllStepsOnSlide();
-      else if (cmd.action === 'GOTO') goToSlideAndStep(cmd.slideIdx, cmd.step);
-      else if (cmd.action === 'REQUEST_STATE') broadcastState();
+    function applyIncomingExactState(data) {
+      if (!data || typeof data.slideIdx !== 'number' || typeof data.step !== 'number') return;
+      if (data.slideIdx === currentSlideIdx && data.step === currentStep) return;
+      renderSlideAndStep(data.slideIdx, data.step, false);
     }
 
     if (syncChannel) {
       syncChannel.onmessage = (ev) => {
-        if (ev.data && ev.data.type === 'REMOTE_CMD') {
-          handleRemoteCommand(ev.data);
+        if (!ev.data) return;
+        if (ev.data.type === 'SET_EXACT_STATE') {
+          applyIncomingExactState(ev.data);
+        } else if (ev.data.type === 'REQUEST_CURRENT_STATE') {
+          broadcastExactState();
         }
       };
     }
 
     window.addEventListener('storage', (ev) => {
-      if (ev.key === 'embeddings_talk_cmd' && ev.newValue) {
-        try {
-          handleRemoteCommand(JSON.parse(ev.newValue));
-        } catch {}
+      if (ev.key === 'embeddings_talk_exact_state' && ev.newValue) {
+        try { applyIncomingExactState(JSON.parse(ev.newValue)); } catch {}
       }
     });
 
     function openPresenterWindow() {
       window.open(
-        'presenter.html',
+        'presenter.html?v=3',
         'SpeakerPresenterWindow',
         'width=1140,height=800,menubar=no,toolbar=no,location=no,status=no'
       );
-      setTimeout(broadcastState, 300);
+      setTimeout(broadcastExactState, 250);
     }
 
-    function renderSlide(idx, initialStep = 0) {
+    function renderSlideAndStep(idx, step = 1, shouldBroadcast = true) {
+      const prevIdx = currentSlideIdx;
       currentSlideIdx = Math.max(0, Math.min(slides.length - 1, idx));
       const s = slides[currentSlideIdx];
-      currentStep = s.type === 'demo' && s.stepsCount === 1 ? 1 : initialStep;
+      currentStep = Math.max(1, Math.min(s.stepsCount, step));
 
       const mount = document.getElementById('slideMount');
-      const showHeader = s.type !== 'title';
-      mount.innerHTML = `
-        ${showHeader ? `
-          <div class="slide-header">
-            <h1 class="slide-title">${s.title}</h1>
-            <p class="slide-subtitle">${s.subtitle}</p>
-          </div>
-        ` : ''}
-        ${s.html}
-      `;
+      if (prevIdx !== currentSlideIdx || !mount.innerHTML) {
+        const showHeader = s.type !== 'title';
+        mount.innerHTML = `
+          ${showHeader ? `
+            <div class="slide-header">
+              <h1 class="slide-title">${s.title}</h1>
+              <p class="slide-subtitle">${s.subtitle}</p>
+            </div>
+          ` : ''}
+          ${s.html}
+        `;
+      }
 
       applyStepVisibility();
       updateFooter();
-      broadcastState();
+      if (shouldBroadcast) broadcastExactState();
     }
 
     function applyStepVisibility() {
@@ -471,66 +469,70 @@
         const dot = document.createElement('div');
         dot.className = 'step-dot ' + (i < currentStep ? 'done' : i === currentStep ? 'current' : '');
         dot.title = `Step ${i}`;
-        dot.onclick = () => goToSlideAndStep(currentSlideIdx, i);
+        dot.onclick = () => renderSlideAndStep(currentSlideIdx, i, true);
         dotsEl.appendChild(dot);
       }
 
       const hint = document.getElementById('stepHintLabel');
       if (currentStep < s.stepsCount) {
-        hint.textContent = `Step ${currentStep} of ${s.stepsCount} (Press → for next step)`;
+        hint.textContent = `Step ${currentStep} of ${s.stepsCount} (Press → for Step ${currentStep + 1})`;
       } else {
-        hint.textContent = `All ${s.stepsCount} steps shown (Press → for next slide)`;
+        hint.textContent = `Step ${currentStep} of ${s.stepsCount} (Press → for Next Slide)`;
       }
     }
 
+    function canNavigateNow() {
+      const now = performance.now();
+      if (now - lastNavTimestamp < 120) return false;
+      lastNavTimestamp = now;
+      return true;
+    }
+
     function stepForward() {
+      if (!canNavigateNow()) return;
       const s = slides[currentSlideIdx];
       if (currentStep < s.stepsCount) {
-        currentStep++;
-        applyStepVisibility();
-        updateFooter();
-        broadcastState();
+        renderSlideAndStep(currentSlideIdx, currentStep + 1, true);
       } else if (currentSlideIdx < slides.length - 1) {
-        renderSlide(currentSlideIdx + 1, 0);
+        renderSlideAndStep(currentSlideIdx + 1, 1, true);
       }
     }
 
     function stepBackward() {
-      if (currentStep > 0) {
-        currentStep--;
-        applyStepVisibility();
-        updateFooter();
-        broadcastState();
+      if (!canNavigateNow()) return;
+      if (currentStep > 1) {
+        renderSlideAndStep(currentSlideIdx, currentStep - 1, true);
       } else if (currentSlideIdx > 0) {
         const prevSlide = slides[currentSlideIdx - 1];
-        renderSlide(currentSlideIdx - 1, prevSlide.stepsCount);
+        renderSlideAndStep(currentSlideIdx - 1, prevSlide.stepsCount, true);
       }
     }
 
     function revealAllStepsOnSlide() {
       const s = slides[currentSlideIdx];
-      currentStep = s.stepsCount;
-      applyStepVisibility();
-      updateFooter();
-      broadcastState();
-    }
-
-    function goToSlideAndStep(slideIdx, step) {
-      renderSlide(slideIdx, step);
+      renderSlideAndStep(currentSlideIdx, s.stepsCount, true);
     }
 
     window.addEventListener('keydown', e => {
-      if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); stepForward(); }
-      else if (e.key === 'ArrowLeft') { e.preventDefault(); stepBackward(); }
-      else if (e.key === 'ArrowDown') { e.preventDefault(); revealAllStepsOnSlide(); }
-      else if (e.key === 'p' || e.key === 'P') { openPresenterWindow(); }
-      else if (e.key === 'f' || e.key === 'F') {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        if (document.activeElement && document.activeElement.tagName === 'BUTTON') document.activeElement.blur();
+        stepForward();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        stepBackward();
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        revealAllStepsOnSlide();
+      } else if (e.key === 'p' || e.key === 'P') {
+        openPresenterWindow();
+      } else if (e.key === 'f' || e.key === 'F') {
         if (!document.fullscreenElement) document.documentElement.requestFullscreen();
         else document.exitFullscreen();
       }
     });
 
-    renderSlide(0, 0);
+    renderSlideAndStep(0, 1, true);
   </script>
 </body>
 </html>

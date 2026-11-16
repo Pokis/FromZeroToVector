@@ -183,15 +183,15 @@
     </div>
 
     <div style="display:flex; gap:10px; align-items:center;">
-      <button class="ctrl-btn" onclick="sendCommand('PREV')">← Back (1 Step)</button>
-      <button class="ctrl-btn" onclick="sendCommand('REVEAL_ALL')">Show All Steps</button>
-      <button class="ctrl-btn primary" onclick="sendCommand('NEXT')">Next Step / Slide (Space / →)</button>
+      <button class="ctrl-btn" onclick="this.blur(); stepPrev();">← Back (1 Step)</button>
+      <button class="ctrl-btn" onclick="this.blur(); revealAllOnSlide();">Show All Steps</button>
+      <button class="ctrl-btn primary" onclick="this.blur(); stepNext();">Next Step / Slide (Space / →)</button>
     </div>
 
     <div class="timer-box">
       <span id="timerDisplay">00:00</span>
-      <button class="ctrl-btn" style="padding:4px 8px; font-size:11px;" onclick="toggleTimer()" id="timerBtn">Start</button>
-      <button class="ctrl-btn" style="padding:4px 8px; font-size:11px;" onclick="resetTimer()">Reset</button>
+      <button class="ctrl-btn" style="padding:4px 8px; font-size:11px;" onclick="this.blur(); toggleTimer();" id="timerBtn">Start</button>
+      <button class="ctrl-btn" style="padding:4px 8px; font-size:11px;" onclick="this.blur(); resetTimer();">Reset</button>
     </div>
   </header>
 
@@ -203,7 +203,7 @@
           <div style="font-size:12px; color:var(--accent-3); text-transform:uppercase; font-weight:800;">🗣️ Spoken Script (Safe to Read Verbatim Out Loud)</div>
           <div id="presSlideSubtitle" style="font-size:14px; color:var(--text-1); margin-top:2px;"></div>
         </div>
-        <span class="badge-step" id="presStepBadge">Step 0 of 3</span>
+        <span class="badge-step" id="presStepBadge">Step 1 of 3</span>
       </div>
 
       <div class="stage-cue-box" id="stageCueBox"></div>
@@ -217,7 +217,7 @@
     <div style="display:flex; flex-direction:column; gap:18px;">
       <div class="panel">
         <div style="font-size:13px; font-weight:800; text-transform:uppercase; color:var(--warn);">
-          💡 Plain-English Glossary & Deep-Dive Examples for This Slide
+          💡 Plain-English Glossary &amp; Deep-Dive Examples for This Slide
         </div>
         <div id="glossaryContainer" style="display:flex; flex-direction:column; gap:10px;"></div>
       </div>
@@ -227,11 +227,11 @@
           🎛️ Remote Control: Switch Visualizer Tab (When Visualizer Window Is Open)
         </div>
         <div style="display:flex; flex-wrap:wrap; gap:8px;">
-          <button class="ctrl-btn" onclick="remoteSwitchVisualizer('tab-2d')">Tab 1: 2D Taste Map</button>
-          <button class="ctrl-btn" onclick="remoteSwitchVisualizer('tab-3d')">Tab 2: 3D Universe</button>
-          <button class="ctrl-btn" onclick="remoteSwitchVisualizer('tab-math')">Tab 3: Vector Math</button>
-          <button class="ctrl-btn" onclick="remoteSwitchVisualizer('tab-gotchas')">Tab 4: Negation & Hybrid</button>
-          <button class="ctrl-btn" onclick="remoteSwitchVisualizer('tab-mrl')">Tab 5: RAM Shrinker</button>
+          <button class="ctrl-btn" onclick="this.blur(); remoteSwitchVisualizer('tab-2d');">Tab 1: 2D Taste Map</button>
+          <button class="ctrl-btn" onclick="this.blur(); remoteSwitchVisualizer('tab-3d');">Tab 2: 3D Universe</button>
+          <button class="ctrl-btn" onclick="this.blur(); remoteSwitchVisualizer('tab-math');">Tab 3: Vector Math</button>
+          <button class="ctrl-btn" onclick="this.blur(); remoteSwitchVisualizer('tab-gotchas');">Tab 4: Negation &amp; Hybrid</button>
+          <button class="ctrl-btn" onclick="this.blur(); remoteSwitchVisualizer('tab-mrl');">Tab 5: RAM Shrinker</button>
         </div>
       </div>
 
@@ -250,15 +250,16 @@
     </div>
     <div style="display:flex; align-items:center; gap:8px;">
       <span style="font-size:13px; color:var(--text-2);">Jump to Slide:</span>
-      <select id="slideJumpSelect" onchange="jumpToSlide(this.value)" style="background:var(--bg-0); color:#fff; border:1px solid var(--border); padding:6px 10px; border-radius:6px;"></select>
+      <select id="slideJumpSelect" onchange="this.blur(); jumpToSlide(this.value);" style="background:var(--bg-0); color:#fff; border:1px solid var(--border); padding:6px 10px; border-radius:6px;"></select>
     </div>
   </footer>
 
-  <script src="slides-data.js"></script>
+  <script src="slides-data.js?v=3"></script>
   <script>
     const slides = window.TALK_SLIDES;
     let curSlide = 0;
-    let curStep = 0;
+    let curStep = 1;
+    let lastNavTimestamp = 0;
 
     const syncChannel = ('BroadcastChannel' in window) ? new BroadcastChannel('embeddings_talk_sync') : null;
 
@@ -267,17 +268,16 @@
       jumpSel.add(new Option(`${idx + 1}. ${s.title}`, idx));
     });
 
-    function renderPresenterState(slideIdx, step) {
-      curSlide = slideIdx;
-      curStep = step;
+    function setLocalAndBroadcast(slideIdx, step, shouldBroadcast = true) {
+      curSlide = Math.max(0, Math.min(slides.length - 1, slideIdx));
+      const s = slides[curSlide];
+      curStep = Math.max(1, Math.min(s.stepsCount, step));
       jumpSel.value = curSlide;
 
-      const s = slides[curSlide];
       document.getElementById('presSlideTitle').textContent = `Slide ${curSlide + 1}/${slides.length}: ${s.title}`;
       document.getElementById('presSlideSubtitle').textContent = s.subtitle;
-      document.getElementById('presStepBadge').textContent = `Active Step: ${curStep} of ${s.stepsCount}`;
+      document.getElementById('presStepBadge').textContent = `Step ${curStep} of ${s.stepsCount}`;
 
-      // Stage cue box (separated from spoken text!)
       const cueBox = document.getElementById('stageCueBox');
       if (s.stageCue) {
         cueBox.style.display = 'block';
@@ -286,28 +286,28 @@
         cueBox.style.display = 'none';
       }
 
-      // Render step-by-step spoken script
+      // 1-to-1 Step Mapping: noteIdx 0 == Step 1, noteIdx 1 == Step 2, etc.
       const notesEl = document.getElementById('notesContainer');
       notesEl.innerHTML = '';
       const notes = s.speakerNotes || [];
       notes.forEach((note, nIdx) => {
+        const stepNum = nIdx + 1;
+        const isCurrent = (stepNum === curStep);
         const div = document.createElement('div');
-        const isCurrent = (nIdx === curStep) || (curStep >= notes.length && nIdx === notes.length - 1);
         div.className = 'note-item ' + (isCurrent ? 'active-note' : '');
-        const tagLabel = nIdx === 0 ? 'Slide Intro (Step 0)' : `Step ${nIdx} of ${s.stepsCount}`;
-        div.innerHTML = `<div class="note-step-tag">${tagLabel}${isCurrent ? ' • CURRENTLY ACTIVE' : ''}</div><div>"${note}"</div>`;
-        div.onclick = () => sendCommand('GOTO', curSlide, Math.min(s.stepsCount, nIdx));
+        div.innerHTML = `<div class="note-step-tag">Step ${stepNum} of ${s.stepsCount}${isCurrent ? ' • CURRENTLY ACTIVE ON SCREEN' : ''}</div><div>"${note}"</div>`;
+        div.onclick = () => setLocalAndBroadcast(curSlide, stepNum, true);
         notesEl.appendChild(div);
         if (isCurrent) {
-          setTimeout(() => div.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+          setTimeout(() => div.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 40);
         }
       });
 
       const nextBox = document.getElementById('nextUpBox');
       if (curStep < s.stepsCount) {
-        nextBox.innerHTML = `<strong>Next Press of Space / → :</strong> Reveals <strong>Step ${curStep + 1} of ${s.stepsCount}</strong> on the audience slide.`;
+        nextBox.innerHTML = `<strong>Next Press of Space / → :</strong> Reveals <strong>Step ${curStep + 1} of ${s.stepsCount}</strong> on this slide.`;
       } else if (curSlide < slides.length - 1) {
-        nextBox.innerHTML = `<strong>Next Press of Space / → :</strong> Moves to <strong>Slide ${curSlide + 2}: ${slides[curSlide + 1].title}</strong>`;
+        nextBox.innerHTML = `<strong>Next Press of Space / → :</strong> Moves to <strong>Slide ${curSlide + 2}: ${slides[curSlide + 1].title} (Step 1)</strong>`;
       } else {
         nextBox.innerHTML = `<strong>End of Deck Reached!</strong> Ready for Q&A.`;
       }
@@ -328,25 +328,53 @@
       } else {
         nextSlideEl.textContent = "Final Slide (Q&A)";
       }
-    }
 
-    function sendCommand(action, slideIdx = 0, step = 0) {
-      const cmdPayload = {
-        type: 'REMOTE_CMD',
-        cmdId: Date.now() + Math.random(),
-        action,
-        slideIdx,
-        step
-      };
-      if (syncChannel) {
-        syncChannel.postMessage(cmdPayload);
-      } else {
-        try { localStorage.setItem('embeddings_talk_cmd', JSON.stringify(cmdPayload)); } catch {}
+      if (shouldBroadcast) {
+        const payload = {
+          type: 'SET_EXACT_STATE',
+          slideIdx: curSlide,
+          step: curStep,
+          ts: Date.now()
+        };
+        if (syncChannel) syncChannel.postMessage(payload);
+        try { localStorage.setItem('embeddings_talk_exact_state', JSON.stringify(payload)); } catch {}
       }
     }
 
+    function canNavigateNow() {
+      const now = performance.now();
+      if (now - lastNavTimestamp < 120) return false;
+      lastNavTimestamp = now;
+      return true;
+    }
+
+    function stepNext() {
+      if (!canNavigateNow()) return;
+      const s = slides[curSlide];
+      if (curStep < s.stepsCount) {
+        setLocalAndBroadcast(curSlide, curStep + 1, true);
+      } else if (curSlide < slides.length - 1) {
+        setLocalAndBroadcast(curSlide + 1, 1, true);
+      }
+    }
+
+    function stepPrev() {
+      if (!canNavigateNow()) return;
+      if (curStep > 1) {
+        setLocalAndBroadcast(curSlide, curStep - 1, true);
+      } else if (curSlide > 0) {
+        const prevSlide = slides[curSlide - 1];
+        setLocalAndBroadcast(curSlide - 1, prevSlide.stepsCount, true);
+      }
+    }
+
+    function revealAllOnSlide() {
+      const s = slides[curSlide];
+      setLocalAndBroadcast(curSlide, s.stepsCount, true);
+    }
+
     function jumpToSlide(idx) {
-      sendCommand('GOTO', parseInt(idx), 0);
+      setLocalAndBroadcast(parseInt(idx), 1, true);
     }
 
     function remoteSwitchVisualizer(tabId) {
@@ -357,26 +385,38 @@
 
     if (syncChannel) {
       syncChannel.onmessage = (ev) => {
-        if (ev.data && ev.data.type === 'SLIDE_STATE') {
-          renderPresenterState(ev.data.slideIdx, ev.data.step);
+        if (ev.data && ev.data.type === 'SET_EXACT_STATE') {
+          if (ev.data.slideIdx !== curSlide || ev.data.step !== curStep) {
+            setLocalAndBroadcast(ev.data.slideIdx, ev.data.step, false);
+          }
         }
       };
-      syncChannel.postMessage({ type: 'REMOTE_CMD', cmdId: Date.now(), action: 'REQUEST_STATE' });
+      syncChannel.postMessage({ type: 'REQUEST_CURRENT_STATE' });
     }
 
     window.addEventListener('storage', (ev) => {
-      if (ev.key === 'embeddings_talk_state' && ev.newValue) {
+      if (ev.key === 'embeddings_talk_exact_state' && ev.newValue) {
         try {
           const st = JSON.parse(ev.newValue);
-          renderPresenterState(st.slideIdx, st.step);
+          if (st.slideIdx !== curSlide || st.step !== curStep) {
+            setLocalAndBroadcast(st.slideIdx, st.step, false);
+          }
         } catch {}
       }
     });
 
     window.addEventListener('keydown', e => {
-      if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); sendCommand('NEXT'); }
-      else if (e.key === 'ArrowLeft') { e.preventDefault(); sendCommand('PREV'); }
-      else if (e.key === 'ArrowDown') { e.preventDefault(); sendCommand('REVEAL_ALL'); }
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        if (document.activeElement && document.activeElement.tagName === 'BUTTON') document.activeElement.blur();
+        stepNext();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        stepPrev();
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        revealAllOnSlide();
+      }
     });
 
     let seconds = 0, timerInterval = null;
@@ -402,11 +442,14 @@
     }
 
     try {
-      const saved = JSON.parse(localStorage.getItem('embeddings_talk_state'));
-      if (saved) renderPresenterState(saved.slideIdx, saved.step);
-      else renderPresenterState(0, 0);
+      const saved = JSON.parse(localStorage.getItem('embeddings_talk_exact_state'));
+      if (saved && typeof saved.slideIdx === 'number' && typeof saved.step === 'number') {
+        setLocalAndBroadcast(saved.slideIdx, saved.step, false);
+      } else {
+        setLocalAndBroadcast(0, 1, false);
+      }
     } catch {
-      renderPresenterState(0, 0);
+      setLocalAndBroadcast(0, 1, false);
     }
   </script>
 </body>
