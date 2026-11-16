@@ -1,0 +1,28 @@
+# .NET Build Artifacts
+bin/
+obj/
+out/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+.idea/
+.vscode/
+
+# OS & Temp files
+.DS_Store
+Thumbs.db
+*.tmp
+*.bak
+*.swp
+
+# Local ONNX / HuggingFace Model Cache (if stored locally)
+models-cache/
+*.onnx
+
+# ============================================================================
+# INTERNAL SPEAKER MATERIALS & STAGE NOTES (Ignored for public listener repo)
+# ============================================================================
+speaker-private/
+internal/

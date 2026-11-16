@@ -1,0 +1,42 @@
+// ============================================================================
+// MINIMAL 25-LINE STAGE LIVE-CODING SCRIPT (Act 3)
+// Paste or type this live on stage if starting from a blank Program.cs!
+// ============================================================================
+using System.Numerics.Tensors;
+using ElBruno.LocalEmbeddings;
+using Microsoft.Extensions.AI;
+
+// 1. Load a local ONNX model (downloads once, runs 100% offline on CPU/GPU)
+IEmbeddingGenerator<string, Embedding<float>> embedder =
+    await LocalEmbeddingGenerator.CreateAsync();
+
+// 2. Our "database" of support tickets
+string[] tickets = [
+    "Payment gateway returns 502 error at checkout",
+    "How do I reset my two-factor authentication?",
+    "App crashes when uploading a profile picture",
+    "Invoice PDF shows the wrong VAT rate"
+];
+
+// 3. Turn strings into float[] coordinates
+var ticketVectors = await embedder.GenerateAsync(tickets);
+
+// 4. Search by MEANING, not exact keywords
+while (true)
+{
+    Console.Write("\nDescribe your issue: ");
+    var query = Console.ReadLine()!;
+    var queryVector = await embedder.GenerateVectorAsync(query);
+
+    var bestMatch = tickets
+        .Zip(ticketVectors)
+        .Select(x => (
+            Ticket: x.First,
+            // Built-in SIMD hardware-accelerated math in .NET!
+            Score: TensorPrimitives.CosineSimilarity(queryVector.Span, x.Second.Vector.Span)
+        ))
+        .OrderByDescending(x => x.Score)
+        .First();
+
+    Console.WriteLine($"Match ({bestMatch.Score:P0}): {bestMatch.Ticket}");
+}

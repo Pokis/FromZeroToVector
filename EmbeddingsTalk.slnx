@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Embeddings.Core/Embeddings.Core.csproj" />
+  </Folder>
+  <Folder Name="/src/01-LiveCoding-SemanticSearch/">
+    <Project Path="src/01-LiveCoding-SemanticSearch/SemanticSearchLive.csproj" />
+  </Folder>
+  <Folder Name="/src/02-PatternsBeyondRag/">
+    <Project Path="src/02-PatternsBeyondRag/PatternsBeyondRag.csproj" />
+  </Folder>
+  <Folder Name="/src/03-ProductionGotchasAndFixes/">
+    <Project Path="src/03-ProductionGotchasAndFixes/ProductionGotchasAndFixes.csproj" />
+  </Folder>
+</Solution>

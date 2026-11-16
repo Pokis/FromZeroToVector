@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Slide Deck — Coordinates for Meaning: From Zero to Vector in .NET</title>
+  <style>
+    :root {
+      --bg-0: #060a12;
+      --bg-1: #0f172a;
+      --bg-2: #1e293b;
+      --text-0: #f8fafc;
+      --text-1: #cbd5e1;
+      --text-2: #94a3b8;
+      --accent: #38bdf8;
+      --accent-2: #818cf8;
+      --accent-3: #34d399;
+      --warn: #fbbf24;
+      --danger: #f87171;
+      --border: rgba(148, 163, 184, 0.2);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: radial-gradient(circle at 20% 10%, #111e38 0%, var(--bg-0) 70%);
+      color: var(--text-0);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .deck-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 28px;
+      background: rgba(15, 23, 42, 0.85);
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--text-2);
+    }
+
+    .progress-track {
+      height: 3px;
+      background: rgba(255,255,255,0.06);
+      width: 100%;
+    }
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--accent-3));
+      width: 5%;
+      transition: width 0.25s ease;
+    }
+
+    .slide-stage {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 56px;
+      overflow-y: auto;
+    }
+
+    .slide {
+      display: none;
+      max-width: 1280px;
+      width: 100%;
+      animation: slideIn 0.22s ease;
+    }
+    .slide.active { display: block; }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .act-pill {
+      display: inline-block;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: rgba(56, 189, 248, 0.14);
+      border: 1px solid rgba(56, 189, 248, 0.38);
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-size: clamp(32px, 4.2vw, 54px);
+      font-weight: 800;
+      line-height: 1.12;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+    }
+    h2 {
+      font-size: clamp(26px, 3.1vw, 40px);
+      font-weight: 800;
+      line-height: 1.18;
+      letter-spacing: -0.02em;
+      margin-bottom: 14px;
+    }
+    p.lead {
+      font-size: clamp(17px, 1.6vw, 22px);
+      color: var(--text-1);
+      line-height: 1.55;
+      margin-bottom: 24px;
+      max-width: 980px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 16px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 16px;
+    }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .panel {
+      background: rgba(15, 23, 42, 0.82);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+    }
+    .panel h3 {
+      font-size: 19px;
+      margin-bottom: 10px;
+      color: var(--accent);
+    }
+    .panel p, .panel li {
+      font-size: 16px;
+      line-height: 1.55;
+      color: var(--text-1);
+    }
+    .panel ul {
+      padding-left: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    pre.code-block {
+      background: #050811;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 22px;
+      font-family: 'JetBrains Mono', Consolas, monospace;
+      font-size: 14.5px;
+      line-height: 1.52;
+      color: #e2e8f0;
+      overflow-x: auto;
+    }
+    .kw { color: #38bdf8; font-weight: 600; }
+    .ty { color: #34d399; }
+    .st { color: #fbbf24; }
+    .cm { color: #64748b; font-style: italic; }
+
+    table.slide-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 15px;
+    }
+    table.slide-table th, table.slide-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+    table.slide-table th {
+      color: var(--accent);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .speaker-drawer {
+      background: rgba(7, 11, 20, 0.96);
+      border-top: 2px solid var(--warn);
+      padding: 14px 36px;
+      font-size: 14px;
+      color: #fde68a;
+      display: none;
+    }
+    .speaker-drawer.visible { display: block; }
+
+    .deck-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 28px;
+      background: rgba(15, 23, 42, 0.85);
+      border-top: 1px solid var(--border);
+    }
+
+    .nav-btn {
+      background: var(--bg-2);
+      color: var(--text-0);
+      border: 1px solid var(--border);
+      padding: 7px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .nav-btn:hover { border-color: var(--accent); }
+    .cta-link {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #060a12;
+      font-weight: 700;
+      padding: 10px 18px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 14px;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="deck-topbar">
+    <div><strong>Coordinates for Meaning</strong> — From Zero to Vector in .NET (60-Min Conference Talk)</div>
+    <div style="display:flex; gap:14px; align-items:center;">
+      <span>Keys: <code>←</code> <code>→</code> Navigate • <code>S</code> Speaker Notes • <code>F</code> Fullscreen</span>
+      <a href="../visualizer/index.html" target="_blank" style="color:var(--accent); text-decoration:none; font-weight:700;">↗ Open 3D Visualizer Lab</a>
+    </div>
+  </div>
+  <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+
+  <div class="slide-stage">
+    <!-- SLIDE 1: TITLE -->
+    <section class="slide active" data-notes="Welcome everyone! Today we're demystifying the architectural engine behind modern AI search, routing, recommendations, and anomaly detection: Vector Embeddings. No PhD math proofs—just visual intuition, live 3D demos, 25 lines of modern C#, and production truths.">
+      <span class="act-pill">60-Minute Technical Session • Software Engineering & Data/AI</span>
+      <h1>Coordinates for Meaning:<br/><span style="background:linear-gradient(90deg,#38bdf8,#818cf8,#34d399); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">From Zero to Vector in .NET</span></h1>
+      <p class="lead">Visual intuition, sub-millisecond C# architectures, multimodal shared spaces, and production engineering realities beyond basic chatbots.</p>
+      <div class="grid-3">
+        <div class="panel">
+          <h3>Act 1 & 2: Visual Intuition</h3>
+          <p>Reframe embeddings from "AI magic" to a familiar CS primitive: GPS coordinates for meaning in 2D, 3D, and 384D.</p>
+        </div>
+        <div class="panel">
+          <h3>Act 3 & 4: C# & Patterns</h3>
+          <p>Live local ONNX inference in ~25 lines of C# (<code>Microsoft.Extensions.AI</code> + SIMD <code>TensorPrimitives</code>) & 5 backend patterns.</p>
+        </div>
+        <div class="panel">
+          <h3>Act 5: Production Gotchas</h3>
+          <p>Where vectors lie: negation blindness, hybrid BM25 + RRF search, Matryoshka truncation, quantization & model migrations.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 2: THE PROBLEM WITH EXACT MATCHING -->
+    <section class="slide" data-notes="Start with a pain point every junior and senior engineer has hit: SQL LIKE '%...%' only matches characters, not intent. Ask the room: how many regex OR clauses does it take before you give up?">
+      <span class="act-pill">Act 1 • 0:00 – 0:10 • The Hook</span>
+      <h2>Computers Love Exact Bytes. Humans Speak in Fuzzy Intent.</h2>
+      <p class="lead">Traditional databases excel at <code>WHERE status = 502</code>, but fail completely when users describe the exact same problem in different words.</p>
+      <div class="grid-2">
+        <div class="panel" style="border-color:rgba(248,113,113,0.4);">
+          <h3 style="color:var(--danger);">❌ What the User Types</h3>
+          <ul>
+            <li><em>"My laptop screen is flickering after sleep"</em></li>
+            <li><em>"Credit card won't go through at checkout"</em></li>
+            <li><em>"My avatar photo freezes the mobile app"</em></li>
+          </ul>
+        </div>
+        <div class="panel" style="border-color:rgba(52,211,153,0.4);">
+          <h3 style="color:var(--accent-3);">✔ What Your Knowledge Base Says</h3>
+          <ul>
+            <li><em>"Troubleshooting display refresh glitches"</em> (0 shared words!)</li>
+            <li><em>"Payment gateway returns 502 error"</em> (0 shared words!)</li>
+            <li><em>"App crashes when uploading profile picture"</em> (0 shared words!)</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 3: THE ZERO-MATH MENTAL MODEL (2D TASTE MAP) -->
+    <section class="slide" data-notes="Do the live audience game here! Ask where Apple, Pear, Potato Chip, and Chocolate Cake go on X=Sweetness, Y=Crunchiness. Point out they just created a 2D embedding without doing any linear algebra.">
+      <span class="act-pill">Act 1 • The "Zero-Math" Mental Model</span>
+      <h2>You Already Understand Vector Spaces: The 2D Taste Map</h2>
+      <p class="lead">An embedding is just a list of numbers (<code>float[]</code>) representing coordinates along meaning axes.</p>
+      <div class="grid-2">
+        <div class="panel">
+          <h3>2 Human-Named Axes: <code>float[2]</code></h3>
+          <ul>
+            <li><strong>Axis 0 (X):</strong> Sweetness (0 to 10)</li>
+            <li><strong>Axis 1 (Y):</strong> Crunchiness (0 to 10)</li>
+            <li>🍎 <strong>Apple</strong> = <code>[ 7.5, 8.0 ]</code></li>
+            <li>🍐 <strong>Crispy Pear</strong> = <code>[ 7.0, 7.2 ]</code> → <em>Lands right next to Apple!</em></li>
+            <li>🥔 <strong>Potato Chip</strong> = <code>[ 1.2, 9.2 ]</code></li>
+            <li>🍰 <strong>Chocolate Cake</strong> = <code>[ 9.4, 1.5 ]</code></li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>Scaling Up to AI Models: <code>float[384..3072]</code></h3>
+          <p>An AI embedding model is a deterministic function:</p>
+          <pre class="code-block" style="margin:12px 0;">f(input) -> float[384]</pre>
+          <p>Instead of 2 human axes, it learns <strong>384 to 3,072 abstract axes</strong> (<em>"is it a billing issue?"</em>, <em>"is it urgent?"</em>, <em>"is it C# code?"</em>) where <strong>geometric proximity = semantic similarity</strong>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: COSINE SIMILARITY IN ONE SENTENCE -->
+    <section class="slide" data-notes="Explain Cosine Similarity as the angle between two arrows from (0,0). Bonus senior tip: when vectors are normalized to unit length 1.0, Cosine Similarity and Dot Product are mathematically identical!">
+      <span class="act-pill">Act 1 • Geometric Intuition</span>
+      <h2>Cosine Similarity in 1 Sentence: Measure the Angle, Not the Ruler</h2>
+      <p class="lead">Draw two arrows from the origin <code>(0, 0)</code>. If they point in the same direction, their meaning is aligned—regardless of document length.</p>
+      <div class="grid-3">
+        <div class="panel">
+          <h3 style="color:var(--accent-3);">cos(0°) = +1.00</h3>
+          <p><strong>Identical Direction</strong><br/>Arrows point the exact same way. High semantic similarity (typically <code>&gt; 0.75</code> in production).</p>
+        </div>
+        <div class="panel">
+          <h3 style="color:var(--warn);">cos(90°) = 0.00</h3>
+          <p><strong>Orthogonal (90° Apart)</strong><br/>Completely unrelated concepts (e.g., <em>"Postgres deadlock"</em> vs <em>"Golden retriever puppy"</em>).</p>
+        </div>
+        <div class="panel">
+          <h3 style="color:var(--accent);">Senior Perf Tip ⚡</h3>
+          <p>Because models normalize vectors to unit length (<code>||v|| = 1.0</code>), <strong>Cosine Similarity == Dot Product</strong>: just <code>SUM(a[i] * b[i])</code> in SIMD!</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 5: HOW ARE EMBEDDINGS GENERATED? (THE 4-STAGE PIPELINE) -->
+    <section class="slide" data-notes="Newbies often think an embedding model is a giant lookup table. Walk through these 4 stages: Tokenize -> Contextualize (Self-Attention) -> Pool -> L2 Normalize. Mention Contrastive Learning!">
+      <span class="act-pill">Act 1 • Under the Hood (Zero Jargon)</span>
+      <h2>How Are Embeddings Generated? The 4-Stage Pipeline</h2>
+      <p class="lead">An embedding model isn't a dictionary lookup—it's a 4-step geometric compressor trained via <strong>Contrastive Learning</strong>.</p>
+      <div class="grid-4">
+        <div class="panel">
+          <h3>1. Chunk & Tokenize</h3>
+          <p><strong>Text:</strong> Sub-words <code>["un", "believ", "able"] → [348, 9102, 481]</code><br/><strong>Image:</strong> 16×16 pixel patches<br/><strong>Audio:</strong> Spectrogram patches</p>
+        </div>
+        <div class="panel">
+          <h3>2. Contextualize</h3>
+          <p><strong>Transformer Self-Attention</strong> updates every token based on surrounding words: <em>"apple"</em> moves toward <em>"iPhone"</em> or <em>"banana"</em> based on context.</p>
+        </div>
+        <div class="panel">
+          <h3>3. Pool (Squash)</h3>
+          <p><strong>Mean Pooling</strong> averages the 500 token vectors into a single fixed-size <code>float[384]</code> coordinate array representing the whole passage.</p>
+        </div>
+        <div class="panel">
+          <h3>4. L2 Normalize</h3>
+          <p>Scales the vector so its length equals <code>1.0</code>, placing every item on the surface of a unit hypersphere.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 6: ACT 2 LIVE DEMO 1 — 3D UNIVERSE -->
+    <section class="slide" data-notes="Switch to the browser tab with visualizer/index.html! Rotate the 3D cloud, ask someone in the front row for a phrase, type it in, and show theVector Arithmetic & 3D Distortion Warning.">
+      <span class="act-pill">Act 2 • 0:10 – 0:22 • Live Demo 1</span>
+      <h2>Live Demo: Flying Through the 3D Meaning Universe</h2>
+      <p class="lead">Let's step inside a 384-dimensional vector space projected down to 3D via UMAP—running 100% locally in the browser.</p>
+      <div class="grid-2">
+        <div class="panel">
+          <h3>What We'll Test Live on Stage</h3>
+          <ul>
+            <li><strong>Natural Clustering:</strong> Watch 6 domains self-organize without manual tags.</li>
+            <li><strong>Audience Live Drop:</strong> Shout out any sentence and watch the camera fly to its landing coordinates.</li>
+            <li><strong>Vector Arithmetic:</strong> <code>"Database latency" + "Angry customer" − "Internal test" → P1 Outage!</code></li>
+            <li><strong>The 3D Shadow Warning:</strong> Why 384D → 3D compression distorts distances.</li>
+          </ul>
+          <a class="cta-link" href="../visualizer/index.html" target="_blank">Launch Interactive 3D Visualizer ↗</a>
+        </div>
+        <div class="panel">
+          <h3>Why Vector Arithmetic Works</h3>
+          <pre class="code-block">
+Vector("Database latency")
++ Vector("Angry customer")
+- Vector("Internal sandbox")
+----------------------------
+≈ Vector("P1 Production Outage!")</pre>
+          <p style="margin-top:12px;">Directions in vector space encode relationships (urgency, sentiment, domain, modality).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 7: ACT 3 LIVE C# CODING (~25 LINES) -->
+    <section class="slide" data-notes="Switch to Rider / VS Code or terminal for Act 3! Point out IEmbeddingGenerator from Microsoft.Extensions.AI and TensorPrimitives.CosineSimilarity from System.Numerics.Tensors.">
+      <span class="act-pill">Act 3 • 0:22 – 0:38 • Live C# Coding</span>
+      <h2>Semantic Search in ~25 Lines of Modern C# (.NET 10)</h2>
+      <div class="grid-2">
+        <pre class="code-block"><span class="kw">using</span> System.Numerics.Tensors;
+<span class="kw">using</span> ElBruno.LocalEmbeddings;
+<span class="kw">using</span> Microsoft.Extensions.AI;
+
+<span class="cm">// 1. Local ONNX model (100% offline, swaps with OpenAI/Ollama via DI)</span>
+<span class="ty">IEmbeddingGenerator</span>&lt;<span class="kw">string</span>, <span class="ty">Embedding</span>&lt;<span class="kw">float</span>&gt;&gt; embedder =
+    <span class="kw">await</span> <span class="ty">LocalEmbeddingGenerator</span>.CreateAsync();
+
+<span class="kw">string</span>[] tickets = [
+    <span class="st">"Payment gateway returns 502 error at checkout"</span>,
+    <span class="st">"How do I reset my two-factor authentication?"</span>,
+    <span class="st">"App crashes when uploading a profile picture"</span>,
+    <span class="st">"Invoice PDF shows the wrong VAT rate"</span>
+];
+
+<span class="cm">// 2. Turn strings into float[384] coordinates</span>
+<span class="kw">var</span> ticketVectors = <span class="kw">await</span> embedder.GenerateAsync(tickets);
+
+<span class="cm">// 3. Hardware SIMD-accelerated Cosine Similarity!</span>
+<span class="kw">var</span> queryVector = <span class="kw">await</span> embedder.GenerateVectorAsync(query);
+<span class="kw">var</span> best = tickets.Zip(ticketVectors)
+    .Select(x =&gt; (Ticket: x.First,
+        Score: <span class="ty">TensorPrimitives</span>.CosineSimilarity(
+            queryVector.Span, x.Second.Vector.Span)))
+    .OrderByDescending(x =&gt; x.Score).First();</pre>
+        <div class="panel">
+          <h3>Two Game-Changing .NET Primitives</h3>
+          <ul>
+            <li><strong><code>IEmbeddingGenerator&lt;string, Embedding&lt;float&gt;&gt;</code></strong> (<code>Microsoft.Extensions.AI</code>): The standard abstraction across .NET. Swap local ONNX for Azure OpenAI, Ollama, or Gemini by changing 1 line of DI registration.</li>
+            <li><strong><code>TensorPrimitives.CosineSimilarity</code></strong> (<code>System.Numerics.Tensors</code>): Built-in AVX2/AVX-512/NEON SIMD hardware acceleration over <code>ReadOnlySpan&lt;float&gt;</code>.</li>
+            <li><strong>Run it now:</strong><br/><code>dotnet run --project src/01-LiveCoding-SemanticSearch -- --demo</code></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 8: ACT 4 — FIVE PATTERNS BEYOND RAG -->
+    <section class="slide" data-notes="Transition to Act 4: Everyone associates embeddings with stuffing context into an LLM prompt (RAG). But embeddings are even more powerful when used as fast, deterministic building blocks in regular backend services.">
+      <span class="act-pill">Act 4 • 0:38 – 0:50 • Architectural Patterns</span>
+      <h2>Five High-Leverage Patterns Beyond Chatbots & RAG</h2>
+      <p class="lead">Use <code>float[]</code> vectors as deterministic, sub-millisecond building blocks in regular microservices—zero LLM generation required.</p>
+      <div class="grid-2">
+        <div class="panel">
+          <h3>1. Zero-Shot Routing & Classification (&lt; 1ms)</h3>
+          <p>Embed 5 queue anchor descriptions at startup. Route incoming webhooks via <code>TensorPrimitives.Dot</code> in microseconds with zero model training.</p>
+          <h3 style="margin-top:16px;">2. Semantic Caching & Deduplication</h3>
+          <p>Before creating a duplicate Jira ticket or calling a $0.03 LLM endpoint, check if <code>CosineSimilarity &gt; 0.90</code> exists in cache.</p>
+        </div>
+        <div class="panel">
+          <h3>3. Anomaly & Log Drift Detection</h3>
+          <p>Compute the mean centroid vector of normal logs. Alert when a log line lands outside a distance threshold—catching novel failures regex misses.</p>
+          <h3 style="margin-top:16px;">4. Stateless Recommendations ("More Like This")</h3>
+          <p>Represent a user's live taste profile by averaging the <code>float[]</code> vectors of the last 5 items they clicked, then query nearest neighbors.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 9: MULTIMODAL SHARED SPACES & THE MODALITY GAP -->
+    <section class="slide" data-notes="Explain how CLIP, SigLIP, Gemini Embedding 2, and Qwen3-VL map images, audio, and text into the exact same coordinate space—and point out the 'Modality Gap' subtlety!">
+      <span class="act-pill">Act 4 • Pattern #5 • Multimodal Shared Spaces</span>
+      <h2>How Text, Images, and Audio Share the Exact Same Space</h2>
+      <p class="lead">Modern multimodal models (CLIP, SigLIP, Gemini Embedding 2, Qwen3-VL) train Text, Vision, and Audio encoders side-by-side using Contrastive Learning.</p>
+      <div class="grid-2">
+        <div class="panel">
+          <h3>One Vector Space to Search Them All</h3>
+          <ul>
+            <li>📝 <strong>Text:</strong> <code>"golden retriever puppy"</code> → <code>[ +0.21, -0.44, +0.81 ... ]</code></li>
+            <li>🖼️ <strong>Image (ViT Patches):</strong> <code>IMG_0042.jpg</code> → <code>[ +0.19, -0.42, +0.79 ... ]</code></li>
+            <li>🔊 <strong>Audio (Spectrogram):</strong> <code>barking.wav</code> → <code>[ +0.18, -0.40, +0.77 ... ]</code></li>
+          </ul>
+          <p style="margin-top:12px;">Your database doesn't care where the <code>float[]</code> came from—one query searches screenshots, PDFs, audio calls, and docs simultaneously!</p>
+        </div>
+        <div class="panel" style="border-color:rgba(251,191,36,0.4);">
+          <h3 style="color:var(--warn);">Engineering Subtlety: "The Modality Gap"</h3>
+          <p>Even in shared spaces, image vectors and text vectors hover in slightly separated sub-clouds (like oil and water).</p>
+          <p style="margin-top:10px;"><strong>Pro Tip:</strong> Normalize per-modality centroids or use smaller-gap models (SigLIP / Gemini Embedding 2) when mixing text and image candidates in a single top-K cutoff.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 10: WHY EMBEDDING MODELS DIFFER (5 AXES) -->
+    <section class="slide" data-notes="Beginners look at the MTEB leaderboard and pick #1. Walk through the 5 axes that actually matter in software engineering.">
+      <span class="act-pill">Act 4 • Model Architecture Selection</span>
+      <h2>Why Embedding Models Differ: The 5 Engineering Axes</h2>
+      <table class="slide-table">
+        <thead>
+          <tr>
+            <th>Dimension / Axis</th>
+            <th>What Varies Between Models</th>
+            <th>Why It Matters in Production</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>1. Specialization (Symmetric vs Asymmetric)</strong></td>
+            <td>General similarity vs Q&A retrieval vs Code models (e.g., <code>voyage-code-3</code>)</td>
+            <td>Short queries don't look like 500-word docs! Asymmetric models use prefixes like <code>"query: "</code> vs <code>"passage: "</code>.</td>
+          </tr>
+          <tr>
+            <td><strong>2. Context Window</strong></td>
+            <td>Legacy models cap at <code>512 tokens</code>; modern models handle <code>8K–32K+</code></td>
+            <td>A 512-token model <strong>silently truncates</strong> pages 2–10 of your PDF!</td>
+          </tr>
+          <tr>
+            <td><strong>3. Vector Dimensions</strong></td>
+            <td><code>384</code> (MiniLM) up to <code>3,072+</code> (OpenAI large / Gemini)</td>
+            <td>10M vectors @ 3,072 float32 = <strong>122 GB RAM</strong> vs 384 dims = <strong>15 GB RAM</strong>.</td>
+          </tr>
+          <tr>
+            <td><strong>4. Language & Domain</strong></td>
+            <td>English-only vs 100+ languages (BGE-M3 / Qwen3) vs Legal/Medical</td>
+            <td>English-only models map non-English text almost randomly.</td>
+          </tr>
+          <tr>
+            <td><strong>5. Local Weights vs API</strong></td>
+            <td>ONNX / Ollama (0$/tok, on-prem privacy) vs Cloud APIs</td>
+            <td>Local ONNX runs in &lt;2ms on CPU with zero data leaving your VPC.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- SLIDE 11: ACT 5 — GOTCHA 1: NEGATION & EXACT ID BLINDNESS -->
+    <section class="slide" data-notes="This is where you earn massive credibility with senior engineers. Show the live failure from Act 3 ('How do I DISABLE MFA?' matching 'How do I ENABLE/RESET MFA?' at 92%+) and the Hybrid Search RRF fix!">
+      <span class="act-pill">Act 5 • 0:50 – 1:00 • Where Embeddings Lie</span>
+      <h2>Gotcha #1: Embeddings Are Blind to Negation & Exact IDs</h2>
+      <p class="lead">Dense vectors capture <strong>general topic</strong>, not boolean logic or exact alphanumeric identifiers.</p>
+      <div class="grid-2">
+        <div class="panel" style="border-color:rgba(248,113,113,0.4);">
+          <h3 style="color:var(--danger);">❌ The Failure Mode</h3>
+          <ul>
+            <li><code>"How to ENABLE MFA"</code> vs <code>"How to DISABLE MFA"</code> → <strong>94% Cosine Similarity!</strong></li>
+            <li><code>"HTTP Error 503"</code> vs <code>"HTTP Error 504"</code> → <strong>91% Cosine Similarity!</strong></li>
+            <li>Searching for SKU <code>"AX-9920-B"</code> returns random parts in the same category.</li>
+          </ul>
+        </div>
+        <div class="panel" style="border-color:rgba(52,211,153,0.4);">
+          <h3 style="color:var(--accent-3);">✔ The Fix: Hybrid Search + RRF</h3>
+          <p>Always pair <strong>Dense Vector Search</strong> with <strong>BM25 Keyword Search</strong> and merge rankings via <strong>Reciprocal Rank Fusion (RRF)</strong>:</p>
+          <pre class="code-block" style="margin-top:10px;">RRF_Score(doc) = 1 / (60 + DenseRank)
+               + 1 / (60 + BM25Rank)</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 12: GOTCHA 2 — THE RAM CLIFF, MATRYOSHKA & QUANTIZATION -->
+    <section class="slide" data-notes="Show the math: 10M vectors at 3072 float32 dims eats ~122 GB of RAM. Then show Matryoshka (MRL) slicing and int8/1-bit quantization.">
+      <span class="act-pill">Act 5 • Production Cost & Memory Optimization</span>
+      <h2>Gotcha #2: The Storage & RAM Cliff (And How to Shrink Vectors 32x)</h2>
+      <p class="lead">Storing 10M vectors at 3,072 <code>float32</code> dimensions requires <strong>~122.9 GB of RAM</strong>. Two modern tricks solve this:</p>
+      <div class="grid-2">
+        <div class="panel">
+          <h3>🪆 1. Matryoshka Representation Learning (MRL)</h3>
+          <p>Modern models train coarse semantic concepts into the first dimensions and fine details into the tail.</p>
+          <p style="margin-top:10px;">You can slice <code>float[3072] → float[256]</code> and re-normalize with <code>TensorPrimitives.Norm</code>, cutting memory <strong>12x</strong> while keeping <strong>~95%+ recall</strong>!</p>
+        </div>
+        <div class="panel">
+          <h3>🗜️ 2. Scalar (<code>int8</code>) & Binary (<code>1-bit</code>) Quantization</h3>
+          <ul>
+            <li><strong><code>float32 → int8</code>:</strong> 4x RAM reduction, &lt;1% recall loss.</li>
+            <li><strong><code>float32 → 1-bit Binary (ulong[])</code>:</strong> <strong>32x RAM reduction!</strong> Search uses hardware CPU <code>BitOperations.PopCount(a ^ b)</code>, then rescores the top 50 in <code>float32</code>.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 13: GOTCHA 3 & 4 — CHUNKING & MODEL MIGRATION LOCK-IN -->
+    <section class="slide" data-notes="Cover the final two production war stories: orphaned pronouns during naive chunking, and the #1 migration trap: vector spaces are completely incompatible across models!">
+      <span class="act-pill">Act 5 • Chunking & Model Lifecycle</span>
+      <h2>Gotchas #3 & #4: Context-Destroying Chunking & Model Lock-In</h2>
+      <div class="grid-2">
+        <div class="panel">
+          <h3>Gotcha #3: Naive Chunking Orphans Context</h3>
+          <p>Splitting every 500 characters produces chunks like:<br/><em>"It returns a 502 error when payload exceeds 4MB."</em> (What is <em>"It"</em>?!)</p>
+          <p style="margin-top:10px; color:var(--accent-3);"><strong>Fix (Contextual Chunking):</strong> Prepend document & section headers to every chunk before embedding:<br/><code>"[Doc: Stripe Gateway > Checkout Limits] It returns..."</code></p>
+        </div>
+        <div class="panel" style="border-color:rgba(251,191,36,0.45);">
+          <h3 style="color:var(--warn);">Gotcha #4: Vector Spaces Are Incompatible!</h3>
+          <p>Even if Model A and Model B both output <code>float[768]</code>, comparing a Model B query against Model A database rows produces <strong>random noise (~0.00 similarity)</strong>.</p>
+          <p style="margin-top:10px;"><strong>3 Defensive Rules:</strong><br/>1. Store <code>model_id</code> & <code>model_version</code> on every row.<br/>2. Use <strong>Blue/Green Vector Columns</strong> (<code>embedding_v1</code>, <code>embedding_v2</code>) to backfill before flipping traffic.<br/>3. Consider compatible model families (Voyage 4 / Cohere) for asymmetric query/index tiers.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 14: THE PRODUCTION DECISION CHEAT SHEET & Q&A -->
+    <section class="slide" data-notes="Leave this cheat-sheet slide up during Q&A! Point attendees to the GitHub repo where all C# demos, the 3D visualizer, and architecture guides are ready to run.">
+      <span class="act-pill">Act 5 • Wrap-Up & Q&A Cheat Sheet</span>
+      <h2>The Production Vector Cheat Sheet (Take-Home Matrix)</h2>
+      <div class="grid-2">
+        <div class="panel">
+          <h3>Where Should I Store My Vectors?</h3>
+          <ul>
+            <li><strong>&lt; 10K vectors:</strong> In-memory <code>ReadOnlyMemory&lt;float&gt;</code> + <code>TensorPrimitives.CosineSimilarity</code> (&lt;1ms, zero infra!).</li>
+            <li><strong>10K – 20M vectors:</strong> <strong>PostgreSQL + <code>pgvector</code> (HNSW index)</strong>. Keep relational joins, ACID, and vectors in one DB.</li>
+            <li><strong>50M – 1B+ vectors:</strong> Dedicated Vector DB (Qdrant, Milvus, Weaviate) with distributed sharding & quantization.</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>Explore Everything in This Repository</h3>
+          <ul>
+            <li>🌐 <code>visualizer/index.html</code> — Interactive 3D Space & Vector Lab</li>
+            <li>💻 <code>src/01-LiveCoding-SemanticSearch</code> — 25-line C# Live Demo</li>
+            <li>🏗️ <code>src/02-PatternsBeyondRag</code> — 5 Backend Patterns in C#</li>
+            <li>🛡️ <code>src/03-ProductionGotchasAndFixes</code> — Hybrid Search RRF, Matryoshka, Quantization & Blue/Green Migration</li>
+          </ul>
+          <a class="cta-link" href="../visualizer/index.html" target="_blank">Open 3D Visualizer Lab ↗</a>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="speaker-drawer" id="speakerDrawer"></div>
+
+  <div class="deck-footer">
+    <div id="slideCounter">Slide 1 of 14</div>
+    <div style="display:flex; gap:8px;">
+      <button class="nav-btn" onclick="prevSlide()">← Prev</button>
+      <button class="nav-btn" onclick="toggleNotes()">Speaker Notes (S)</button>
+      <button class="nav-btn" onclick="nextSlide()">Next →</button>
+    </div>
+  </div>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    let cur = 0;
+    let notesOpen = false;
+
+    function showSlide(idx) {
+      cur = Math.max(0, Math.min(slides.length - 1, idx));
+      slides.forEach((s, i) => s.classList.toggle('active', i === cur));
+      document.getElementById('slideCounter').textContent = `Slide ${cur + 1} of ${slides.length}`;
+      document.getElementById('progressBar').style.width = `${((cur + 1) / slides.length) * 100}%`;
+      document.getElementById('speakerDrawer').innerHTML = `<strong>🎤 Speaker Cue:</strong> ${slides[cur].getAttribute('data-notes') || ''}`;
+    }
+
+    function nextSlide() { showSlide(cur + 1); }
+    function prevSlide() { showSlide(cur - 1); }
+    function toggleNotes() {
+      notesOpen = !notesOpen;
+      document.getElementById('speakerDrawer').classList.toggle('visible', notesOpen);
+    }
+
+    window.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+      else if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+      else if (e.key === 's' || e.key === 'S') { toggleNotes(); }
+      else if (e.key === 'f' || e.key === 'F') {
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+        else document.exitFullscreen();
+      }
+    });
+
+    showSlide(0);
+  </script>
+</body>
+</html>
