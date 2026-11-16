@@ -30,6 +30,42 @@ public static class ConsoleUi
         Console.WriteLine();
     }
 
+    public static void WriteCodeSnippet(string caption, params string[] lines)
+    {
+        Console.ForegroundColor = ConsoleColor.DarkCyan;
+        Console.WriteLine($"  ┌── C# Code: {caption} ──────────────────────────────────────────────────");
+        foreach (var line in lines)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            Console.Write("  │ ");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine(line);
+        }
+        Console.ForegroundColor = ConsoleColor.DarkCyan;
+        Console.WriteLine("  └──────────────────────────────────────────────────────────────────────────────");
+        Console.ResetColor();
+        Console.WriteLine();
+    }
+
+    public static bool WaitForNextStep(string nextStepPrompt, bool autoRunAll = false)
+    {
+        if (autoRunAll || Console.IsInputRedirected)
+        {
+            return true;
+        }
+
+        Console.WriteLine();
+        Console.ForegroundColor = ConsoleColor.DarkYellow;
+        Console.Write($"  ▶ Press [Enter] for {nextStepPrompt} (or 'q' to quit)... ");
+        Console.ResetColor();
+        var key = Console.ReadLine();
+        if (key is not null && key.Trim().Equals("q", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+        return true;
+    }
+
     public static void WriteScoreBar(float score, int width = 20)
     {
         float clamped = Math.Clamp(score, 0f, 1f);
@@ -55,7 +91,7 @@ public static class ConsoleUi
         {
             parts[i] = $"{vector[i]:+0.000;-0.000;0.000}";
         }
-        return $"[ {string.Join(", ", parts)}, ... ({vector.Length} dims) ]";
+        return $"[ {string.Join(", ", parts)}, ... ({vector.Length} numbers) ]";
     }
 
     public static void WriteCallout(string label, string message, ConsoleColor color = ConsoleColor.Magenta)

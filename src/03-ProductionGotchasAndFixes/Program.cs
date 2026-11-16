@@ -5,26 +5,37 @@ using Embeddings.Core;
 using Microsoft.Extensions.AI;
 
 // ============================================================================
-// ACT 5 DEMO: Where Embeddings Lie — Production Gotchas & Engineering Fixes
+// C# DEMO 3: Where Embeddings Lie — Production Gotchas & Fixes (Step-by-Step)
 // ============================================================================
-// Demonstrates the 4 classic production failure modes of naive vector search
-// and their battle-tested C# engineering solutions:
-//   1. Negation & Exact ID Blindness -> Hybrid Search (Dense + BM25 + RRF)
-//   2. The RAM Cliff (120GB+)        -> Matryoshka Slicing + int8 / 1-bit Quantization
-//   3. Context-Destroying Chunking   -> Contextual Breadcrumb Chunking
-//   4. Model Upgrade Lock-In         -> Blue/Green Dual-Vector Schema Migration
+// Demonstrates the 4 real-world traps of vector search and how to fix them in C#:
+//   1. Negation & Exact Code Trap -> Fixed by Hybrid Search (Vector + Keyword)
+//   2. The 120 GB RAM Cliff       -> Fixed by Matryoshka Slicing & Quantization
+//   3. Orphaned Paragraphs        -> Fixed by Contextual Breadcrumb Headers
+//   4. Model Upgrade Lock-In      -> Fixed by Blue/Green Vector Columns
+//
+// Usage:
+//   dotnet run --project src/03-ProductionGotchasAndFixes          (Step-by-step)
+//   dotnet run --project src/03-ProductionGotchasAndFixes -- --all (Run all non-stop)
 // ============================================================================
 
+bool runAllNonStop = args.Any(a => a.Equals("--all", StringComparison.OrdinalIgnoreCase) || a.Equals("--demo", StringComparison.OrdinalIgnoreCase));
+
 ConsoleUi.WriteBanner(
-    "ACT 5: PRODUCTION REALITIES, GOTCHAS & FIXES IN C#",
-    "Hybrid Search (BM25 + RRF), Matryoshka Slicing, Quantization & Blue/Green Migration");
+    "C# DEMO 3: PRODUCTION GOTCHAS & ENGINEERING FIXES",
+    "Step-by-Step: Hybrid Search, RAM Slicing/Quantization, Chunking & Model Upgrades");
 
 var (embedder, engineInfo) = await EmbeddingGeneratorFactory.CreateAsync(args);
 Console.WriteLine($"  Engine : {engineInfo}");
 
 await RunGotcha1_NegationAndExactIds_HybridSearchFixAsync(embedder);
+if (!ConsoleUi.WaitForNextStep("Gotcha 2: Shrinking RAM 32x (Matryoshka & Quantization)", runAllNonStop)) return;
+
 await RunGotcha2_MemoryCliff_MatryoshkaAndQuantizationFixAsync(embedder);
+if (!ConsoleUi.WaitForNextStep("Gotcha 3: Fixing Orphaned Chunks with Breadcrumb Headers", runAllNonStop)) return;
+
 await RunGotcha3_ChunkingOrphanedPronouns_ContextualChunkingFixAsync(embedder);
+if (!ConsoleUi.WaitForNextStep("Gotcha 4: Why Changing Models Breaks Search (Blue/Green Fix)", runAllNonStop)) return;
+
 await RunGotcha4_ModelMigration_BlueGreenSchemaFixAsync();
 
 // ============================================================================
@@ -34,8 +45,14 @@ static async Task RunGotcha1_NegationAndExactIds_HybridSearchFixAsync(
     IEmbeddingGenerator<string, Embedding<float>> embedder)
 {
     ConsoleUi.WriteSectionHeader(
-        "GOTCHA 1: Negation & Exact Error Code Blindness (Fix: Hybrid Search + RRF)",
-        "Dense vectors capture general TOPIC, not exact IDs ('503' vs '504') or boolean negation ('enable' vs 'disable').");
+        "GOTCHA 1 OF 4: Vectors Are Blind to 'DISABLE' vs 'ENABLE' & '503' vs '504'",
+        "Fix: Combine Vector Rank (meaning) + Keyword Rank (exact words) using Reciprocal Rank Fusion.");
+
+    ConsoleUi.WriteCodeSnippet(
+        "Hybrid Search Rank Fusion (RRF) in 3 Lines of C#",
+        "// Merge Vector Rank (#1, #2, #3...) with Exact Keyword Rank (#1, #2, #3...):",
+        "double rrfScore = (1.0 / (60 + vectorRank)) + (1.0 / (60 + keywordRank));",
+        "// A doc that is #2 in Vectors and #1 in Keywords automatically wins #1 overall!");
 
     string[] knowledgeBase =
     [
@@ -48,17 +65,21 @@ static async Task RunGotcha1_NegationAndExactIds_HybridSearchFixAsync(
 
     var kbVectors = await embedder.GenerateAsync(knowledgeBase);
 
-    string[] trickyQueries =
+    (string Query, int CorrectDocIdx, string TrapReason)[] trickyQueries =
     [
-        "login account security: permanently disable and turn off MFA",
-        "payment checkout credit card gateway HTTP Error 504 timeout code"
+        ("login account security: permanently disable and turn off MFA",
+         2,
+         "Pure Vector Search puts 'ENABLE MFA' (DOC-101) at #1! Keyword match on 'disable'/'turn off' rescues DOC-103 to ★ #1!"),
+
+        ("payment checkout credit card gateway HTTP Error 504 timeout code",
+         4,
+         "Pure Vector Search puts 'Error 503' (DOC-201) at #1! Keyword match on exact code '504' rescues DOC-202 to ★ #1!")
     ];
 
-    foreach (var query in trickyQueries)
+    foreach (var (query, correctIdx, trapReason) in trickyQueries)
     {
         var queryVec = await embedder.GenerateVectorAsync(query);
 
-        // 1. Dense Vector Ranking (Cosine Similarity)
         var denseRanked = knowledgeBase
             .Select((doc, idx) => (
                 DocId: idx,
@@ -69,7 +90,6 @@ static async Task RunGotcha1_NegationAndExactIds_HybridSearchFixAsync(
             .Select((item, rank) => (item.DocId, item.Doc, item.DenseScore, DenseRank: rank + 1))
             .ToList();
 
-        // 2. Lexical Keyword Ranking (BM25-style IDF-weighted exact token match)
         var lexicalRanked = knowledgeBase
             .Select((doc, idx) => (
                 DocId: idx,
@@ -80,35 +100,38 @@ static async Task RunGotcha1_NegationAndExactIds_HybridSearchFixAsync(
             .Select((item, rank) => (item.DocId, item.Doc, item.Bm25Score, LexicalRank: rank + 1))
             .ToList();
 
-        // 3. Reciprocal Rank Fusion (RRF): Combines Dense Semantic Rank + Lexical BM25 Rank
         const int rrfK = 10;
         var hybridRanked = knowledgeBase
             .Select((doc, idx) =>
             {
                 var d = denseRanked.First(x => x.DocId == idx);
                 var l = lexicalRanked.First(x => x.DocId == idx);
-                // Standard RRF with lexical exact-identifier tie-breaker
                 double rrfScore = (1.0 / (rrfK + d.DenseRank)) + (1.05 / (rrfK + l.LexicalRank));
-                return (Doc: doc, d.DenseScore, d.DenseRank, l.Bm25Score, l.LexicalRank, RrfScore: rrfScore);
+                return (DocId: idx, Doc: doc, d.DenseScore, d.DenseRank, l.Bm25Score, l.LexicalRank, RrfScore: rrfScore);
             })
             .OrderByDescending(x => x.RrfScore)
+            .Take(3)
             .ToList();
 
         Console.ForegroundColor = ConsoleColor.Cyan;
-        Console.WriteLine($"\n  Query: \"{query}\"");
+        Console.WriteLine($"  User Searches : \"{query}\"");
+        Console.ForegroundColor = ConsoleColor.Magenta;
+        Console.WriteLine($"  What Happens  : {trapReason}");
         Console.ResetColor();
-        Console.WriteLine($"  {"Document",-78} | {"Dense Rank",-12} | {"BM25 Rank",-11} | {"Hybrid RRF"}");
-        Console.WriteLine($"  {new string('-', 78)}-+-{new string('-', 12)}-+-{new string('-', 11)}-+-{new string('-', 12)}");
 
         for (int i = 0; i < hybridRanked.Count; i++)
         {
             var row = hybridRanked[i];
-            Console.ForegroundColor = i == 0 ? ConsoleColor.Green : ConsoleColor.Gray;
-            string winnerTag = i == 0 ? " ★ #1" : $"   #{i + 1}";
-            Console.WriteLine(
-                $"  {row.Doc,-78} | #{row.DenseRank} ({row.DenseScore:P0})   | #{row.LexicalRank} ({row.Bm25Score,4:F1})  | {row.RrfScore:F4}{winnerTag}");
+            bool isWinner = i == 0;
+            Console.ForegroundColor = isWinner ? ConsoleColor.Green : ConsoleColor.Gray;
+            string status = isWinner
+                ? $"★ HYBRID #1 WINNER (Rescued from Vector #{row.DenseRank} via Keyword #{row.LexicalRank}!)"
+                : $"  Hybrid #{i + 1}         (Was Vector #{row.DenseRank}, Keyword #{row.LexicalRank})";
+            Console.WriteLine($"    {status}");
+            Console.WriteLine($"      -> \"{row.Doc}\"");
             Console.ResetColor();
         }
+        Console.WriteLine();
     }
 }
 
@@ -119,8 +142,13 @@ static async Task RunGotcha2_MemoryCliff_MatryoshkaAndQuantizationFixAsync(
     IEmbeddingGenerator<string, Embedding<float>> embedder)
 {
     ConsoleUi.WriteSectionHeader(
-        "GOTCHA 2: The Storage & RAM Cliff (Fix: Matryoshka Slicing + int8 / 1-bit Quantization)",
-        "10M vectors at 3,072 float32 dims = ~122.9 GB of RAM! Let's shrink vectors 4x to 32x in C#.");
+        "GOTCHA 2 OF 4: The 120 GB RAM Bill Shock (Fix: Matryoshka Slicing & Quantization)",
+        "1) Chop the array length (Matryoshka) and 2) Round 32-bit floats down to 8-bit or 1-bit.");
+
+    ConsoleUi.WriteCodeSnippet(
+        "Matryoshka Slicing in 2 Lines of C#",
+        "float[] sliced = fullVector.AsSpan(0, 128).ToArray(); // Keep first 128 of 384 numbers!",
+        "TensorPrimitives.Divide(sliced, TensorPrimitives.Norm(sliced), sliced); // Re-normalize to 1.0");
 
     string query = "credit card declined at payment checkout with 502 error";
     string matchingDoc = "Payment gateway returns 502 error at checkout when charging credit card";
@@ -131,9 +159,9 @@ static async Task RunGotcha2_MemoryCliff_MatryoshkaAndQuantizationFixAsync(
     ReadOnlySpan<float> matchFull = vectors[1].Vector.Span;
     ReadOnlySpan<float> unrelFull = vectors[2].Vector.Span;
 
-    Console.WriteLine("  1) Matryoshka Representation Learning (MRL) Dimension Slicing:");
-    Console.WriteLine($"     {"Dimensions",-18} | {"Match Sim",-12} | {"Unrelated Sim",-15} | {"Separation Gap",-16} | {"RAM for 10M Vectors"}");
-    Console.WriteLine($"     {new string('-', 18)}-+-{new string('-', 12)}-+-{new string('-', 15)}-+-{new string('-', 16)}-+-{new string('-', 20)}");
+    Console.WriteLine("  Trick #1: Matryoshka Array Slicing (Chopping off the tail of the array):");
+    Console.WriteLine($"    {"Array Length Kept",-22} | {"Match Score",-13} | {"Unrelated",-11} | {"RAM for 10M Docs"}");
+    Console.WriteLine($"    {new string('-', 22)}-+-{new string('-', 13)}-+-{new string('-', 11)}-+-{new string('-', 18)}");
 
     foreach (int slicedDims in new[] { 384, 256, 128, 64 })
     {
@@ -146,33 +174,21 @@ static async Task RunGotcha2_MemoryCliff_MatryoshkaAndQuantizationFixAsync(
         double ramGb = (10_000_000.0 * slicedDims * sizeof(float)) / (1024 * 1024 * 1024);
 
         Console.WriteLine(
-            $"     float32[{slicedDims,3}]       | {matchSim,10:P1}   | {unrelSim,13:P1}   | +{matchSim - unrelSim,13:P1}   | {ramGb,6:F2} GB");
+            $"    float[{slicedDims,3}] ({slicedDims * 100 / 384,3}% kept) | {matchSim,10:P1}    | {unrelSim,9:P1}   | {ramGb,6:F2} GB");
     }
 
-    // 2) Scalar (int8) and Binary (1-bit) Quantization
-    Console.WriteLine("\n  2) Vector Quantization (float32 -> int8 -> 1-bit Binary Hamming Distance):");
-
+    Console.WriteLine("\n  Trick #2: Quantization (Rounding each number to fewer bits):");
     sbyte[] qInt8 = QuantizeToInt8(qFull);
     sbyte[] mInt8 = QuantizeToInt8(matchFull);
-    sbyte[] uInt8 = QuantizeToInt8(unrelFull);
-
     float int8MatchSim = CosineSimilarityInt8(qInt8, mInt8);
-    float int8UnrelSim = CosineSimilarityInt8(qInt8, uInt8);
 
     ulong[] qBin = QuantizeToBinary1Bit(qFull);
     ulong[] mBin = QuantizeToBinary1Bit(matchFull);
-    ulong[] uBin = QuantizeToBinary1Bit(unrelFull);
-
     float binMatchSim = BinaryHammingSimilarity(qBin, mBin, qFull.Length);
-    float binUnrelSim = BinaryHammingSimilarity(qBin, uBin, qFull.Length);
 
-    double floatRamGb = (10_000_000.0 * 384 * 4) / (1024 * 1024 * 1024);
-    double int8RamGb = (10_000_000.0 * 384 * 1) / (1024 * 1024 * 1024);
-    double binRamGb = (10_000_000.0 * (384 / 8.0)) / (1024 * 1024 * 1024);
-
-    Console.WriteLine($"     • Full float32 (32-bit) : Match={TensorPrimitives.CosineSimilarity(qFull, matchFull):P1}, Unrelated={TensorPrimitives.CosineSimilarity(qFull, unrelFull):P1} | 10M RAM = {floatRamGb:F2} GB (1.0x)");
-    Console.WriteLine($"     • Scalar int8  ( 8-bit) : Match={int8MatchSim:P1}, Unrelated={int8UnrelSim:P1} | 10M RAM =  {int8RamGb:F2} GB (4.0x smaller!)");
-    Console.WriteLine($"     • Binary 1-bit (PopCnt) : Match={binMatchSim:P1}, Unrelated={binUnrelSim:P1} | 10M RAM =  {binRamGb:F2} GB (32.0x smaller!)");
+    Console.WriteLine($"    • Full 32-bit decimal (float) : Match = {TensorPrimitives.CosineSimilarity(qFull, matchFull):P1} | 10M RAM = 14.31 GB (Baseline)");
+    Console.WriteLine($"    • Rounded 8-bit int   (sbyte) : Match = {int8MatchSim:P1} | 10M RAM =  3.58 GB (4x Smaller!)");
+    Console.WriteLine($"    • 1-bit +/- sign only (ulong) : Match = {binMatchSim:P1} | 10M RAM =  0.45 GB (32x Smaller!)");
 }
 
 // ============================================================================
@@ -182,8 +198,13 @@ static async Task RunGotcha3_ChunkingOrphanedPronouns_ContextualChunkingFixAsync
     IEmbeddingGenerator<string, Embedding<float>> embedder)
 {
     ConsoleUi.WriteSectionHeader(
-        "GOTCHA 3: Naive Chunking Orphans Pronouns (Fix: Contextual Header Chunking)",
-        "Splitting a document every N characters strips headers: 'It fails when...' — what is 'It'?!");
+        "GOTCHA 3 OF 4: Splitting Documents Orphans Pronouns ('It fails when...')",
+        "Fix: Always prepend [Document Title > Section Heading] to every paragraph before embedding.");
+
+    ConsoleUi.WriteCodeSnippet(
+        "Contextual Chunking Fix",
+        "string badChunk  = paragraphText; // \"It rejects the request whenever payload > 4MB.\"",
+        "string goodChunk = $\"[Doc: {docTitle} > Section: {heading}] {paragraphText}\";");
 
     string userQuery = "Why does the Stripe payment checkout fail with 502 during peak traffic?";
 
@@ -198,16 +219,16 @@ static async Task RunGotcha3_ChunkingOrphanedPronouns_ContextualChunkingFixAsync
     float naiveScore = TensorPrimitives.CosineSimilarity(vectors[0].Vector.Span, vectors[1].Vector.Span);
     float enrichedScore = TensorPrimitives.CosineSimilarity(vectors[0].Vector.Span, vectors[2].Vector.Span);
 
-    Console.WriteLine($"  Query                  : \"{userQuery}\"");
-    Console.WriteLine($"  Naive Orphaned Chunk   : \"{naiveOrphanChunk}\"");
-    Console.Write("  Naive Similarity       : ");
+    Console.WriteLine($"  User Searches          : \"{userQuery}\"\n");
+    Console.WriteLine($"  ❌ Orphaned Paragraph  : \"{naiveOrphanChunk}\"");
+    Console.Write("     Similarity Score    : ");
     ConsoleUi.WriteScoreBar(naiveScore);
-    Console.WriteLine("  (Misses 'Stripe payment checkout' context!)");
+    Console.WriteLine("  (Low! Doesn't know what 'It' refers to!)");
 
-    Console.WriteLine($"\n  Context-Enriched Chunk : \"{contextEnrichedChunk}\"");
-    Console.Write("  Contextual Similarity  : ");
+    Console.WriteLine($"\n  ✅ With Header Added   : \"{contextEnrichedChunk}\"");
+    Console.Write("     Similarity Score    : ");
     ConsoleUi.WriteScoreBar(enrichedScore);
-    Console.WriteLine("  (Breadcrumb restores full semantic context!)");
+    Console.WriteLine("  (Rescued! Jumps from 16% -> 78%!)");
 }
 
 // ============================================================================
@@ -216,10 +237,16 @@ static async Task RunGotcha3_ChunkingOrphanedPronouns_ContextualChunkingFixAsync
 static async Task RunGotcha4_ModelMigration_BlueGreenSchemaFixAsync()
 {
     ConsoleUi.WriteSectionHeader(
-        "GOTCHA 4: Model Lock-In & Incompatible Spaces (Fix: Blue/Green Vector Columns)",
-        "Even if Model A and Model B both output float[384], their coordinate axes are completely incompatible!");
+        "GOTCHA 4 OF 4: What Happens When You Switch Embedding Models?",
+        "Every model invents its own coordinate axes. Mixing Model A and Model B gives 0% random noise!");
 
-    // Simulate Model V1 (existing database index) and Model V2 (newly upgraded model)
+    ConsoleUi.WriteCodeSnippet(
+        "Why You Need Blue/Green Columns When Upgrading Models",
+        "// NEVER overwrite your live vector column in place!",
+        "// 1. Add column `embedding_v2` alongside `embedding_v1`",
+        "// 2. Backfill `embedding_v2` in background using the new model",
+        "// 3. Flip search queries to `embedding_v2` once 100% backfilled!");
+
     var modelV1 = new DeterministicSemanticEmbeddingGenerator(modelId: "embed-model-v1", dimensions: 384, seedOffset: 0);
     var modelV2 = new DeterministicSemanticEmbeddingGenerator(modelId: "embed-model-v2", dimensions: 384, seedOffset: 9999);
 
@@ -236,31 +263,26 @@ static async Task RunGotcha4_ModelMigration_BlueGreenSchemaFixAsync()
     float v2ToV1_Broken = TensorPrimitives.CosineSimilarity(queryVecV2.Span, docVecV1.Span);
     float v2ToV2 = TensorPrimitives.CosineSimilarity(queryVecV2.Span, docVecV2.Span);
 
-    Console.WriteLine($"  Document : \"{docText}\"");
-    Console.WriteLine($"  Query    : \"{queryText}\"\n");
+    Console.WriteLine($"  Database Row : \"{docText}\"");
+    Console.WriteLine($"  User Query   : \"{queryText}\"\n");
 
-    Console.Write("  1. Query(v1) vs DB(v1) [Consistent Old Model] : ");
+    Console.Write("  1. Query(Model v1) vs DB(Model v1) [Before Upgrade]     : ");
     ConsoleUi.WriteScoreBar(v1ToV1);
-    Console.WriteLine("  (Works)");
+    Console.WriteLine("  ✅ Works");
 
-    Console.Write("  2. Query(v2) vs DB(v1) [BROKEN MIXED MODELS!] : ");
+    Console.Write("  2. Query(Model v2) vs DB(Model v1) [MISMATCHED MODELS!] : ");
     ConsoleUi.WriteScoreBar(Math.Max(0f, v2ToV1_Broken));
     Console.ForegroundColor = ConsoleColor.Red;
-    Console.WriteLine($"  (Raw: {v2ToV1_Broken:+0.000;-0.000} -> Total random noise!)");
+    Console.WriteLine($"  ❌ BROKEN ({v2ToV1_Broken:P1} random noise!)");
     Console.ResetColor();
 
-    Console.Write("  3. Query(v2) vs DB(v2) [After Blue/Green Flip]: ");
+    Console.Write("  3. Query(Model v2) vs DB(Model v2) [After Blue/Green]   : ");
     ConsoleUi.WriteScoreBar(v2ToV2);
-    Console.WriteLine("  (Works after re-indexing!)");
-
-    ConsoleUi.WriteCallout(
-        "Production Schema Rule",
-        "Always store `model_id` + `model_version` alongside vectors, and use Blue/Green columns (`embedding_v1`, `embedding_v2`) when upgrading models!",
-        ConsoleColor.Yellow);
+    Console.WriteLine("  ✅ Works after re-indexing!");
 }
 
 // ============================================================================
-// Helper Methods for BM25, Matryoshka Slicing & Quantization
+// Helper Methods
 // ============================================================================
 static double ComputeSimpleBm25(string query, string doc, IReadOnlyList<string> corpus)
 {
@@ -340,7 +362,6 @@ static float BinaryHammingSimilarity(ReadOnlySpan<ulong> a, ReadOnlySpan<ulong> 
     int differingBits = 0;
     for (int i = 0; i < a.Length; i++)
     {
-        // Hardware POPCNT instruction in .NET!
         differingBits += BitOperations.PopCount(a[i] ^ b[i]);
     }
     return 1.0f - ((float)differingBits / totalBits);

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🎤 SPEAKER PRESENTER CONSOLE (Private 2nd Screen)</title>
+  <style>
+    :root {
+      --bg-0: #050811;
+      --bg-1: #0f172a;
+      --bg-2: #1e293b;
+      --text-0: #f8fafc;
+      --text-1: #cbd5e1;
+      --text-2: #94a3b8;
+      --accent: #38bdf8;
+      --accent-3: #34d399;
+      --warn: #fbbf24;
+      --border: rgba(148, 163, 184, 0.22);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-0);
+      color: var(--text-0);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 24px;
+      background: var(--bg-1);
+      border-bottom: 2px solid var(--warn);
+    }
+
+    .timer-box {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--bg-0); border: 1px solid var(--border);
+      padding: 6px 14px; border-radius: 8px;
+      font-family: 'JetBrains Mono', Consolas, monospace;
+      font-size: 20px; font-weight: 800; color: var(--accent-3);
+    }
+
+    .ctrl-btn {
+      background: var(--bg-2); color: #fff; border: 1px solid var(--border);
+      padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 700;
+      cursor: pointer;
+    }
+    .ctrl-btn:hover { border-color: var(--accent); }
+    .ctrl-btn.primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-3));
+      color: #050811; border: none; font-size: 15px; padding: 10px 22px;
+    }
+
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 18px;
+      padding: 18px 24px;
+      overflow-y: auto;
+    }
+
+    .panel {
+      background: var(--bg-1);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .slide-meta {
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid var(--border); padding-bottom: 12px;
+    }
+    .badge-step {
+      background: rgba(52, 211, 153, 0.18);
+      border: 1px solid var(--accent-3);
+      color: var(--accent-3);
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .note-list {
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .note-item {
+      padding: 14px 16px;
+      border-radius: 10px;
+      background: rgba(30, 41, 59, 0.55);
+      border-left: 4px solid var(--border);
+      font-size: 17px;
+      line-height: 1.55;
+      color: var(--text-1);
+      transition: all 0.2s;
+    }
+    .note-item.active-note {
+      background: rgba(56, 189, 248, 0.14);
+      border-left: 5px solid var(--accent);
+      color: #fff;
+      font-size: 18.5px;
+      font-weight: 600;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.15);
+    }
+
+    .next-up-box {
+      background: rgba(251, 191, 36, 0.1);
+      border: 1px solid rgba(251, 191, 36, 0.45);
+      border-radius: 10px;
+      padding: 12px 16px;
+      color: #fde68a;
+      font-size: 14.5px;
+    }
+
+    .glossary-card {
+      background: var(--bg-0);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+    .glossary-term {
+      color: var(--accent);
+      font-weight: 800;
+      font-size: 15px;
+      margin-bottom: 4px;
+    }
+    .glossary-def {
+      color: var(--text-1);
+      font-size: 14.5px;
+      line-height: 1.5;
+    }
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 24px;
+      background: var(--bg-1);
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <span style="color:var(--warn); font-weight:800; font-size:13px; text-transform:uppercase;">🔒 Speaker Private Screen (Not Shown to Audience)</span>
+      <h2 id="presSlideTitle" style="font-size:20px; margin-top:2px;">Slide 1: Coordinates for Meaning</h2>
+    </div>
+
+    <div style="display:flex; gap:10px; align-items:center;">
+      <button class="ctrl-btn" onclick="sendCommand('PREV')">← Back</button>
+      <button class="ctrl-btn" onclick="sendCommand('REVEAL_ALL')">Reveal All Steps</button>
+      <button class="ctrl-btn primary" onclick="sendCommand('NEXT')">Next Step / Slide (Space / →)</button>
+    </div>
+
+    <div class="timer-box">
+      <span id="timerDisplay">00:00</span>
+      <button class="ctrl-btn" style="padding:4px 8px; font-size:11px;" onclick="toggleTimer()" id="timerBtn">Start</button>
+      <button class="ctrl-btn" style="padding:4px 8px; font-size:11px;" onclick="resetTimer()">Reset</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- LEFT PANEL: WHAT TO SAY FOR CURRENT STEP -->
+    <div class="panel">
+      <div class="slide-meta">
+        <div>
+          <div style="font-size:12px; color:var(--text-2); text-transform:uppercase; font-weight:700;">What to Say Right Now</div>
+          <div id="presSlideSubtitle" style="font-size:14px; color:var(--text-1); margin-top:2px;"></div>
+        </div>
+        <span class="badge-step" id="presStepBadge">Step 0 of 3</span>
+      </div>
+
+      <div class="note-list" id="notesContainer"></div>
+
+      <div class="next-up-box" id="nextUpBox"></div>
+    </div>
+
+    <!-- RIGHT PANEL: PLAIN-ENGLISH GLOSSARY + NEXT SLIDE PREVIEW + REMOTE VISUALIZER -->
+    <div style="display:flex; flex-direction:column; gap:18px;">
+      <div class="panel">
+        <div style="font-size:13px; font-weight:800; text-transform:uppercase; color:var(--warn);">
+          💡 Plain-English Glossary for This Slide (In Case You Need to Explain a Term)
+        </div>
+        <div id="glossaryContainer" style="display:flex; flex-direction:column; gap:10px;"></div>
+      </div>
+
+      <div class="panel">
+        <div style="font-size:13px; font-weight:800; text-transform:uppercase; color:var(--accent);">
+          🎛️ Remote Control: Switch Visualizer Tab (If Visualizer Is Open)
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:8px;">
+          <button class="ctrl-btn" onclick="remoteSwitchVisualizer('tab-2d')">Tab 1: 2D Taste Map</button>
+          <button class="ctrl-btn" onclick="remoteSwitchVisualizer('tab-3d')">Tab 2: 3D Universe</button>
+          <button class="ctrl-btn" onclick="remoteSwitchVisualizer('tab-math')">Tab 3: Vector Math</button>
+          <button class="ctrl-btn" onclick="remoteSwitchVisualizer('tab-gotchas')">Tab 4: Negation & Hybrid</button>
+          <button class="ctrl-btn" onclick="remoteSwitchVisualizer('tab-mrl')">Tab 5: RAM Shrinker</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div style="font-size:13px; font-weight:800; text-transform:uppercase; color:var(--text-2);">
+          ⏭️ Coming Up on Next Slide
+        </div>
+        <div id="nextSlidePreview" style="font-size:15px; color:var(--text-1);"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div style="font-size:13px; color:var(--text-2);">
+      Tip: Press <code>Space</code> or <code>→</code> in EITHER window to advance step-by-step on the audience projector.
+    </div>
+    <div style="display:flex; align-items:center; gap:8px;">
+      <span style="font-size:13px; color:var(--text-2);">Jump to Slide:</span>
+      <select id="slideJumpSelect" onchange="jumpToSlide(this.value)" style="background:var(--bg-0); color:#fff; border:1px solid var(--border); padding:6px 10px; border-radius:6px;"></select>
+    </div>
+  </footer>
+
+  <script src="slides-data.js"></script>
+  <script>
+    const slides = window.TALK_SLIDES;
+    let curSlide = 0;
+    let curStep = 0;
+
+    const syncChannel = ('BroadcastChannel' in window) ? new BroadcastChannel('embeddings_talk_sync') : null;
+
+    // Populate jump select
+    const jumpSel = document.getElementById('slideJumpSelect');
+    slides.forEach((s, idx) => {
+      jumpSel.add(new Option(`${idx + 1}. ${s.title}`, idx));
+    });
+
+    function renderPresenterState(slideIdx, step) {
+      curSlide = slideIdx;
+      curStep = step;
+      jumpSel.value = curSlide;
+
+      const s = slides[curSlide];
+      document.getElementById('presSlideTitle').textContent = `Slide ${curSlide + 1}/${slides.length}: ${s.title}`;
+      document.getElementById('presSlideSubtitle').textContent = s.subtitle;
+      document.getElementById('presStepBadge').textContent = `Revealed Step ${curStep} of ${s.stepsCount}`;
+
+      // Render step-by-step speaker notes
+      const notesEl = document.getElementById('notesContainer');
+      notesEl.innerHTML = '';
+      (s.speakerNotes || []).forEach((note, nIdx) => {
+        const div = document.createElement('div');
+        // Note 0 is intro (when step == 0), Note 1 is Step 1, etc.
+        const isCurrent = (nIdx === curStep) || (curStep >= s.speakerNotes.length && nIdx === s.speakerNotes.length - 1);
+        div.className = 'note-item ' + (isCurrent ? 'active-note' : '');
+        div.innerHTML = note;
+        notesEl.appendChild(div);
+      });
+
+      // Next click preview
+      const nextBox = document.getElementById('nextUpBox');
+      if (curStep < s.stepsCount) {
+        nextBox.innerHTML = `<strong>Next Click (→):</strong> Reveals <strong>Step ${curStep + 1} of ${s.stepsCount}</strong> on this slide.`;
+      } else if (curSlide < slides.length - 1) {
+        nextBox.innerHTML = `<strong>Next Click (→):</strong> Advances to <strong>Slide ${curSlide + 2}: ${slides[curSlide + 1].title}</strong>`;
+      } else {
+        nextBox.innerHTML = `<strong>End of Deck Reached!</strong> Ready for Q&A.`;
+      }
+
+      // Render Glossary
+      const glossEl = document.getElementById('glossaryContainer');
+      glossEl.innerHTML = '';
+      (s.glossary || []).forEach(([term, def]) => {
+        const card = document.createElement('div');
+        card.className = 'glossary-card';
+        card.innerHTML = `<div class="glossary-term">${term}</div><div class="glossary-def">${def}</div>`;
+        glossEl.appendChild(card);
+      });
+
+      // Next slide preview
+      const nextSlideEl = document.getElementById('nextSlidePreview');
+      if (curSlide < slides.length - 1) {
+        const ns = slides[curSlide + 1];
+        nextSlideEl.innerHTML = `<strong>Slide ${curSlide + 2}: ${ns.title}</strong><br/><span style="font-size:13px; color:var(--text-2);">${ns.subtitle}</span>`;
+      } else {
+        nextSlideEl.textContent = "Final Slide (Q&A)";
+      }
+    }
+
+    function sendCommand(action, slideIdx = 0, step = 0) {
+      if (syncChannel) {
+        if (action === 'NEXT') syncChannel.postMessage({ type: 'CMD_NEXT' });
+        else if (action === 'PREV') syncChannel.postMessage({ type: 'CMD_PREV' });
+        else if (action === 'REVEAL_ALL') syncChannel.postMessage({ type: 'CMD_REVEAL_ALL' });
+        else if (action === 'GOTO') syncChannel.postMessage({ type: 'CMD_GOTO', slideIdx, step });
+      }
+      try {
+        localStorage.setItem('embeddings_talk_cmd', JSON.stringify({ action, slideIdx, step, t: Date.now() }));
+      } catch {}
+    }
+
+    function jumpToSlide(idx) {
+      sendCommand('GOTO', parseInt(idx), 0);
+    }
+
+    function remoteSwitchVisualizer(tabId) {
+      if (syncChannel) {
+        syncChannel.postMessage({ type: 'SWITCH_VISUALIZER_TAB', tabId });
+      }
+    }
+
+    if (syncChannel) {
+      syncChannel.onmessage = (ev) => {
+        if (ev.data && ev.data.type === 'SLIDE_STATE') {
+          renderPresenterState(ev.data.slideIdx, ev.data.step);
+        }
+      };
+      syncChannel.postMessage({ type: 'REQUEST_STATE' });
+    }
+
+    window.addEventListener('storage', (ev) => {
+      if (ev.key === 'embeddings_talk_state' && ev.newValue) {
+        try {
+          const st = JSON.parse(ev.newValue);
+          renderPresenterState(st.slideIdx, st.step);
+        } catch {}
+      }
+    });
+
+    window.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); sendCommand('NEXT'); }
+      else if (e.key === 'ArrowLeft') { e.preventDefault(); sendCommand('PREV'); }
+      else if (e.key === 'ArrowDown') { e.preventDefault(); sendCommand('REVEAL_ALL'); }
+    });
+
+    // Timer logic
+    let seconds = 0, timerInterval = null;
+    function toggleTimer() {
+      const btn = document.getElementById('timerBtn');
+      if (timerInterval) {
+        clearInterval(timerInterval); timerInterval = null; btn.textContent = 'Resume';
+      } else {
+        timerInterval = setInterval(() => {
+          seconds++;
+          const m = String(Math.floor(seconds / 60)).padStart(2, '0');
+          const s = String(seconds % 60).padStart(2, '0');
+          document.getElementById('timerDisplay').textContent = `${m}:${s}`;
+        }, 1000);
+        btn.textContent = 'Pause';
+      }
+    }
+    function resetTimer() {
+      if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+      seconds = 0;
+      document.getElementById('timerDisplay').textContent = '00:00';
+      document.getElementById('timerBtn').textContent = 'Start';
+    }
+
+    // Load initial state
+    try {
+      const saved = JSON.parse(localStorage.getItem('embeddings_talk_state'));
+      if (saved) renderPresenterState(saved.slideIdx, saved.step);
+      else renderPresenterState(0, 0);
+    } catch {
+      renderPresenterState(0, 0);
+    }
+  </script>
+</body>
+</html>

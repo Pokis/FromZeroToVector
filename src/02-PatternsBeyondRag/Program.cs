@@ -4,33 +4,43 @@ using Embeddings.Core;
 using Microsoft.Extensions.AI;
 
 // ============================================================================
-// ACT 4 DEMO: Five Architectural Patterns Beyond Chatbots & RAG
+// C# DEMO 2: Five Backend Patterns Beyond Chatbots (Step-by-Step)
 // ============================================================================
-// Demonstrates deterministic, sub-millisecond backend patterns using vectors
-// as a core CS data structure—zero LLM text generation required!
+// Shows how to use float[] embeddings in regular backend microservices—with
+// zero LLM chatbot calls required.
 //
 // Usage:
-//   dotnet run --project src/02-PatternsBeyondRag
-//   dotnet run --project src/02-PatternsBeyondRag -- --pattern 1
+//   dotnet run --project src/02-PatternsBeyondRag          (Step-by-step pause)
+//   dotnet run --project src/02-PatternsBeyondRag -- --all (Run all non-stop)
 // ============================================================================
 
+bool runAllNonStop = args.Any(a => a.Equals("--all", StringComparison.OrdinalIgnoreCase) || a.Equals("--demo", StringComparison.OrdinalIgnoreCase));
+
 ConsoleUi.WriteBanner(
-    "ACT 4: FIVE HIGH-LEVERAGE PATTERNS BEYOND RAG",
-    "Using float[] Embeddings as Fast, Deterministic Backend Building Blocks");
+    "C# DEMO 2: FIVE BACKEND PATTERNS BEYOND CHATBOTS",
+    "Step-by-Step Walkthrough: Routing, Caching, Anomaly Radar, Recommendations & Multimodal");
 
 var (embedder, engineInfo) = await EmbeddingGeneratorFactory.CreateAsync(args);
 Console.WriteLine($"  Engine : {engineInfo}");
 
 await RunPattern1_ZeroShotRoutingAsync(embedder);
+if (!ConsoleUi.WaitForNextStep("Pattern 2: Semantic Cache & Duplicate Blocker", runAllNonStop)) return;
+
 await RunPattern2_SemanticCacheAndDedupAsync(embedder);
+if (!ConsoleUi.WaitForNextStep("Pattern 3: Log Anomaly & Outlier Radar", runAllNonStop)) return;
+
 await RunPattern3_LogAnomalyDetectionAsync(embedder);
+if (!ConsoleUi.WaitForNextStep("Pattern 4: Stateless Article Recommendations", runAllNonStop)) return;
+
 await RunPattern4_StatelessRecommendationsAsync(embedder);
+if (!ConsoleUi.WaitForNextStep("Pattern 5: Multimodal Image/Audio/Text Search", runAllNonStop)) return;
+
 await RunPattern5_MultimodalSharedSpaceAsync(embedder);
 
 Console.WriteLine();
 ConsoleUi.WriteCallout(
-    "Key Architectural Takeaway",
-    "None of these 5 patterns called an LLM chat completion endpoint. Every decision ran in <1ms using float[] + TensorPrimitives!",
+    "Summary",
+    "All 5 patterns ran in <1ms using simple float[] arrays and TensorPrimitives—zero LLM chat calls!",
     ConsoleColor.Green);
 
 // ============================================================================
@@ -39,8 +49,15 @@ ConsoleUi.WriteCallout(
 static async Task RunPattern1_ZeroShotRoutingAsync(IEmbeddingGenerator<string, Embedding<float>> embedder)
 {
     ConsoleUi.WriteSectionHeader(
-        "PATTERN 1: Zero-Shot Ticket Routing & Classification",
-        "Define anchor descriptions once at startup. Route incoming webhooks in microseconds via Dot Product.");
+        "PATTERN 1 OF 5: Zero-Shot Ticket Routing (< 1 Millisecond)",
+        "Embed 1 sentence per team at startup. Route incoming tickets by checking which team vector is closest.");
+
+    ConsoleUi.WriteCodeSnippet(
+        "Zero-Shot Router in 4 Lines of C#",
+        "var teamVectors = await embedder.GenerateAsync(teamDescriptions); // Done once at startup",
+        "var ticketVec   = await embedder.GenerateVectorAsync(incomingWebhook);",
+        "var bestTeam    = teams.Zip(teamVectors)",
+        "                       .MaxBy(t => TensorPrimitives.Dot(ticketVec.Span, t.Second.Vector.Span));");
 
     var routeDefinitions = new (string QueueName, string AnchorDescription)[]
     {
@@ -67,7 +84,6 @@ static async Task RunPattern1_ZeroShotRoutingAsync(IEmbeddingGenerator<string, E
 
     foreach (var (webhookText, webhookEmbedding) in incomingWebhooks.Zip(webhookVectors))
     {
-        // Since vectors are L2-normalized to unit length (1.0), Dot Product == Cosine Similarity!
         var bestRoute = routeDefinitions
             .Zip(anchorVectors)
             .Select(anchor => (
@@ -87,8 +103,8 @@ static async Task RunPattern1_ZeroShotRoutingAsync(IEmbeddingGenerator<string, E
     sw.Stop();
 
     ConsoleUi.WriteCallout(
-        "Latency",
-        $"Classified {incomingWebhooks.Length} incoming tickets in {sw.Elapsed.TotalMilliseconds:F2} ms total — zero custom model training!",
+        "Speed",
+        $"Routed {incomingWebhooks.Length} webhooks in {sw.Elapsed.TotalMilliseconds:F2} ms total — zero custom ML training needed!",
         ConsoleColor.Cyan);
 }
 
@@ -98,22 +114,27 @@ static async Task RunPattern1_ZeroShotRoutingAsync(IEmbeddingGenerator<string, E
 static async Task RunPattern2_SemanticCacheAndDedupAsync(IEmbeddingGenerator<string, Embedding<float>> embedder)
 {
     ConsoleUi.WriteSectionHeader(
-        "PATTERN 2: Semantic Caching & Duplicate Detection",
-        "Check if CosineSimilarity >= threshold before hitting a $0.03 LLM API or creating a duplicate Jira issue.");
+        "PATTERN 2 OF 5: Semantic Cache & Duplicate Bug Blocker",
+        "Before creating a duplicate Jira ticket or calling a slow LLM API, check if a similar vector already exists.");
+
+    ConsoleUi.WriteCodeSnippet(
+        "Semantic Cache Check",
+        "float bestMatch = TensorPrimitives.CosineSimilarity(newVec.Span, cachedVec.Span);",
+        "if (bestMatch >= 0.78f) return cachedEntry.ExistingJiraTicket; // Instant hit!");
 
     const float DuplicateThreshold = 0.78f;
     var cache = new List<(string PromptOrIssue, ReadOnlyMemory<float> Vector, string CachedResponse)>();
 
-    var incomingStream = new (string Input, string MockExpensiveComputation)[]
+    var incomingStream = new (string Input, string ActionIfNew)[]
     {
-        ("Payment gateway returns 502 error at checkout", "Jira #1042: Investigate Stripe/Gateway 502 at checkout"),
-        ("Checkout credit card payment fails with 502 gateway error", "Would be duplicate of #1042!"),
-        ("How do I reset my two-factor authentication?", "Jira #1043: User MFA reset self-service flow"),
-        ("How can I reset my 2FA two-factor authentication login?", "Would be duplicate of #1043!"),
-        ("Invoice PDF shows the wrong VAT tax rate for EU customers", "Jira #1044: Fix EU VAT calculation on PDF invoices")
+        ("Payment gateway returns 502 error at checkout", "Created Jira #1042"),
+        ("Checkout credit card payment fails with 502 gateway error", "Blocked Duplicate of #1042!"),
+        ("How do I reset my two-factor authentication?", "Created Jira #1043"),
+        ("How can I reset my 2FA two-factor authentication login?", "Blocked Duplicate of #1043!"),
+        ("Invoice PDF shows the wrong VAT tax rate for EU customers", "Created Jira #1044")
     };
 
-    foreach (var (input, computation) in incomingStream)
+    foreach (var (input, action) in incomingStream)
     {
         var vector = await embedder.GenerateVectorAsync(input);
 
@@ -128,20 +149,20 @@ static async Task RunPattern2_SemanticCacheAndDedupAsync(IEmbeddingGenerator<str
         if (cache.Count > 0 && match.Score >= DuplicateThreshold)
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.Write($"  [CACHE HIT  {match.Score:P0}] ");
+            Console.Write($"  [DUPLICATE CAUGHT {match.Score:P0}] ");
             Console.ResetColor();
             Console.WriteLine($"\"{input}\"");
             Console.ForegroundColor = ConsoleColor.DarkGray;
-            Console.WriteLine($"                   -> Matched existing: \"{match.Entry.PromptOrIssue}\" ({match.Entry.CachedResponse})");
+            Console.WriteLine($"                        -> Matches existing: \"{match.Entry.PromptOrIssue}\" ({match.Entry.CachedResponse})");
             Console.ResetColor();
         }
         else
         {
-            cache.Add((input, vector, computation));
+            cache.Add((input, vector, action));
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.Write($"  [NEW ENTRY  { (cache.Count == 1 ? 0f : match.Score):P0}] ");
+            Console.Write($"  [STORED NEW       {(cache.Count == 1 ? 0f : match.Score):P0}] ");
             Console.ResetColor();
-            Console.WriteLine($"\"{input}\" -> Stored ({computation})");
+            Console.WriteLine($"\"{input}\" -> {action}");
         }
     }
 }
@@ -152,8 +173,14 @@ static async Task RunPattern2_SemanticCacheAndDedupAsync(IEmbeddingGenerator<str
 static async Task RunPattern3_LogAnomalyDetectionAsync(IEmbeddingGenerator<string, Embedding<float>> embedder)
 {
     ConsoleUi.WriteSectionHeader(
-        "PATTERN 3: Anomaly & Drift Detection (Outlier Detection in Meaning Space)",
-        "Compute the centroid of normal telemetry/logs. Flag anything falling far outside the normal cluster.");
+        "PATTERN 3 OF 5: Anomaly & Outlier Radar in Production Logs",
+        "Average normal logs to find the 'Normal Center'. Flag any log that lands far outside that circle.");
+
+    ConsoleUi.WriteCodeSnippet(
+        "Computing Cluster Center & Outlier Distance",
+        "foreach (var v in normalLogs) TensorPrimitives.Add(center, v.Span, center); // Average normal logs",
+        "float distanceFromNormal = 1.0f - TensorPrimitives.CosineSimilarity(center, liveLogVec.Span);",
+        "bool isAnomaly = distanceFromNormal > 0.55f;");
 
     string[] baselineNormalLogs =
     [
@@ -166,14 +193,12 @@ static async Task RunPattern3_LogAnomalyDetectionAsync(IEmbeddingGenerator<strin
     var baselineEmbeddings = await embedder.GenerateAsync(baselineNormalLogs);
     int dims = baselineEmbeddings[0].Vector.Length;
 
-    // Compute the cluster centroid (mean vector of normal logs, then L2 normalize)
     float[] centroid = new float[dims];
     foreach (var emb in baselineEmbeddings)
     {
         TensorPrimitives.Add(centroid.AsSpan(), emb.Vector.Span, centroid.AsSpan());
     }
-    float norm = TensorPrimitives.Norm(centroid.AsSpan());
-    TensorPrimitives.Divide(centroid.AsSpan(), norm, centroid.AsSpan());
+    TensorPrimitives.Divide(centroid.AsSpan(), TensorPrimitives.Norm(centroid.AsSpan()), centroid.AsSpan());
 
     string[] liveLogStream =
     [
@@ -192,9 +217,9 @@ static async Task RunPattern3_LogAnomalyDetectionAsync(IEmbeddingGenerator<strin
         bool isAnomaly = anomalyDistance > 0.55f;
 
         Console.ForegroundColor = isAnomaly ? ConsoleColor.Red : ConsoleColor.Green;
-        Console.Write(isAnomaly ? "  [ANOMALY ALERT] " : "  [NORMAL LOG   ] ");
+        Console.Write(isAnomaly ? "  [🔴 ANOMALY ALERT] " : "  [🟢 NORMAL LOG   ] ");
         Console.ResetColor();
-        Console.Write($"Distance={anomalyDistance:F2} (Sim={similarityToNormal:P0}) | ");
+        Console.Write($"Distance={anomalyDistance:F2} | ");
         Console.WriteLine(logLine);
     }
 }
@@ -205,12 +230,18 @@ static async Task RunPattern3_LogAnomalyDetectionAsync(IEmbeddingGenerator<strin
 static async Task RunPattern4_StatelessRecommendationsAsync(IEmbeddingGenerator<string, Embedding<float>> embedder)
 {
     ConsoleUi.WriteSectionHeader(
-        "PATTERN 4: Stateless Recommendation Engine ('Users Who Read X')",
-        "Represent a user's taste profile by averaging the vectors of the last N items they interacted with.");
+        "PATTERN 4 OF 5: Instant 'Recommended For You' Feed (Stateless)",
+        "Average the coordinates of the last 3 articles a user read -> find closest unread articles!");
+
+    ConsoleUi.WriteCodeSnippet(
+        "Building a User Taste Vector by Averaging Arrays",
+        "foreach (var readArticleVec in lastThreeRead)",
+        "    TensorPrimitives.Add(userTasteVector, readArticleVec.Span, userTasteVector);",
+        "// Now find unread articles with highest CosineSimilarity to userTasteVector!");
 
     string[] userRecentlyRead =
     [
-        "Building high-performance SIMD vector math in C# and .NET with TensorPrimitives",
+        "Building high-performance vector math in C# and .NET with TensorPrimitives",
         "Running local ONNX embedding models in .NET microservices without cloud APIs",
         "How semantic search and vector embeddings replace brittle SQL LIKE queries"
     ];
@@ -220,14 +251,12 @@ static async Task RunPattern4_StatelessRecommendationsAsync(IEmbeddingGenerator<
         "Deep dive into Matryoshka vector quantization and hybrid search in C# .NET",
         "Async/Await and Span<T> memory optimization tricks for C# backend engineers",
         "Configuring EU VAT tax rates on PDF billing receipts and Stripe checkout",
-        "Resetting two-factor authentication MFA passkeys when a user loses their phone",
-        "Understanding transformer attention layers and cosine similarity for developers"
+        "Resetting two-factor authentication MFA passkeys when a user loses their phone"
     ];
 
     var historyVectors = await embedder.GenerateAsync(userRecentlyRead);
     var catalogVectors = await embedder.GenerateAsync(catalogArticles);
 
-    // Compute User Taste Vector = Normalized Average of History Vectors
     int dims = historyVectors[0].Vector.Length;
     float[] userTasteVector = new float[dims];
     foreach (var h in historyVectors)
@@ -237,13 +266,10 @@ static async Task RunPattern4_StatelessRecommendationsAsync(IEmbeddingGenerator<
     TensorPrimitives.Divide(userTasteVector.AsSpan(), TensorPrimitives.Norm(userTasteVector.AsSpan()), userTasteVector.AsSpan());
 
     Console.ForegroundColor = ConsoleColor.Gray;
-    Console.WriteLine("  User Reading History (3 items averaged into 1 User Taste Vector):");
-    foreach (var item in userRecentlyRead)
-    {
-        Console.WriteLine($"    • {item}");
-    }
+    Console.WriteLine("  User Recently Read (Averaged into 1 Taste Coordinate):");
+    foreach (var item in userRecentlyRead) Console.WriteLine($"    • {item}");
     Console.ResetColor();
-    Console.WriteLine("\n  Recommended Next Reads (Ranked by Cosine Similarity to User Taste Vector):");
+    Console.WriteLine("\n  Recommended Next Reads:");
 
     var recommendations = catalogArticles
         .Zip(catalogVectors)
@@ -267,17 +293,15 @@ static async Task RunPattern4_StatelessRecommendationsAsync(IEmbeddingGenerator<
 static async Task RunPattern5_MultimodalSharedSpaceAsync(IEmbeddingGenerator<string, Embedding<float>> embedder)
 {
     ConsoleUi.WriteSectionHeader(
-        "PATTERN 5: Cross-Modal Search (Shared Coordinate Space + The Modality Gap)",
-        "Multimodal models (CLIP, SigLIP, Gemini Embedding 2) map Text, Image patches, and Audio spectrograms into ONE vector space.");
+        "PATTERN 5 OF 5: Searching Untagged Photos, Audio & PDFs with Text",
+        "Multimodal models (CLIP, SigLIP, Gemini Embedding 2) put Text, Images, and Audio into the SAME float[] space.");
 
-    // In a multimodal model, the Image Encoder, Audio Encoder, and Text Encoder all output float[N] in the same space.
     var untaggedMediaVault = new (string MediaId, string Modality, string RawContentRepresentation)[]
     {
-        ("IMG_0042.jpg",  "IMAGE (16x16 ViT Patches)",   "visual photo of a golden retriever dog puppy running in the park"),
-        ("AUD_9910.wav",  "AUDIO (Spectrogram Patches)", "audio clip of a canine dog barking loudly outdoors"),
-        ("IMG_0108.png",  "IMAGE (16x16 ViT Patches)",   "screenshot of mobile app crash when uploading user profile picture avatar"),
-        ("DOC_arch.pdf",  "PDF   (Visual + Text)",       "architecture diagram flowchart with red arrows showing database failover"),
-        ("IMG_0299.png",  "IMAGE (16x16 ViT Patches)",   "checkout payment modal freeze showing 502 credit card error")
+        ("IMG_0042.jpg",  "🖼️ IMAGE (Photo)",        "visual photo of a golden retriever dog puppy running in the park"),
+        ("AUD_9910.wav",  "🔊 AUDIO (Sound Clip)",   "audio clip of a canine dog barking loudly outdoors"),
+        ("IMG_0108.png",  "🖼️ IMAGE (Screenshot)",   "screenshot of mobile app crash when uploading user profile picture avatar"),
+        ("DOC_arch.pdf",  "📄 PDF   (Diagram)",      "architecture diagram flowchart with red arrows showing database failover")
     };
 
     var mediaVectors = await embedder.GenerateAsync(untaggedMediaVault.Select(m => m.RawContentRepresentation));
@@ -285,8 +309,7 @@ static async Task RunPattern5_MultimodalSharedSpaceAsync(IEmbeddingGenerator<str
     string[] naturalLanguageQueries =
     [
         "golden retriever puppy",
-        "diagram with red arrows",
-        "error toast on mobile profile upload"
+        "diagram with red arrows"
     ];
 
     foreach (var query in naturalLanguageQueries)
@@ -304,7 +327,7 @@ static async Task RunPattern5_MultimodalSharedSpaceAsync(IEmbeddingGenerator<str
             .ToList();
 
         Console.ForegroundColor = ConsoleColor.Cyan;
-        Console.WriteLine($"\n  Text Query: \"{query}\"");
+        Console.WriteLine($"  Text Search: \"{query}\"");
         Console.ResetColor();
 
         foreach (var hit in topMatches)
@@ -312,9 +335,10 @@ static async Task RunPattern5_MultimodalSharedSpaceAsync(IEmbeddingGenerator<str
             Console.Write("    ");
             ConsoleUi.WriteScoreBar(hit.Score, 14);
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.Write($" [{hit.Media.Modality,-27}] ");
+            Console.Write($" [{hit.Media.Modality,-22}] ");
             Console.ResetColor();
             Console.WriteLine($"{hit.Media.MediaId}");
         }
+        Console.WriteLine();
     }
 }

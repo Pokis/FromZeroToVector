@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Coordinates for Meaning — Interactive 3D Vector & Embedding Lab</title>
+  <title>Coordinates for Meaning — Interactive Vector Lab</title>
   <style>
     :root {
-      --bg-0: #070b14;
+      --bg-0: #060a12;
       --bg-1: #0f172a;
       --bg-2: #1e293b;
       --bg-3: #334155;
@@ -18,7 +18,7 @@
       --accent-3: #34d399;
       --warn: #fbbf24;
       --danger: #f87171;
-      --border: rgba(148, 163, 184, 0.18);
+      --border: rgba(148, 163, 184, 0.2);
       --radius: 12px;
     }
 
@@ -38,7 +38,7 @@
       align-items: center;
       justify-content: space-between;
       padding: 12px 24px;
-      background: rgba(15, 23, 42, 0.88);
+      background: rgba(15, 23, 42, 0.9);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
       position: sticky;
@@ -48,113 +48,38 @@
       gap: 12px;
     }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+    .brand { display: flex; align-items: center; gap: 12px; }
     .brand-badge {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
+      width: 36px; height: 36px; border-radius: 10px;
       background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      display: grid;
-      place-items: center;
-      font-weight: 800;
-      color: #070b14;
-      font-size: 16px;
-      box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+      display: grid; place-items: center; font-weight: 800; color: #060a12; font-size: 16px;
     }
-    .brand h1 {
-      font-size: 17px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-    }
-    .brand p {
-      font-size: 12px;
-      color: var(--text-2);
-    }
+    .brand h1 { font-size: 17px; font-weight: 700; }
+    .brand p { font-size: 12px; color: var(--text-2); }
 
-    .nav-tabs {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
+    .nav-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
     .tab-btn {
-      background: rgba(30, 41, 59, 0.7);
-      color: var(--text-1);
-      border: 1px solid var(--border);
-      padding: 8px 14px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.15s ease;
+      background: rgba(30, 41, 59, 0.7); color: var(--text-1);
+      border: 1px solid var(--border); padding: 8px 14px; border-radius: 8px;
+      font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s ease;
     }
-    .tab-btn:hover {
-      background: var(--bg-2);
-      color: var(--text-0);
-    }
+    .tab-btn:hover { background: var(--bg-2); color: #fff; }
     .tab-btn.active {
-      background: linear-gradient(135deg, rgba(56, 189, 248, 0.22), rgba(129, 140, 248, 0.22));
-      border-color: var(--accent);
-      color: #fff;
-      box-shadow: 0 0 16px rgba(56, 189, 248, 0.2);
-    }
-
-    .engine-pill {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 12px;
-      padding: 6px 12px;
-      border-radius: 999px;
-      background: rgba(52, 211, 153, 0.12);
-      border: 1px solid rgba(52, 211, 153, 0.35);
-      color: var(--accent-3);
-      cursor: pointer;
-    }
-    .dot-live {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--accent-3);
-      box-shadow: 0 0 8px var(--accent-3);
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.24), rgba(129, 140, 248, 0.24));
+      border-color: var(--accent); color: #fff;
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.22);
     }
 
     main {
-      flex: 1;
-      padding: 18px 24px;
-      max-width: 1680px;
-      width: 100%;
-      margin: 0 auto;
+      flex: 1; padding: 18px 24px; max-width: 1680px; width: 100%; margin: 0 auto;
     }
 
-    .tab-panel {
-      display: none;
-      animation: fadeIn 0.2s ease;
-    }
-    .tab-panel.active {
-      display: block;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(4px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .grid-3d {
-      display: grid;
-      grid-template-columns: 1fr 400px;
-      gap: 18px;
-      height: calc(100vh - 110px);
-      min-height: 620px;
-    }
-    @media (max-width: 1100px) {
-      .grid-3d { grid-template-columns: 1fr; height: auto; }
-    }
+    .tab-panel { display: none; animation: fadeIn 0.2s ease; }
+    .tab-panel.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
     .card {
-      background: rgba(15, 23, 42, 0.82);
+      background: rgba(15, 23, 42, 0.85);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 18px;
@@ -163,244 +88,164 @@
       gap: 14px;
     }
 
-    .canvas-wrap {
-      position: relative;
-      border-radius: var(--radius);
-      overflow: hidden;
-      background: radial-gradient(circle at center, #0d172a 0%, #050811 100%);
-      border: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      min-height: 540px;
+    .two-col { display: grid; grid-template-columns: 1.05fr 1fr; gap: 18px; }
+    .grid-3d {
+      display: grid; grid-template-columns: 1fr 410px; gap: 18px;
+      height: calc(100vh - 110px); min-height: 620px;
     }
-    #universeCanvas {
-      width: 100%;
-      height: 100%;
-      flex: 1;
-      cursor: grab;
-      display: block;
-    }
-    #universeCanvas:active { cursor: grabbing; }
-
-    .canvas-hud-top {
-      position: absolute;
-      top: 14px;
-      left: 14px;
-      right: 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      pointer-events: none;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    .hud-box {
-      pointer-events: auto;
-      background: rgba(7, 11, 20, 0.82);
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px 14px;
-      font-size: 12px;
-    }
-    .cluster-legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 6px;
-    }
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      color: var(--text-1);
-      cursor: pointer;
-      padding: 2px 6px;
-      border-radius: 6px;
-    }
-    .legend-item:hover { background: rgba(255,255,255,0.08); }
-    .legend-swatch {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-    }
-
-    .canvas-hud-bottom {
-      position: absolute;
-      bottom: 14px;
-      left: 14px;
-      right: 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      pointer-events: none;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .distortion-banner {
-      pointer-events: auto;
-      background: rgba(251, 191, 36, 0.14);
-      border: 1px solid rgba(251, 191, 36, 0.45);
-      color: #fde68a;
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-size: 12px;
-      max-width: 560px;
-      display: none;
-    }
-    .distortion-banner.visible { display: block; }
-
-    .tooltip-3d {
-      position: absolute;
-      pointer-events: none;
-      background: rgba(7, 11, 20, 0.95);
-      border: 1px solid var(--accent);
-      border-radius: 8px;
-      padding: 10px 12px;
-      font-size: 12px;
-      max-width: 320px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
-      display: none;
-      z-index: 30;
+    @media (max-width: 1100px) {
+      .two-col, .grid-3d { grid-template-columns: 1fr; height: auto; }
     }
 
     label {
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-2);
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.05em; color: var(--text-2);
     }
 
-    input[type="text"], select {
-      width: 100%;
-      background: var(--bg-0);
-      border: 1px solid var(--border);
-      color: var(--text-0);
-      padding: 10px 12px;
-      border-radius: 8px;
-      font-size: 14px;
-      outline: none;
+    input[type="text"], input[type="number"], select {
+      width: 100%; background: var(--bg-0); border: 1px solid var(--border);
+      color: var(--text-0); padding: 10px 12px; border-radius: 8px; font-size: 14px; outline: none;
     }
-    input[type="text"]:focus, select:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
-    }
+    input:focus, select:focus { border-color: var(--accent); }
 
     .btn {
       background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      color: #070b14;
-      font-weight: 700;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 13px;
-      transition: transform 0.1s, opacity 0.15s;
+      color: #060a12; font-weight: 700; border: none; padding: 10px 16px;
+      border-radius: 8px; cursor: pointer; font-size: 13px; transition: all 0.15s;
     }
     .btn:hover { opacity: 0.94; }
-    .btn:active { transform: scale(0.98); }
     .btn-secondary {
-      background: var(--bg-2);
-      color: var(--text-0);
-      border: 1px solid var(--border);
-      font-weight: 600;
+      background: var(--bg-2); color: var(--text-0); border: 1px solid var(--border); font-weight: 600;
+    }
+    .btn-secondary.active-mode {
+      background: rgba(52, 211, 153, 0.2); border-color: var(--accent-3); color: var(--accent-3);
     }
 
-    .chip-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
+    .chip-row { display: flex; flex-wrap: wrap; gap: 6px; }
     .chip {
-      background: rgba(56, 189, 248, 0.1);
-      border: 1px solid rgba(56, 189, 248, 0.25);
-      color: var(--text-1);
-      padding: 5px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      cursor: pointer;
-      transition: all 0.15s;
+      background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.28);
+      color: var(--text-1); padding: 6px 11px; border-radius: 999px; font-size: 12px;
+      cursor: pointer; transition: all 0.15s;
     }
-    .chip:hover {
-      background: rgba(56, 189, 248, 0.22);
-      color: #fff;
+    .chip:hover, .chip.active {
+      background: rgba(56, 189, 248, 0.25); border-color: var(--accent); color: #fff;
     }
 
-    .neighbors-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      overflow-y: auto;
-      max-height: 290px;
-      padding-right: 4px;
+    .mono { font-family: 'JetBrains Mono', Consolas, monospace; }
+
+    /* 3D Canvas styles */
+    .canvas-wrap {
+      position: relative; border-radius: var(--radius); overflow: hidden;
+      background: radial-gradient(circle at center, #0d172a 0%, #050811 100%);
+      border: 1px solid var(--border); display: flex; flex-direction: column; min-height: 540px;
     }
+    #universeCanvas { width: 100%; height: 100%; flex: 1; cursor: grab; display: block; }
+    #universeCanvas:active { cursor: grabbing; }
+    .canvas-hud-top {
+      position: absolute; top: 14px; left: 14px; right: 14px;
+      display: flex; justify-content: space-between; align-items: flex-start;
+      pointer-events: none; gap: 12px; flex-wrap: wrap;
+    }
+    .hud-box {
+      pointer-events: auto; background: rgba(7, 11, 20, 0.85);
+      backdrop-filter: blur(10px); border: 1px solid var(--border);
+      border-radius: 10px; padding: 10px 14px; font-size: 12px;
+    }
+    .cluster-legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+    .legend-item {
+      display: flex; align-items: center; gap: 6px; font-size: 12px;
+      color: var(--text-1); cursor: pointer; padding: 2px 6px; border-radius: 6px;
+    }
+    .legend-item:hover { background: rgba(255,255,255,0.08); }
+    .legend-swatch { width: 10px; height: 10px; border-radius: 50%; }
+    .canvas-hud-bottom {
+      position: absolute; bottom: 14px; left: 14px; right: 14px;
+      display: flex; justify-content: space-between; align-items: center;
+      pointer-events: none; flex-wrap: wrap; gap: 8px;
+    }
+    .distortion-banner {
+      pointer-events: auto; background: rgba(251, 191, 36, 0.16);
+      border: 1px solid rgba(251, 191, 36, 0.5); color: #fde68a;
+      padding: 10px 14px; border-radius: 8px; font-size: 12.5px; max-width: 600px; display: none;
+    }
+    .distortion-banner.visible { display: block; }
+    .tooltip-3d {
+      position: absolute; pointer-events: none; background: rgba(7, 11, 20, 0.95);
+      border: 1px solid var(--accent); border-radius: 8px; padding: 10px 12px;
+      font-size: 12px; max-width: 320px; display: none; z-index: 30;
+    }
+
+    .neighbors-list { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; max-height: 290px; }
     .neighbor-item {
-      background: rgba(30, 41, 59, 0.55);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 9px 11px;
-      font-size: 13px;
+      background: rgba(30, 41, 59, 0.55); border: 1px solid var(--border);
+      border-radius: 8px; padding: 9px 11px; font-size: 13px;
     }
-    .neighbor-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 4px;
-      font-size: 11px;
-      color: var(--text-2);
-    }
+    .neighbor-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; font-size: 11px; color: var(--text-2); }
     .score-badge {
-      font-family: 'JetBrains Mono', Consolas, monospace;
-      font-weight: 700;
-      padding: 2px 6px;
-      border-radius: 4px;
-      background: rgba(52, 211, 153, 0.16);
-      color: var(--accent-3);
+      font-family: 'JetBrains Mono', Consolas, monospace; font-weight: 700;
+      padding: 2px 6px; border-radius: 4px; background: rgba(52, 211, 153, 0.16); color: var(--accent-3);
     }
 
     .vector-preview-strip {
-      display: flex;
-      height: 18px;
-      border-radius: 4px;
-      overflow: hidden;
-      border: 1px solid var(--border);
+      display: flex; height: 18px; border-radius: 4px; overflow: hidden; border: 1px solid var(--border);
     }
     .vec-cell { flex: 1; }
 
-    .two-col {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 18px;
+    /* Hover Metric Cards on 2D Taste Map */
+    .metric-card {
+      background: var(--bg-0); border: 1px solid var(--border); border-radius: 10px;
+      padding: 12px 10px; text-align: center; cursor: pointer; position: relative;
+      transition: all 0.15s ease;
     }
-    @media (max-width: 960px) {
-      .two-col { grid-template-columns: 1fr; }
+    .metric-card:hover, .metric-card.active {
+      border-color: var(--accent);
+      background: rgba(56, 189, 248, 0.08);
+      transform: translateY(-2px);
+    }
+    .metric-hint-tag {
+      font-size: 10px; color: var(--accent); margin-top: 4px; display: block;
     }
 
-    .mono {
-      font-family: 'JetBrains Mono', Consolas, monospace;
+    /* Step-by-step Wizard Pills */
+    .step-wizard {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+    }
+    .step-pill {
+      background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border);
+      border-radius: 10px; padding: 12px 14px; cursor: pointer; text-align: left;
+      transition: all 0.15s;
+    }
+    .step-pill:hover { border-color: var(--accent); }
+    .step-pill.active {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.18), rgba(52, 211, 153, 0.15));
+      border-color: var(--accent-3);
+    }
+    .step-pill .step-num {
+      font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--accent);
+    }
+    .step-pill .step-title {
+      font-size: 14px; font-weight: 700; color: #fff; margin-top: 2px;
     }
 
-    table.data-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
+    /* Dramatic Rank Cards for Tab 4 Hybrid Search */
+    .doc-rank-card {
+      display: flex; align-items: center; justify-content: space-between; gap: 14px;
+      padding: 13px 16px; border-radius: 10px; border: 1px solid var(--border);
+      background: rgba(30, 41, 59, 0.55); transition: all 0.25s ease;
+      margin-bottom: 10px;
     }
-    table.data-table th, table.data-table td {
-      padding: 10px 12px;
-      border-bottom: 1px solid var(--border);
-      text-align: left;
+    .doc-rank-card.winner-good {
+      background: rgba(52, 211, 153, 0.13); border: 2px solid var(--accent-3);
+      box-shadow: 0 0 20px rgba(52, 211, 153, 0.15);
     }
-    table.data-table th {
-      color: var(--text-2);
-      font-size: 11px;
-      text-transform: uppercase;
+    .doc-rank-card.winner-bad {
+      background: rgba(248, 113, 113, 0.14); border: 2px solid var(--danger);
+      box-shadow: 0 0 20px rgba(248, 113, 113, 0.15);
     }
-    .rank-winner {
-      background: rgba(52, 211, 153, 0.1);
-      border-left: 3px solid var(--accent-3);
+    .rank-circle {
+      width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center;
+      font-weight: 800; font-size: 16px; flex-shrink: 0;
+      background: var(--bg-0); border: 1px solid var(--border);
     }
   </style>
 </head>
@@ -410,29 +255,129 @@
       <div class="brand-badge">V⃗</div>
       <div>
         <h1>Coordinates for Meaning — Interactive Vector Lab</h1>
-        <p>From Zero to Vector: Live 3D Semantic Space, Cosine Geometry, Vector Math & Production Gotchas</p>
+        <p>Visual Demos for 2D Intuition, 3D Clusters, Vector Math, Hybrid Search & Memory Optimization</p>
       </div>
     </div>
 
     <div class="nav-tabs">
-      <button class="tab-btn active" onclick="switchTab('tab-3d', this)">1. 3D Meaning Universe</button>
-      <button class="tab-btn" onclick="switchTab('tab-2d', this)">2. Act 1: 2D Taste Map</button>
-      <button class="tab-btn" onclick="switchTab('tab-math', this)">3. Vector Arithmetic</button>
-      <button class="tab-btn" onclick="switchTab('tab-gotchas', this)">4. Negation & Hybrid Search</button>
-      <button class="tab-btn" onclick="switchTab('tab-mrl', this)">5. Matryoshka & Quantization</button>
+      <button class="tab-btn active" id="btn-tab-2d" onclick="switchTab('tab-2d')">1. 2D Taste Map (ELI5)</button>
+      <button class="tab-btn" id="btn-tab-3d" onclick="switchTab('tab-3d')">2. 3D Meaning Universe</button>
+      <button class="tab-btn" id="btn-tab-math" onclick="switchTab('tab-math')">3. Vector Arithmetic</button>
+      <button class="tab-btn" id="btn-tab-gotchas" onclick="switchTab('tab-gotchas')">4. Where Vectors Fail & Hybrid Fix</button>
+      <button class="tab-btn" id="btn-tab-mrl" onclick="switchTab('tab-mrl')">5. Step-by-Step RAM Shrinker</button>
     </div>
 
-    <div class="engine-pill" id="engineStatusBtn" onclick="tryLoadTransformersJs()" title="Click to optionally load HuggingFace Transformers.js ONNX in browser">
-      <span class="dot-live"></span>
-      <span id="engineStatusText">Local 384-D Engine Ready (100% Offline)</span>
-    </div>
+    <a href="../slides/index.html" style="color:var(--accent); text-decoration:none; font-size:13px; font-weight:700; padding:7px 12px; border:1px solid rgba(56,189,248,0.35); border-radius:8px;">
+      ← Back to Slide Deck
+    </a>
   </header>
 
   <main>
     <!-- ================================================================== -->
-    <!-- TAB 1: 3D MEANING UNIVERSE (Interactive 3D Scatter + Live Prompt)  -->
+    <!-- TAB 1: ACT 1 — THE 2D "ZERO MATH" TASTE MAP & COSINE ANGLE         -->
     <!-- ================================================================== -->
-    <section id="tab-3d" class="tab-panel active">
+    <section id="tab-2d" class="tab-panel active">
+      <div class="two-col">
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <div>
+              <h2 style="font-size:19px;">The 2D Taste Map: Coordinates = Meaning</h2>
+              <p style="font-size:13px; color:var(--text-2);">
+                Every dot is stored in the computer as just <strong>2 numbers</strong>: <code>[Sweetness, Crunchiness]</code>. Similar foods naturally land near each other!
+              </p>
+            </div>
+            <div style="display:flex; gap:6px;">
+              <button class="btn btn-secondary" style="font-size:12px; padding:7px 11px;" onclick="demoTweetVsBook()">⚡ Demo: Why Angle Beats Ruler</button>
+              <button class="btn btn-secondary" style="font-size:12px; padding:7px 11px;" onclick="reset2dTasteMap()">Reset Map</button>
+            </div>
+          </div>
+
+          <div style="position:relative; background:#060a12; border:1px solid var(--border); border-radius:10px; overflow:hidden;">
+            <canvas id="tasteCanvas" width="680" height="440" style="width:100%; height:auto; display:block;"></canvas>
+          </div>
+
+          <!-- ADD ITEM WITH CLEAR EXPLANATION OF WHAT THE FIELDS MEAN -->
+          <div style="background:rgba(30,41,59,0.5); border:1px solid var(--border); border-radius:10px; padding:12px 14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <label style="color:var(--accent);">Place a New Item on the Map (Create a 2-Number Embedding)</label>
+              <span style="font-size:11px; color:var(--text-2);">Type scores from 0 (none) to 10 (maximum)</span>
+            </div>
+            <div style="display:grid; grid-template-columns: 1.3fr 1fr 1fr auto; gap:10px; align-items:end;">
+              <div>
+                <div style="font-size:11px; color:var(--text-1); margin-bottom:3px;">Item Name</div>
+                <input type="text" id="newTasteName" placeholder="e.g. Salted Pretzel 🥨" value="Salted Pretzel 🥨" />
+              </div>
+              <div>
+                <div style="font-size:11px; color:var(--text-1); margin-bottom:3px;">X-Axis: Sweetness (0–10)</div>
+                <input type="number" id="newTasteX" min="0" max="10" step="0.5" value="1.5" title="0 = Not sweet at all (Broccoli), 10 = Pure sugar (Cake)" />
+              </div>
+              <div>
+                <div style="font-size:11px; color:var(--text-1); margin-bottom:3px;">Y-Axis: Crunchiness (0–10)</div>
+                <input type="number" id="newTasteY" min="0" max="10" step="0.5" value="9.0" title="0 = Soft/smooth (Cake), 10 = Super loud crunch (Potato Chip)" />
+              </div>
+              <button class="btn" onclick="addCustomTasteItem()">Plot Item</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div>
+            <h2 style="font-size:19px;">How Computers Measure Similarity</h2>
+            <p style="font-size:13.5px; color:var(--text-1); line-height:1.5; margin-top:4px;">
+              Pick any two items below to draw their arrows from <code>(0, 0)</code>. <strong>Hover or click any of the 3 boxes below</strong> to see what that metric means in plain English!
+            </p>
+          </div>
+
+          <div class="two-col" style="gap:12px;">
+            <div style="background:rgba(56,189,248,0.08); border:1px solid rgba(56,189,248,0.35); padding:10px 12px; border-radius:8px;">
+              <label style="color:var(--accent);">Arrow A (Cyan Vector)</label>
+              <select id="tasteItemA" onchange="drawTasteMap()" style="margin-top:6px;"></select>
+              <div class="mono" style="font-size:12px; color:var(--accent); margin-top:6px;" id="coordExplainA">Coordinates: float[2] = [ 7.5, 8.0 ]</div>
+            </div>
+            <div style="background:rgba(167,139,250,0.08); border:1px solid rgba(167,139,250,0.35); padding:10px 12px; border-radius:8px;">
+              <label style="color:#a78bfa;">Arrow B (Purple Vector)</label>
+              <select id="tasteItemB" onchange="drawTasteMap()" style="margin-top:6px;"></select>
+              <div class="mono" style="font-size:12px; color:#a78bfa; margin-top:6px;" id="coordExplainB">Coordinates: float[2] = [ 7.0, 7.2 ]</div>
+            </div>
+          </div>
+
+          <!-- 3 INTERACTIVE METRIC CARDS WITH HOVER/CLICK EXPLANATIONS -->
+          <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px;">
+            <div class="metric-card active" id="mcard-cos" onmouseenter="explainMetric('cos')" onclick="explainMetric('cos')">
+              <div style="font-size:11px; font-weight:700; color:var(--text-2);">1. COSINE SIMILARITY</div>
+              <div class="mono" style="font-size:28px; font-weight:800; color:var(--accent-3); margin:4px 0;" id="tasteCosVal">99.9%</div>
+              <span class="metric-hint-tag">★ What AI Uses (Hover/Click)</span>
+            </div>
+
+            <div class="metric-card" id="mcard-angle" onmouseenter="explainMetric('angle')" onclick="explainMetric('angle')">
+              <div style="font-size:11px; font-weight:700; color:var(--text-2);">2. ANGLE BETWEEN ARROWS</div>
+              <div class="mono" style="font-size:28px; font-weight:800; color:var(--warn); margin:4px 0;" id="tasteAngleVal">1.5°</div>
+              <span class="metric-hint-tag">Compass Direction (Hover/Click)</span>
+            </div>
+
+            <div class="metric-card" id="mcard-dist" onmouseenter="explainMetric('dist')" onclick="explainMetric('dist')">
+              <div style="font-size:11px; font-weight:700; color:var(--text-2);">3. RULER (EUCLIDEAN) DIST</div>
+              <div class="mono" style="font-size:28px; font-weight:800; color:var(--accent); margin:4px 0;" id="tasteDistVal">0.94</div>
+              <span class="metric-hint-tag">Straight Tape Measure (Hover)</span>
+            </div>
+          </div>
+
+          <!-- PLAIN ENGLISH EXPLANATION BOX FOR THE HOVERED METRIC -->
+          <div id="metricExplanationBox" style="background:rgba(52,211,153,0.09); border:1px solid rgba(52,211,153,0.4); border-radius:10px; padding:14px 16px; font-size:13.5px; line-height:1.58;">
+          </div>
+
+          <div style="background:var(--bg-0); border:1px solid var(--border); border-radius:10px; padding:14px; font-size:13px; line-height:1.55;">
+            <strong style="color:var(--accent);">How This Connects to Real AI Embeddings:</strong><br/>
+            On this chart, each item is an array of <strong>2 numbers</strong> (<code>float[2]</code>: Sweetness, Crunchiness). A real AI embedding model does the exact same thing, except it outputs <strong>384 to 3,072 numbers</strong> (<code>float[384]</code>) capturing hundreds of learned traits (<em>Urgency, Finance, Tech, Sentiment...</em>).
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================== -->
+    <!-- TAB 2: 3D MEANING UNIVERSE (Interactive 3D Scatter + Live Prompt)  -->
+    <!-- ================================================================== -->
+    <section id="tab-3d" class="tab-panel">
       <div class="grid-3d">
         <div class="canvas-wrap">
           <canvas id="universeCanvas"></canvas>
@@ -440,7 +385,7 @@
           <div class="canvas-hud-top">
             <div class="hud-box">
               <div style="display:flex; align-items:center; justify-content:space-between; gap:16px;">
-                <strong>384-D → 3D UMAP Semantic Projection</strong>
+                <strong>384 Numbers Squashed to 3D Space (So Humans Can See Clusters)</strong>
                 <span class="mono" style="color:var(--accent);" id="pointCountLabel">180 items</span>
               </div>
               <div class="cluster-legend" id="clusterLegend"></div>
@@ -449,16 +394,16 @@
             <div class="hud-box" style="display:flex; gap:8px; align-items:center;">
               <button class="btn btn-secondary" style="padding:6px 10px; font-size:12px;" onclick="resetCamera()">Reset View</button>
               <button class="btn btn-secondary" style="padding:6px 10px; font-size:12px;" onclick="toggleAutoRotate()" id="autoRotateBtn">Auto-Orbit: ON</button>
-              <button class="btn btn-secondary" style="padding:6px 10px; font-size:12px; border-color:rgba(251,191,36,0.5); color:#fde68a;" onclick="toggleDistortionWarning()">⚠ 3D Distortion Check</button>
+              <button class="btn btn-secondary" style="padding:6px 10px; font-size:12px; border-color:rgba(251,191,36,0.5); color:#fde68a;" onclick="toggleDistortionWarning()">⚠ 3D Shadow Warning</button>
             </div>
           </div>
 
           <div class="canvas-hud-bottom">
             <div class="hud-box" style="color:var(--text-2);">
-              Drag to orbit 3D space • Scroll to zoom • Click any dot to inspect its 384-D vector & nearest neighbors
+              Drag to rotate • Scroll to zoom • Click any dot to see its 384 numbers & closest matches
             </div>
             <div class="distortion-banner" id="distortionBanner">
-              <strong>⚠ Dimensionality Reduction Warning (384D → 3D):</strong> Compressing 384 axes onto a flat screen is like casting a 3D shadow onto a wall. Two dots that look close in 3D might actually be far apart in full 384-D space! Always compute similarity in full space (shown in the panel on the right).
+              <strong>⚠ The "Shadow on a Wall" Warning (384D → 3D):</strong> Squashing 384 coordinates down to 3D for a projector screen is like shining a flashlight on your hand—two fingers might look like they touch in the 2D shadow even when they are inches apart in real space! That's why your code always checks similarity using all 384 numbers (shown on the right).
             </div>
           </div>
 
@@ -467,18 +412,18 @@
 
         <div class="card">
           <div>
-            <label>1. Choose Pre-Loaded Dataset</label>
+            <label>1. Choose Dataset</label>
             <select id="datasetSelect" onchange="changeDataset(this.value)" style="margin-top:6px;">
-              <option value="dev">Engineering & Support Tickets (6 Semantic Clusters)</option>
-              <option value="movies">Movies & Sci-Fi / Genre Synopses (6 Genre Clusters)</option>
-              <option value="stackoverflow">StackOverflow Developer Q&A (6 Tech Stacks)</option>
+              <option value="dev">Support Tickets & Engineering Issues (6 Clusters)</option>
+              <option value="movies">Movies & Genre Plots (6 Clusters)</option>
+              <option value="stackoverflow">Developer Q&A (6 Tech Topics)</option>
             </select>
           </div>
 
           <div>
-            <label>2. Live Audience Input — Drop a New Phrase into 3D Space</label>
+            <label>2. Live Audience Input — Drop Any Sentence into 3D Space</label>
             <div style="display:flex; gap:8px; margin-top:6px;">
-              <input type="text" id="liveQueryInput" placeholder="Shout out a sentence (e.g. 'credit card won't go through')..." onkeydown="if(event.key==='Enter') embedLiveInput()" />
+              <input type="text" id="liveQueryInput" placeholder="Type any phrase (e.g. 'credit card won't go through')..." onkeydown="if(event.key==='Enter') embedLiveInput()" />
               <button class="btn" onclick="embedLiveInput()">Embed & Fly</button>
             </div>
             <div class="chip-row" style="margin-top:8px;" id="quickPromptChips"></div>
@@ -486,88 +431,16 @@
 
           <div>
             <div style="display:flex; justify-content:space-between; align-items:center;">
-              <label>3. Active Vector Barcode (384 Dimensions)</label>
-              <span class="mono" style="font-size:11px; color:var(--accent);" id="activeVectorNorm">||v|| = 1.000 (Unit Length)</span>
+              <label>3. The 384 Numbers Inside This Vector</label>
+              <span class="mono" style="font-size:11px; color:var(--accent);">Blue = Positive • Pink = Negative</span>
             </div>
             <div class="vector-preview-strip" id="activeVectorStrip" style="margin-top:6px;"></div>
-            <div class="mono" style="font-size:11px; color:var(--text-2); margin-top:4px;" id="activeVectorNumbers">
-              [ +0.142, -0.088, +0.031, -0.119, +0.074, ... 384 floats ]
-            </div>
+            <div class="mono" style="font-size:11px; color:var(--text-2); margin-top:4px;" id="activeVectorNumbers"></div>
           </div>
 
           <div style="flex:1; display:flex; flex-direction:column; min-height:0;">
-            <label>4. Top Nearest Neighbors in Full 384-D Space (Cosine Similarity)</label>
+            <label>4. Closest Neighbors in Full 384-D Space</label>
             <div class="neighbors-list" id="neighborsList" style="margin-top:8px;"></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================================================================== -->
-    <!-- TAB 2: ACT 1 — THE 2D "ZERO MATH" TASTE MAP & COSINE ANGLE         -->
-    <!-- ================================================================== -->
-    <section id="tab-2d" class="tab-panel">
-      <div class="two-col">
-        <div class="card">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div>
-              <h2 style="font-size:18px;">Act 1 Mental Model: The 2D Coordinate Map</h2>
-              <p style="font-size:13px; color:var(--text-2);">Drag any food item or click on the chart to place a new item. Watch how angle = similarity!</p>
-            </div>
-            <button class="btn btn-secondary" onclick="reset2dTasteMap()">Reset Items</button>
-          </div>
-
-          <div style="position:relative; background:#060a12; border:1px solid var(--border); border-radius:10px; overflow:hidden;">
-            <canvas id="tasteCanvas" width="680" height="460" style="width:100%; height:auto; display:block; cursor:pointer;"></canvas>
-          </div>
-        </div>
-
-        <div class="card">
-          <h2 style="font-size:18px;">Cosine Similarity in One Sentence</h2>
-          <p style="font-size:14px; color:var(--text-1); line-height:1.55;">
-            Instead of measuring ruler distance, we draw two arrows from <code>(0, 0)</code> and measure the <strong>angle θ</strong> between them:
-            if they point in the same direction, <code>cos(0°) = 1.00</code> (identical ratio of features). If they are 90° apart, <code>cos(90°) = 0.00</code> (unrelated).
-          </p>
-
-          <div class="two-col" style="gap:12px;">
-            <div>
-              <label>Arrow A (Cyan)</label>
-              <select id="tasteItemA" onchange="drawTasteMap()" style="margin-top:4px;"></select>
-            </div>
-            <div>
-              <label>Arrow B (Purple)</label>
-              <select id="tasteItemB" onchange="drawTasteMap()" style="margin-top:4px;"></select>
-            </div>
-          </div>
-
-          <div style="background:var(--bg-0); border:1px solid var(--border); border-radius:10px; padding:16px; display:grid; grid-template-columns:repeat(3,1fr); gap:12px; text-align:center;">
-            <div>
-              <div style="font-size:11px; color:var(--text-2);">ANGLE (θ)</div>
-              <div class="mono" style="font-size:26px; font-weight:800; color:var(--warn);" id="tasteAngleVal">8.2°</div>
-            </div>
-            <div>
-              <div style="font-size:11px; color:var(--text-2);">COSINE SIMILARITY</div>
-              <div class="mono" style="font-size:26px; font-weight:800; color:var(--accent-3);" id="tasteCosVal">0.990</div>
-            </div>
-            <div>
-              <div style="font-size:11px; color:var(--text-2);">EUCLIDEAN DIST</div>
-              <div class="mono" style="font-size:26px; font-weight:800; color:var(--accent);" id="tasteDistVal">1.41</div>
-            </div>
-          </div>
-
-          <div style="border-top:1px solid var(--border); padding-top:12px;">
-            <label>Add Audience Item to 2D Map</label>
-            <div style="display:grid; grid-template-columns: 1fr 90px 90px auto; gap:8px; margin-top:6px;">
-              <input type="text" id="newTasteName" placeholder="e.g. Pretzel" />
-              <input type="text" id="newTasteX" placeholder="Sweet (0-10)" value="2.5" />
-              <input type="text" id="newTasteY" placeholder="Crunch (0-10)" value="8.8" />
-              <button class="btn" onclick="addCustomTasteItem()">Add</button>
-            </div>
-          </div>
-
-          <div style="background:rgba(56,189,248,0.08); border:1px solid rgba(56,189,248,0.25); border-radius:10px; padding:14px; font-size:13px; line-height:1.5;">
-            <strong>How Real AI Embeddings Scale This Up:</strong><br/>
-            Here we picked 2 human axes (<em>Sweetness</em>, <em>Crunchiness</em>). An embedding model like <code>all-MiniLM-L6-v2</code> or <code>text-embedding-3</code> learns <strong>384 to 3,072 abstract axes</strong> by reading billions of sentences via <em>Contrastive Learning</em>!
           </div>
         </div>
       </div>
@@ -580,44 +453,46 @@
       <div class="card">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
           <div>
-            <h2 style="font-size:19px;">Live Vector Arithmetic Lab — Directions in Meaning Space</h2>
-            <p style="font-size:13px; color:var(--text-2);">Because meaning is encoded as coordinates, we can add and subtract concepts using regular array math: <code>Result[i] = A[i] + B[i] - C[i]</code></p>
+            <h2 style="font-size:19px;">Doing Math on Meaning: <code>Vector A + Vector B − Vector C</code></h2>
+            <p style="font-size:13.5px; color:var(--text-2);">
+              Because concepts are just coordinates, we can add and subtract ideas using a simple <code>for</code> loop over the arrays!
+            </p>
           </div>
           <div class="chip-row">
-            <span class="chip" onclick="loadMathPreset(0)">Preset 1: Outage + Angry Customer − Internal</span>
-            <span class="chip" onclick="loadMathPreset(1)">Preset 2: Checkout + Timeout − Success</span>
-            <span class="chip" onclick="loadMathPreset(2)">Preset 3: Login Password + Phone Code − Email</span>
-            <span class="chip" onclick="loadMathPreset(3)">Preset 4: SQL LIKE + Neural Net − Exact Keyword</span>
+            <span class="chip" onclick="loadMathPreset(0)">1. Database Latency + Angry Customer − Internal Test</span>
+            <span class="chip" onclick="loadMathPreset(1)">2. Checkout + Timeout − Success</span>
+            <span class="chip" onclick="loadMathPreset(2)">3. Login Password + Phone Code − Email</span>
+            <span class="chip" onclick="loadMathPreset(3)">4. SQL LIKE + Neural Net − Exact Keyword</span>
           </div>
         </div>
 
         <div style="display:grid; grid-template-columns: 1fr auto 1fr auto 1fr auto; gap:10px; align-items:center; margin-top:8px;">
           <div>
-            <label style="color:var(--accent);">Start Concept (Vector A)</label>
-            <input type="text" id="mathVecA" value="Database latency issue" style="margin-top:4px;" />
+            <label style="color:var(--accent);">Start With (Concept A)</label>
+            <input type="text" id="mathVecA" value="Database query latency" style="margin-top:4px;" />
           </div>
           <div class="mono" style="font-size:26px; font-weight:800; padding-top:18px; color:var(--accent-3);">+</div>
           <div>
-            <label style="color:var(--accent-3);">Add Concept (Vector B)</label>
+            <label style="color:var(--accent-3);">Add Meaning (Concept B)</label>
             <input type="text" id="mathVecB" value="Angry customer blocked at checkout" style="margin-top:4px;" />
           </div>
           <div class="mono" style="font-size:26px; font-weight:800; padding-top:18px; color:var(--danger);">−</div>
           <div>
-            <label style="color:var(--danger);">Subtract Concept (Vector C)</label>
+            <label style="color:var(--danger);">Subtract Meaning (Concept C)</label>
             <input type="text" id="mathVecC" value="Internal staging sandbox test" style="margin-top:4px;" />
           </div>
           <div style="padding-top:18px;">
-            <button class="btn" onclick="runVectorMath()">Compute A + B − C</button>
+            <button class="btn" onclick="runVectorMath()">Calculate Result</button>
           </div>
         </div>
 
         <div class="two-col" style="margin-top:10px;">
           <div style="background:var(--bg-0); border:1px solid var(--border); border-radius:10px; padding:14px;">
-            <label>2D Vector Addition Parallelogram Projection</label>
+            <label>How the Arrows Add & Subtract in Space</label>
             <canvas id="mathCanvas" width="600" height="320" style="width:100%; height:auto; margin-top:8px;"></canvas>
           </div>
           <div>
-            <label>Closest Items in Database to Resulting Vector (A + B − C)</label>
+            <label>Where Did the Resulting Coordinate Land? (Closest Matches)</label>
             <div id="mathResultsList" class="neighbors-list" style="margin-top:8px; max-height:320px;"></div>
           </div>
         </div>
@@ -625,165 +500,171 @@
     </section>
 
     <!-- ================================================================== -->
-    <!-- TAB 4: WHERE EMBEDDINGS LIE (NEGATION TRAP + HYBRID SEARCH RRF)    -->
+    <!-- TAB 4: WHERE VECTORS FAIL & HOW HYBRID SEARCH FIXES IT             -->
     <!-- ================================================================== -->
     <section id="tab-gotchas" class="tab-panel">
-      <div class="two-col">
-        <div class="card">
-          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-            <h2 style="font-size:18px;">Side-by-Side Cosine Similarity Inspector</h2>
-            <div class="chip-row">
-              <span class="chip" onclick="loadGotchaPair(0)">1. Negation Trap (Enable vs Disable MFA)</span>
-              <span class="chip" onclick="loadGotchaPair(1)">2. Exact ID Trap (Error 503 vs 504)</span>
-              <span class="chip" onclick="loadGotchaPair(2)">3. Synonym Triumph (Zero Shared Words)</span>
-            </div>
-          </div>
-
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
           <div>
-            <label>Sentence A</label>
-            <input type="text" id="simInputA" value="How do I ENABLE two-factor authentication (MFA) on my account?" oninput="updatePairSimilarity()" style="margin-top:4px;" />
-          </div>
-          <div>
-            <label>Sentence B</label>
-            <input type="text" id="simInputB" value="How do I DISABLE two-factor authentication (MFA) on my account?" oninput="updatePairSimilarity()" style="margin-top:4px;" />
-          </div>
-
-          <div style="background:var(--bg-0); border:1px solid var(--border); border-radius:10px; padding:16px; display:flex; align-items:center; justify-content:space-between;">
-            <div>
-              <div style="font-size:12px; color:var(--text-2);">RAW COSINE SIMILARITY (TensorPrimitives.CosineSimilarity)</div>
-              <div id="simVerdictText" style="font-size:14px; color:var(--warn); margin-top:4px; font-weight:600;"></div>
-            </div>
-            <div class="mono" style="font-size:36px; font-weight:800; color:var(--accent-3);" id="simPairScore">94.8%</div>
-          </div>
-
-          <div>
-            <label>Why Did This Happen? (Dimension-by-Dimension Alignment)</label>
-            <div style="font-size:12px; color:var(--text-2); margin:4px 0 8px;">
-              Top Strip = Vector A • Middle Strip = Vector B • Bottom Strip = Element-wise Product <code>A[i] * B[i]</code> (Green = aligned axes):
-            </div>
-            <div class="vector-preview-strip" id="stripCompareA" style="margin-bottom:4px;"></div>
-            <div class="vector-preview-strip" id="stripCompareB" style="margin-bottom:4px;"></div>
-            <div class="vector-preview-strip" id="stripCompareProd"></div>
+            <h2 style="font-size:20px;">Where Embeddings Lie — And How Hybrid Search Fixes It</h2>
+            <p style="font-size:14px; color:var(--text-1);">
+              Embeddings group things by <strong>general topic</strong>, which means they are blind to <strong>"NOT / WITHOUT" (negation)</strong> and <strong>exact error numbers</strong>. Pick a scenario below, then flip from <strong>Pure Vector Search</strong> to <strong>Hybrid Search</strong>!
+            </p>
           </div>
         </div>
 
-        <div class="card">
-          <h2 style="font-size:18px;">The Production Fix: Hybrid Search (Dense Vectors + BM25 + RRF)</h2>
-          <p style="font-size:13px; color:var(--text-2);">
-            Adjust the fusion balance between <strong>Dense Semantic Vectors</strong> and <strong>BM25 Exact Keyword Search</strong> to see how Reciprocal Rank Fusion rescues exact error codes and negations:
-          </p>
+        <!-- STEP 1: PICK ONE OF 3 DRAMATIC FAILURE SCENARIOS -->
+        <div>
+          <label>Step 1: Choose a Real-World Trap</label>
+          <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:8px;">
+            <div class="step-pill active" id="scen-btn-0" onclick="selectHybridScenario(0)">
+              <div class="step-num">Trap #1 • Negation ("WITHOUT")</div>
+              <div class="step-title">🥜 "Peanut Allergy — Snacks WITHOUT Peanuts"</div>
+            </div>
+            <div class="step-pill" id="scen-btn-1" onclick="selectHybridScenario(1)">
+              <div class="step-num">Trap #2 • Opposite Action</div>
+              <div class="step-title">🔐 "How Do I Permanently DISABLE MFA?"</div>
+            </div>
+            <div class="step-pill" id="scen-btn-2" onclick="selectHybridScenario(2)">
+              <div class="step-num">Trap #3 • Exact Error Code</div>
+              <div class="step-title">🚨 "Fix HTTP Error 504 Gateway Timeout"</div>
+            </div>
+          </div>
+        </div>
 
+        <div class="two-col" style="margin-top:6px;">
+          <!-- LEFT COLUMN: MODE SWITCHER & EXPLANATION -->
+          <div style="display:flex; flex-direction:column; gap:14px;">
+            <div style="background:var(--bg-0); border:1px solid var(--border); border-radius:10px; padding:16px;">
+              <label>User's Search Query</label>
+              <div class="mono" style="font-size:17px; font-weight:700; color:#fff; margin-top:6px;" id="scenQueryDisplay"></div>
+            </div>
+
+            <div style="background:var(--bg-0); border:1px solid var(--border); border-radius:10px; padding:16px;">
+              <label>Step 2: Switch Search Engine Mode</label>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:10px;">
+                <button class="btn btn-secondary active-mode" id="modeBtnVector" onclick="setSearchMode('vector')" style="padding:14px; font-size:14px; border-width:2px;">
+                  ❌ 1. Pure Vector Search Only<br/>
+                  <span style="font-size:11px; font-weight:400; color:var(--text-2);">(Looks at general topic only)</span>
+                </button>
+                <button class="btn btn-secondary" id="modeBtnHybrid" onclick="setSearchMode('hybrid')" style="padding:14px; font-size:14px; border-width:2px;">
+                  ✅ 2. Hybrid Search (Vector + Keyword)<br/>
+                  <span style="font-size:11px; font-weight:400; color:var(--text-2);">(Combines Meaning + Exact Words)</span>
+                </button>
+              </div>
+            </div>
+
+            <div id="scenExplanationBox" style="border-radius:10px; padding:16px; font-size:14px; line-height:1.6;"></div>
+          </div>
+
+          <!-- RIGHT COLUMN: ANIMATED SEARCH RESULTS RANKING -->
           <div>
-            <label>Search Query</label>
-            <div style="display:flex; gap:8px; margin-top:4px;">
-              <input type="text" id="hybridQueryInput" value="permanently disable and turn off MFA on my login account" oninput="runHybridDemo()" />
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <label id="resultsHeaderLabel">Search Results Ranking</label>
+              <span style="font-size:12px; color:var(--text-2);">Watch how the #1 result changes!</span>
             </div>
-            <div class="chip-row" style="margin-top:6px;">
-              <span class="chip" onclick="setHybridQuery('permanently disable and turn off MFA on my login account')">Query: Disable MFA</span>
-              <span class="chip" onclick="setHybridQuery('payment checkout gateway HTTP Error 504 timeout')">Query: HTTP Error 504</span>
-              <span class="chip" onclick="setHybridQuery('credit card rejected at checkout screen')">Query: Semantic Synonym</span>
-            </div>
+            <div id="hybridCardsContainer"></div>
           </div>
-
-          <div style="background:var(--bg-0); border:1px solid var(--border); border-radius:10px; padding:12px;">
-            <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:700;">
-              <span style="color:var(--accent);">← Pure Vector Search (0.0)</span>
-              <span style="color:var(--accent-3);" id="hybridSliderLabel">Balanced Hybrid RRF (50% Vector + 50% BM25)</span>
-              <span style="color:var(--warn);">Pure BM25 Keyword (1.0) →</span>
-            </div>
-            <input type="range" id="hybridWeightSlider" min="0" max="100" value="55" oninput="runHybridDemo()" style="width:100%; margin-top:8px;" />
-          </div>
-
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Knowledge Base Document</th>
-                <th>Dense</th>
-                <th>BM25</th>
-                <th>Combined</th>
-              </tr>
-            </thead>
-            <tbody id="hybridTableBody"></tbody>
-          </table>
         </div>
       </div>
     </section>
 
     <!-- ================================================================== -->
-    <!-- TAB 5: MATRYOSHKA (MRL) SLICING & QUANTIZATION CALCULATOR          -->
+    <!-- TAB 5: STEP-BY-STEP RAM SHRINKER (MATRYOSHKA & QUANTIZATION)       -->
     <!-- ================================================================== -->
     <section id="tab-mrl" class="tab-panel">
-      <div class="two-col">
-        <div class="card">
-          <h2 style="font-size:18px;">Production RAM & Cost Calculator (Matryoshka + Quantization)</h2>
-          <p style="font-size:13px; color:var(--text-2);">
-            Modern Matryoshka (MRL) models front-load the most important semantic information into the early dimensions, letting you slice arrays and quantize floats with minimal recall loss.
+      <div class="card">
+        <div>
+          <h2 style="font-size:20px;">Step-by-Step: How to Shrink a 120 GB Vector Database Down to 600 MB</h2>
+          <p style="font-size:14px; color:var(--text-1); margin-top:4px;">
+            Click through the <strong>4 steps below in order</strong> to see why large vector databases get expensive—and the two tricks engineers use to shrink them up to 200x.
           </p>
+        </div>
 
-          <div>
-            <label>1. Total Vectors in Database: <span class="mono" style="color:var(--accent);" id="mrlCountLabel">10,000,000</span></label>
-            <input type="range" id="mrlCountSlider" min="1" max="100" value="10" oninput="updateMrlCalculator()" style="width:100%; margin-top:6px;" />
+        <!-- 4-STEP PROGRESSIVE WIZARD BUTTONS -->
+        <div class="step-wizard">
+          <div class="step-pill active" id="mrl-step-1" onclick="setMrlStep(1)">
+            <div class="step-num">Step 1 • The Problem</div>
+            <div class="step-title">💸 The 120 GB RAM Bill Shock</div>
           </div>
-
-          <div>
-            <label>2. Original Model Dimensions: <span class="mono" style="color:var(--accent);" id="mrlOrigDimLabel">3072 dims</span></label>
-            <select id="mrlOrigDimSelect" onchange="updateMrlCalculator()" style="margin-top:6px;">
-              <option value="3072" selected>3,072 dimensions (e.g., text-embedding-3-large / Gemini Embedding)</option>
-              <option value="1536">1,536 dimensions (e.g., text-embedding-3-small)</option>
-              <option value="1024">1,024 dimensions (e.g., Voyage-3 / BGE-M3 / Qwen3)</option>
-              <option value="768">768 dimensions (e.g., EmbeddingGemma / mpnet-base)</option>
-              <option value="384">384 dimensions (e.g., all-MiniLM-L6-v2 Local ONNX)</option>
-            </select>
+          <div class="step-pill" id="mrl-step-2" onclick="setMrlStep(2)">
+            <div class="step-num">Step 2 • Trick #1 (Length)</div>
+            <div class="step-title">🪆 Matryoshka Slicing (Chop Tail)</div>
           </div>
-
-          <div>
-            <label>3. Matryoshka Sliced Dimensions: <span class="mono" style="color:var(--accent-3);" id="mrlSliceDimLabel">512 dims</span></label>
-            <input type="range" id="mrlSliceSlider" min="64" max="3072" step="64" value="512" oninput="updateMrlCalculator()" style="width:100%; margin-top:6px;" />
+          <div class="step-pill" id="mrl-step-3" onclick="setMrlStep(3)">
+            <div class="step-num">Step 3 • Trick #2 (Size)</div>
+            <div class="step-title">🗜️ Quantization (Round Numbers)</div>
           </div>
-
-          <div>
-            <label>4. Numeric Precision (Quantization)</label>
-            <select id="mrlPrecisionSelect" onchange="updateMrlCalculator()" style="margin-top:6px;">
-              <option value="4">float32 (4 bytes per dimension — Baseline)</option>
-              <option value="2">float16 / bfloat16 (2 bytes per dimension — 2x smaller)</option>
-              <option value="1" selected>int8 Scalar Quantization (1 byte per dimension — 4x smaller)</option>
-              <option value="0.125">1-bit Binary Quantization (1 bit per dim + Hamming PopCount — 32x smaller!)</option>
-            </select>
+          <div class="step-pill" id="mrl-step-4" onclick="setMrlStep(4)">
+            <div class="step-num">Step 4 • The Payoff</div>
+            <div class="step-title">🚀 Both Combined (Up to 200x!)</div>
           </div>
         </div>
 
-        <div class="card">
-          <h2 style="font-size:18px;">Live Memory Footprint & Recall Impact</h2>
+        <div class="two-col" style="margin-top:6px;">
+          <!-- LEFT SIDE: ONLY SHOWS THE CONTROLS FOR THE CURRENT STEP! -->
+          <div class="card" style="background:var(--bg-0);">
+            <div id="mrlStepStoryBox" style="font-size:14.5px; line-height:1.6; color:var(--text-0);"></div>
 
-          <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px; text-align:center;">
-            <div style="background:var(--bg-0); border:1px solid var(--border); border-radius:10px; padding:14px;">
-              <div style="font-size:11px; color:var(--text-2);">NAIVE BASELINE RAM</div>
-              <div class="mono" style="font-size:24px; font-weight:800; color:var(--danger);" id="mrlBaselineRam">114.4 GB</div>
-              <div style="font-size:11px; color:var(--text-2);">Full dims @ float32</div>
+            <!-- Control 1: Always visible -->
+            <div style="border-top:1px solid var(--border); padding-top:12px;">
+              <label>Database Size: <span class="mono" style="color:var(--accent);" id="mrlCountLabel">10,000,000 documents</span></label>
+              <input type="range" id="mrlCountSlider" min="1" max="50" value="10" oninput="updateMrlCalculator()" style="width:100%; margin-top:6px;" />
+              <div style="font-size:11.5px; color:var(--text-2); margin-top:2px;">Each document Starts with <strong>3,072 decimal numbers</strong> (<code>float32</code> = 4 bytes per number).</div>
             </div>
-            <div style="background:var(--bg-0); border:1px solid var(--accent-3); border-radius:10px; padding:14px;">
-              <div style="font-size:11px; color:var(--text-2);">OPTIMIZED RAM</div>
-              <div class="mono" style="font-size:24px; font-weight:800; color:var(--accent-3);" id="mrlOptRam">4.77 GB</div>
-              <div style="font-size:11px; color:var(--accent-3);" id="mrlSavingsFactor">24.0x Smaller!</div>
+
+            <!-- Control 2: Revealed in Step 2, 3, 4 -->
+            <div id="mrlControlSlice" style="display:none; border-top:1px solid var(--border); padding-top:12px;">
+              <label style="color:var(--accent-3);">✂️ Trick #1: Matryoshka Slicing — Keep First <span class="mono" id="mrlSliceDimLabel">512</span> of 3,072 Numbers</label>
+              <input type="range" id="mrlSliceSlider" min="128" max="3072" step="128" value="512" oninput="updateMrlCalculator()" style="width:100%; margin-top:6px;" />
+              <div style="font-size:12px; color:var(--text-2); margin-top:4px;">
+                Just like a Russian Nesting Doll (or a progressive JPEG), the model puts the <strong>big topic</strong> in the first 256–512 numbers and tiny details at the end. We can chop off the tail!
+              </div>
             </div>
-            <div style="background:var(--bg-0); border:1px solid var(--border); border-radius:10px; padding:14px;">
-              <div style="font-size:11px; color:var(--text-2);">EST. RECALL RETENTION</div>
-              <div class="mono" style="font-size:24px; font-weight:800; color:var(--accent);" id="mrlRecallEst">~96.4%</div>
-              <div style="font-size:11px; color:var(--text-2);">Top-K Accuracy</div>
+
+            <!-- Control 3: Revealed in Step 3 & 4 -->
+            <div id="mrlControlQuant" style="display:none; border-top:1px solid var(--border); padding-top:12px;">
+              <label style="color:var(--warn);">🗜️ Trick #2: Quantization — Round Each Number to Fewer Bits</label>
+              <select id="mrlPrecisionSelect" onchange="updateMrlCalculator()" style="margin-top:6px;">
+                <option value="4">Full Decimal (float32 — 4 bytes per number, e.g. +0.1428571)</option>
+                <option value="1">Whole Number -127..127 (int8 — 1 byte per number, 4x smaller!)</option>
+                <option value="0.125">Just Plus/Minus Sign (1-bit binary — 32x smaller!)</option>
+              </select>
+              <div style="font-size:12px; color:var(--text-2); margin-top:6px;">
+                Look at how a real coordinate changes on the right when we round it—the arrow still points to the same neighborhood!
+              </div>
             </div>
           </div>
 
-          <div>
-            <label>Visualizing Matryoshka Slicing on a Live Vector (Front-Loaded Signal)</label>
-            <div style="font-size:12px; color:var(--text-2); margin:4px 0 8px;">
-              Highlighted region = kept dimensions after slicing; dimmed tail = truncated dimensions:
+          <!-- RIGHT SIDE: VISUAL VECTOR & RAM COMPARISON -->
+          <div class="card" style="background:var(--bg-0);">
+            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; text-align:center;">
+              <div style="background:var(--bg-1); border:1px solid var(--border); border-radius:10px; padding:12px;">
+                <div style="font-size:11px; color:var(--text-2);">STARTING RAM</div>
+                <div class="mono" style="font-size:24px; font-weight:800; color:var(--danger);" id="mrlBaselineRam">114.4 GB</div>
+                <div style="font-size:11px; color:var(--text-2);">3072 nums × 4 bytes</div>
+              </div>
+              <div style="background:var(--bg-1); border:2px solid var(--accent-3); border-radius:10px; padding:12px;">
+                <div style="font-size:11px; color:var(--text-2);">YOUR NEW RAM</div>
+                <div class="mono" style="font-size:24px; font-weight:800; color:var(--accent-3);" id="mrlOptRam">114.4 GB</div>
+                <div style="font-size:11px; font-weight:700; color:var(--accent-3);" id="mrlSavingsFactor">1.0x (Baseline)</div>
+              </div>
+              <div style="background:var(--bg-1); border:1px solid var(--border); border-radius:10px; padding:12px;">
+                <div style="font-size:11px; color:var(--text-2);">SEARCH ACCURACY</div>
+                <div class="mono" style="font-size:24px; font-weight:800; color:var(--accent);" id="mrlRecallEst">100%</div>
+                <div style="font-size:11px; color:var(--text-2);">Recall Kept</div>
+              </div>
             </div>
-            <div class="vector-preview-strip" id="mrlVisualBar" style="height:36px;"></div>
-          </div>
 
-          <div style="background:rgba(52,211,153,0.08); border:1px solid rgba(52,211,153,0.3); border-radius:10px; padding:14px; font-size:13px; line-height:1.55;">
-            <strong>C# Engineering Tip (Two-Stage Binary Rescoring):</strong><br/>
-            Keep <strong>1-bit Binary Quantized</strong> vectors in RAM (`ulong[]`) and scan 10M vectors in milliseconds using hardware <code>BitOperations.PopCount(a ^ b)</code>. Fetch the top 50 candidates from disk as full <code>float32</code> to rescore with <code>TensorPrimitives.CosineSimilarity</code>—getting <strong>32x RAM savings with ~99% recall</strong>!
+            <div>
+              <label>Live View of One Vector Array (Green = Kept, Grey = Chopped Off by Scissors)</label>
+              <div class="vector-preview-strip" id="mrlVisualBar" style="height:32px; margin-top:6px;"></div>
+            </div>
+
+            <div style="background:var(--bg-1); border:1px solid var(--border); border-radius:10px; padding:12px;">
+              <label>What the Numbers Inside the Array Actually Look Like Right Now:</label>
+              <div class="mono" style="font-size:13px; color:var(--accent); margin-top:6px; line-height:1.5;" id="mrlLiveNumbersPreview"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -792,7 +673,204 @@
 
   <script>
     // ========================================================================
-    // 1. CLIENT-SIDE 384-D SEMANTIC EMBEDDING ENGINE (Matches C# Engine + Optional ONNX)
+    // SYNC WITH SLIDE DECK & PRESENTER CONSOLE
+    // ========================================================================
+    const syncChannel = ('BroadcastChannel' in window) ? new BroadcastChannel('embeddings_talk_sync') : null;
+    if (syncChannel) {
+      syncChannel.onmessage = (ev) => {
+        if (ev.data && ev.data.type === 'SWITCH_VISUALIZER_TAB') {
+          switchTab(ev.data.tabId);
+        }
+      };
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      const panel = document.getElementById(tabId);
+      const btn = document.getElementById('btn-' + tabId);
+      if (panel) panel.classList.add('active');
+      if (btn) btn.classList.add('active');
+    }
+
+    // Check URL query string on load (e.g. ?tab=tab-3d)
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('tab')) {
+      setTimeout(() => switchTab(urlParams.get('tab')), 20);
+    }
+
+    // ========================================================================
+    // TAB 1 (2D TASTE MAP): CLEAR EXPLANATIONS & HOVER METRICS
+    // ========================================================================
+    let tasteItems = [];
+    let currentMetricTopic = 'cos';
+
+    function reset2dTasteMap() {
+      tasteItems = [
+        { name: "Apple 🍎", x: 7.5, y: 8.0, color: "#f87171" },
+        { name: "Crispy Pear 🍐", x: 7.0, y: 7.5, color: "#34d399" },
+        { name: "Potato Chip 🥔", x: 1.2, y: 9.2, color: "#fbbf24" },
+        { name: "Chocolate Cake 🍰", x: 9.4, y: 1.4, color: "#a78bfa" },
+        { name: "Raw Broccoli 🥦", x: 1.4, y: 6.8, color: "#4ade80" },
+        { name: "Caramel Popcorn 🍿", x: 8.2, y: 8.6, color: "#38bdf8" }
+      ];
+      populateTasteSelects(0, 1);
+      drawTasteMap();
+      explainMetric('cos');
+    }
+
+    function demoTweetVsBook() {
+      tasteItems = [
+        { name: "Short Tweet about Apples 🐦", x: 3.5, y: 4.0, color: "#38bdf8" },
+        { name: "Long Book about Apples 📚", x: 7.0, y: 8.0, color: "#a78bfa" },
+        { name: "Potato Chip 🥔", x: 1.2, y: 9.2, color: "#fbbf24" },
+        { name: "Chocolate Cake 🍰", x: 9.4, y: 1.4, color: "#f87171" }
+      ];
+      populateTasteSelects(0, 1);
+      drawTasteMap();
+      explainMetric('dist');
+    }
+
+    function populateTasteSelects(idxA, idxB) {
+      const selA = document.getElementById('tasteItemA');
+      const selB = document.getElementById('tasteItemB');
+      selA.innerHTML = ''; selB.innerHTML = '';
+      tasteItems.forEach((it, idx) => {
+        selA.add(new Option(`${it.name} → [${it.x.toFixed(1)}, ${it.y.toFixed(1)}]`, idx, idx === idxA, idx === idxA));
+        selB.add(new Option(`${it.name} → [${it.x.toFixed(1)}, ${it.y.toFixed(1)}]`, idx, idx === idxB, idx === idxB));
+      });
+    }
+
+    function addCustomTasteItem() {
+      const name = document.getElementById('newTasteName').value.trim() || "New Food";
+      const x = Math.max(0.2, Math.min(10, parseFloat(document.getElementById('newTasteX').value) || 5));
+      const y = Math.max(0.2, Math.min(10, parseFloat(document.getElementById('newTasteY').value) || 5));
+      tasteItems.push({ name, x, y, color: "#f472b6" });
+      populateTasteSelects(2, tasteItems.length - 1);
+      drawTasteMap();
+    }
+
+    function explainMetric(topic) {
+      currentMetricTopic = topic;
+      ['cos', 'angle', 'dist'].forEach(k => {
+        document.getElementById('mcard-' + k).classList.toggle('active', k === topic);
+      });
+
+      const box = document.getElementById('metricExplanationBox');
+      const cosText = document.getElementById('tasteCosVal').textContent;
+      const angText = document.getElementById('tasteAngleVal').textContent;
+      const dstText = document.getElementById('tasteDistVal').textContent;
+
+      if (topic === 'cos') {
+        box.innerHTML = `
+          <strong style="color:var(--accent-3);">1. What Cosine Similarity (${cosText}) Means in Practice:</strong><br/>
+          This is the <strong>percentage match of direction</strong> (from <code>0%</code> unrelated up to <code>100%</code> identical meaning).<br/>
+          • <strong>Why AI uses it:</strong> Two arrows pointing the same way have the <em>same ratio of Sweetness to Crunchiness</em>—even if one arrow is longer! In production, <strong>80%–100%</strong> means strong semantic match; below <strong>40%</strong> means unrelated.
+        `;
+      } else if (topic === 'angle') {
+        box.innerHTML = `
+          <strong style="color:var(--warn);">2. What the Angle (${angText}) Means in Practice:</strong><br/>
+          Imagine standing at <code>(0, 0)</code> with a compass and pointing at Item A, then turning to point at Item B.<br/>
+          • <strong>0° angle:</strong> You didn't turn at all! They are in the exact same direction (<code>cos(0°) = 100%</code>).<br/>
+          • <strong>90° angle:</strong> They are perpendicular—completely unrelated topics (<code>cos(90°) = 0%</code>).
+        `;
+      } else {
+        box.innerHTML = `
+          <strong style="color:var(--accent);">3. What Ruler / Euclidean Distance (${dstText}) Means — And Its Trap:</strong><br/>
+          This is a straight tape-measure between the two dots' tips.<br/>
+          • <strong>The Trap (Try clicking "Demo: Why Angle Beats Ruler" on the left!):</strong> A 1-sentence tweet about Apples <code>[3.5, 4.0]</code> and a 10-page book about Apples <code>[7.0, 8.0]</code> have a huge Ruler Distance (<code>${dstText}</code>) just because the book has more words—yet their <strong>Angle is 0.0° (100% Cosine match)</strong>! That's why we normalize vectors or measure angle.
+        `;
+      }
+    }
+
+    function drawTasteMap() {
+      const c = document.getElementById('tasteCanvas');
+      const ctx = c.getContext('2d');
+      const W = c.width, H = c.height;
+      const padL = 62, padB = 48, padT = 26, padR = 32;
+      const plotW = W - padL - padR, plotH = H - padT - padB;
+
+      ctx.clearRect(0, 0, W, H);
+      const toScreen = (x, y) => [padL + (x / 10) * plotW, H - padB - (y / 10) * plotH];
+
+      // Grid lines
+      ctx.strokeStyle = "rgba(148,163,184,0.13)";
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 10; i += 2) {
+        const [gx, gy] = toScreen(i, i);
+        ctx.beginPath(); ctx.moveTo(gx, padT); ctx.lineTo(gx, H - padB); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(padL, gy); ctx.lineTo(W - padR, gy); ctx.stroke();
+        ctx.fillStyle = "#94a3b8";
+        ctx.font = "11px Inter, sans-serif";
+        ctx.fillText(i.toString(), gx - 4, H - padB + 18);
+        ctx.fillText(i.toString(), padL - 24, gy + 4);
+      }
+
+      ctx.fillStyle = "#cbd5e1";
+      ctx.font = "600 13px Inter, sans-serif";
+      ctx.fillText("X-Axis: Sweetness (0 = Not Sweet → 10 = Super Sweet)", padL + plotW / 2 - 150, H - 12);
+      ctx.save();
+      ctx.translate(18, padT + plotH / 2 + 120);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillText("Y-Axis: Crunchiness (0 = Soft → 10 = Crunchy)", 0, 0);
+      ctx.restore();
+
+      const idxA = parseInt(document.getElementById('tasteItemA').value) || 0;
+      const idxB = parseInt(document.getElementById('tasteItemB').value) || 1;
+      const itemA = tasteItems[idxA], itemB = tasteItems[idxB];
+      const [ox, oy] = toScreen(0, 0);
+
+      if (itemA && itemB) {
+        document.getElementById('coordExplainA').textContent =
+          `float[2] = [ ${itemA.x.toFixed(1)} sweet, ${itemA.y.toFixed(1)} crunchy ]`;
+        document.getElementById('coordExplainB').textContent =
+          `float[2] = [ ${itemB.x.toFixed(1)} sweet, ${itemB.y.toFixed(1)} crunchy ]`;
+
+        const [ax, ay] = toScreen(itemA.x, itemA.y);
+        const [bx, by] = toScreen(itemB.x, itemB.y);
+
+        // Dashed ruler line between tips
+        ctx.save();
+        ctx.setLineDash([5, 5]);
+        ctx.strokeStyle = "rgba(251, 191, 36, 0.5)";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by); ctx.stroke();
+        ctx.restore();
+
+        // Vector arrows from Origin (0,0)
+        ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(ax, ay); ctx.stroke();
+
+        ctx.strokeStyle = "#a78bfa"; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(bx, by); ctx.stroke();
+
+        const dot = itemA.x * itemB.x + itemA.y * itemB.y;
+        const magA = Math.hypot(itemA.x, itemA.y);
+        const magB = Math.hypot(itemB.x, itemB.y);
+        const cos = Math.min(1, Math.max(-1, dot / (magA * magB || 1)));
+        const angleDeg = Math.acos(cos) * (180 / Math.PI);
+        const dist = Math.hypot(itemA.x - itemB.x, itemA.y - itemB.y);
+
+        document.getElementById('tasteAngleVal').textContent = `${angleDeg.toFixed(1)}°`;
+        document.getElementById('tasteCosVal').textContent = `${(cos * 100).toFixed(1)}%`;
+        document.getElementById('tasteDistVal').textContent = dist.toFixed(2);
+        explainMetric(currentMetricTopic);
+      }
+
+      tasteItems.forEach((it, idx) => {
+        const [sx, sy] = toScreen(it.x, it.y);
+        ctx.fillStyle = it.color;
+        ctx.beginPath();
+        ctx.arc(sx, sy, (idx === idxA || idx === idxB) ? 8.5 : 6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#f8fafc";
+        ctx.font = "600 12.5px Inter, sans-serif";
+        ctx.fillText(it.name, sx + 12, sy + 4);
+      });
+    }
+
+    // ========================================================================
+    // TAB 2 & 3: 384-D ENGINE & 3D MEANING UNIVERSE
     // ========================================================================
     const CLUSTERS = {
       dev: [
@@ -823,124 +901,60 @@
 
     const SEED_SENTENCES = {
       dev: [
-        // Cluster 0: Billing & Payments
         ["Payment gateway returns 502 error at checkout", 0],
         ["Credit card declined when customer clicks Pay Now", 0],
         ["Invoice PDF shows the wrong EU VAT tax rate", 0],
         ["Stripe webhook timeout during subscription renewal", 0],
         ["Duplicate charge on Visa card after checkout retry", 0],
-        ["Apple Pay wallet sheet fails to load total price", 0],
-        ["Customer billing receipt missing company tax ID", 0],
-        ["Refund transaction stuck in pending state on gateway", 0],
-        ["Checkout promo code discount not applied to annual plan", 0],
-        ["Currency conversion rounding bug on Euro invoices", 0],
-        // Cluster 1: Auth, MFA & Security
         ["How do I reset my two-factor authentication (MFA)?", 1],
         ["How do I ENABLE two-factor authentication on my account?", 1],
         ["How do I DISABLE two-factor authentication (2FA)?", 1],
         ["User locked out after losing TOTP authenticator phone", 1],
         ["SSO SAML login redirect loop with enterprise OAuth", 1],
-        ["Passkey registration fails on security key token", 1],
-        ["Password reset email token expired immediately", 1],
-        ["OAuth refresh token revoked during active session", 1],
-        ["API key permissions scope allows unauthorized read", 1],
-        ["Account recovery backup codes rejected at sign-in", 1],
-        // Cluster 2: Database & SRE Outages
         ["Database connection pool exhausted during peak traffic", 2],
         ["HTTP Error 503 Service Unavailable on primary ingress", 2],
         ["HTTP Error 504 Gateway Timeout waiting for upstream SQL", 2],
         ["P1 Production database outage! Customers blocked!", 2],
         ["Postgres read replica replication lag exceeding 60s", 2],
-        ["Redis cache cluster OOM memory eviction spike", 2],
-        ["Deadlock detected in concurrent order table update", 2],
-        ["Slow SQL query missing index causes CPU saturation", 2],
-        ["DNS resolution timeout between microservice nodes", 2],
-        ["Storage disk IOPS throttled during nightly backup", 2],
-        // Cluster 3: Mobile & UI Glitches
         ["App crashes when uploading a profile picture", 3],
         ["Laptop screen is flickering after waking from sleep", 3],
         ["Troubleshooting display refresh glitches on external monitor", 3],
         ["Checkout spinner hangs forever on mobile Safari", 3],
         ["User avatar PNG photo upload freezes iOS client", 3],
-        ["Modal dialog close button unresponsive on Android", 3],
-        ["Dark mode toggle leaves white flash on navigation", 3],
-        ["Touch scroll jitter in infinite virtualized list", 3],
-        ["Toast notification overlaps mobile bottom tab bar", 3],
-        ["Camera permission prompt freezes profile screen", 3],
-        // Cluster 4: CI/CD & DevOps Tooling
         ["Internal CI/CD pipeline build #482 deployed to staging", 4],
         ["Docker container image layer cache miss in GitHub Actions", 4],
         ["Kubernetes pod liveness probe failed on staging cluster", 4],
         ["Automated linter and unit test suite passed in sandbox", 4],
-        ["Helm chart rollout paused on internal dev environment", 4],
-        ["OpenTelemetry collector log batching configuration", 4],
-        ["Terraform state lock held by cancelled build runner", 4],
-        ["Local devcontainer startup script port forwarding", 4],
-        ["Canary deployment metrics healthy in staging k8s", 4],
-        ["NuGet package restore caching in internal build pipeline", 4],
-        // Cluster 5: AI, Embeddings & Vector Search
         ["Cosine similarity search using SIMD TensorPrimitives in C#", 5],
         ["Running local ONNX embedding models via Microsoft.Extensions.AI", 5],
         ["Matryoshka vector slicing from 1536 down to 256 dimensions", 5],
-        ["Hybrid search combining dense vectors with BM25 and RRF", 5],
-        ["Int8 scalar and 1-bit binary quantization for pgvector", 5],
-        ["Contextual document chunking to prevent orphaned pronouns", 5],
-        ["Zero-shot ticket routing using anchor vector dot products", 5],
-        ["Multimodal CLIP shared vector space for text and images", 5],
-        ["Blue/Green vector column migration when upgrading models", 5],
-        ["Semantic cache deduplication before calling expensive LLM", 5]
+        ["Hybrid search combining dense vectors with BM25 and RRF", 5]
       ],
       movies: [
         ["Lone astronaut pilots a damaged starship across a dying galaxy", 0],
         ["Rebel fleet launches a hyperdrive strike on the orbital empire", 0],
-        ["First contact team decodes an alien signal near Jupiter's moon", 0],
-        ["Colonists on a desert planet revolt over orbital water rights", 0],
         ["Rogue neural hacker uncovers a synthetic AI memory syndicate", 1],
         ["Cyberpunk detective hunts a fugitive android in neon Tokyo", 1],
-        ["Corporate brain implant uploads human dreams into a simulation", 1],
-        ["Autonomous drone swarm gains consciousness inside a server tower", 1],
         ["Young wizard and an exiled elf forge an ancient dragon sword", 2],
         ["Fellowship crosses the cursed mountains to destroy a magic ring", 2],
-        ["Apprentice sorcerer awakens a sleeping kingdom beneath the castle", 2],
-        ["Royal knight defends the citadel against a necromancer's army", 2],
         ["Master thief assembles a crew to crack a Monte Carlo casino vault", 3],
         ["Undercover detective races to protect a key syndicate witness", 3],
-        ["Disgraced safecracker pulls one final diamond heist in Paris", 3],
-        ["Noir investigator unravels a city hall conspiracy on a rainy night", 3],
         ["Lost golden retriever puppy teams up with a talking alley cat", 4],
         ["Magical seaside bakery grants wishes to neighborhood children", 4],
-        ["Two best friends build a cardboard rocket during summer vacation", 4],
-        ["Shy toy robot searches the house for its missing musical key", 4],
         ["Archival chronicle of the first winter ascent of K2", 5],
-        ["Biography of the mathematician who cracked the telegraph cipher", 5],
-        ["Restored 1920s film following an Antarctic polar voyage", 5],
-        ["Behind the scenes with a symphony orchestra on world tour", 5]
+        ["Biography of the mathematician who cracked the telegraph cipher", 5]
       ],
       stackoverflow: [
         ["How to compute SIMD CosineSimilarity with Span<float> and TensorPrimitives in .NET 10", 0],
-        ["Registering IEmbeddingGenerator with dependency injection in Microsoft.Extensions.AI", 0],
-        ["Zero-allocation array slicing with ReadOnlySpan<T> in high-throughput C#", 0],
         ["Running local ONNX models offline in C# with ElBruno.LocalEmbeddings", 0],
         ["Creating an HNSW cosine ops index on pgvector column in PostgreSQL", 1],
         ["Combining Postgres tsvector BM25 full-text search with pgvector <=> operator", 1],
-        ["Fixing Postgres connection pool exhaustion under high async concurrency", 1],
-        ["Zero-downtime Blue/Green column migration for vector embeddings in SQL", 1],
         ["Projecting 384D embeddings to 3D interactive scatter plot in HTML5 Canvas", 2],
         ["Running HuggingFace Transformers.js ONNX models in browser via WebGPU", 2],
-        ["Smooth quaternion camera fly-to interpolation in 3D scatter plots", 2],
-        ["Rendering responsive high-DPI canvas visualizations without blur", 2],
         ["Designing idempotent webhook consumers with exponential retry backoff", 3],
-        ["Preventing duplicate event processing across Kafka consumer partitions", 3],
-        ["Implementing a semantic deduplication cache in front of microservice APIs", 3],
         ["Detecting anomalous production log drift using rolling vector centroids", 3],
         ["Implementing WebAuthn Passkeys and TOTP MFA recovery flows safely", 4],
-        ["Why OAuth2 refresh tokens should be rotated on every token exchange", 4],
-        ["Validating JWT signatures and scopes in minimal API middleware", 4],
-        ["Preventing account lockout enumeration in two-factor authentication", 4],
-        ["Why L2-normalized vectors make Dot Product identical to Cosine Similarity", 5],
-        ["Implementing Reciprocal Rank Fusion (RRF) to merge dense and lexical ranks", 5],
-        ["How Matryoshka Representation Learning (MRL) orders variance by dimension", 5],
-        ["Quantizing float32 vectors to 1-bit uint64 with PopCount Hamming distance", 5]
+        ["Why L2-normalized vectors make Dot Product identical to Cosine Similarity", 5]
       ]
     };
 
@@ -948,20 +962,17 @@
       dev: [
         "credit card won't go through at checkout",
         "troubleshooting display refresh glitches",
-        "How do I DISABLE two-factor authentication?",
-        "Database outage + angry customer - internal test",
-        "c# simd cosine similarity vector search"
+        "my avatar photo freezes the mobile app",
+        "How do I DISABLE two-factor authentication?"
       ],
       movies: [
         "hacker discovers he is living inside an AI simulation",
         "wizard and dragon battle for the ancient kingdom",
-        "thieves plan an impossible bank vault robbery",
         "talking puppy goes on a summer island adventure"
       ],
       stackoverflow: [
-        "hardware accelerated dot product in C# Span<float>",
-        "hybrid search with pgvector and full text tsvector",
-        "shrinking 1536 float vectors to 1-bit binary"
+        "fast dot product in C# Span<float>",
+        "hybrid search with pgvector and full text"
       ]
     };
 
@@ -987,7 +998,6 @@
       const tokens = (text.toLowerCase().match(/[a-z0-9#\.]+/g) || []);
       if (tokens.length === 0) { vec[0] = 1; return vec; }
 
-      // 1. Cluster / Latent Concept projection with Matryoshka envelope
       clusters.forEach((cluster, cIdx) => {
         let hits = 0;
         tokens.forEach(tok => {
@@ -1008,7 +1018,6 @@
         }
       });
 
-      // 2. Fine-grained token stem & trigram projection
       const stop = new Set(["the","a","an","to","in","on","at","of","for","with","is","are","how","do","i","my","it","when"]);
       tokens.forEach(tok => {
         if (stop.has(tok)) return;
@@ -1022,7 +1031,6 @@
         }
       });
 
-      // 3. L2 Normalize to unit hypersphere
       let norm = 0;
       for (let i = 0; i < dims; i++) norm += vec[i] * vec[i];
       norm = Math.sqrt(norm) || 1;
@@ -1033,24 +1041,20 @@
     function cosineSim(a, b) {
       let dot = 0;
       for (let i = 0; i < a.length; i++) dot += a[i] * b[i];
-      return dot; // Both a and b are unit-normalized!
+      return dot;
     }
 
     function projectVectorTo3D(vec, datasetKey = currentDatasetKey) {
       const clusters = CLUSTERS[datasetKey] || CLUSTERS.dev;
-      // Compute affinity to each cluster anchor vector to place smoothly in 3D space
       let x = 0, y = 0, z = 0, totalWeight = 0;
       clusters.forEach((c) => {
         const anchorVec = compute384Vector(c.keywords.join(" "), datasetKey);
         const sim = Math.max(0, cosineSim(vec, anchorVec));
         const w = Math.pow(sim, 2.3) + 0.02;
-        x += c.center[0] * w;
-        y += c.center[1] * w;
-        z += c.center[2] * w;
+        x += c.center[0] * w; y += c.center[1] * w; z += c.center[2] * w;
         totalWeight += w;
       });
       x /= totalWeight; y /= totalWeight; z /= totalWeight;
-      // Add deterministic local microstructure from vector components
       x += (vec[0] * 1.8 + vec[3] * 1.1);
       y += (vec[1] * 1.8 + vec[4] * 1.1);
       z += (vec[2] * 1.8 + vec[5] * 1.1);
@@ -1062,40 +1066,26 @@
       const seeds = SEED_SENTENCES[datasetKey];
       const clusters = CLUSTERS[datasetKey];
       points3D = [];
+      const modifiers = ["", " (enterprise report)", " — recurring issue"];
 
-      // Add core curated items + synthesized variations to form a rich cloud of ~180 items
-      const modifiers = [
-        "",
-        " (reported by enterprise customer)",
-        " — recurring production ticket",
-      ];
-
-      seeds.forEach(([text, clusterId], idx) => {
+      seeds.forEach(([text, clusterId]) => {
         modifiers.forEach((mod, mIdx) => {
           const label = mIdx === 0 ? text : `${text}${mod}`;
           const vec = compute384Vector(label, datasetKey);
           const pos = projectVectorTo3D(vec, datasetKey);
-          // Slight jitter for variations so cloud has organic volume
           const h = hashStr(label, mIdx * 37);
           const jx = (((h & 0xFF) / 255) - 0.5) * (mIdx === 0 ? 0.35 : 1.15);
           const jy = ((((h >> 8) & 0xFF) / 255) - 0.5) * (mIdx === 0 ? 0.35 : 1.15);
           const jz = ((((h >> 16) & 0xFF) / 255) - 0.5) * (mIdx === 0 ? 0.35 : 1.15);
           points3D.push({
-            id: points3D.length,
-            text: label,
-            isPrimary: mIdx === 0,
-            clusterId,
-            clusterName: clusters[clusterId].name,
-            color: clusters[clusterId].color,
-            vec,
-            x: pos[0] + jx,
-            y: pos[1] + jy,
-            z: pos[2] + jz
+            id: points3D.length, text: label, isPrimary: mIdx === 0,
+            clusterId, clusterName: clusters[clusterId].name, color: clusters[clusterId].color,
+            vec, x: pos[0] + jx, y: pos[1] + jy, z: pos[2] + jz
           });
         });
       });
 
-      document.getElementById('pointCountLabel').textContent = `${points3D.length} vectors`;
+      document.getElementById('pointCountLabel').textContent = `${points3D.length} items`;
       renderClusterLegend();
       renderQuickPromptChips();
       selectPointForInspection(points3D[0]);
@@ -1149,9 +1139,8 @@
       selectedPoint = pt;
       renderVectorBarcode(document.getElementById('activeVectorStrip'), pt.vec);
       const head = Array.from(pt.vec.slice(0, 5)).map(n => (n >= 0 ? '+' : '') + n.toFixed(3)).join(', ');
-      document.getElementById('activeVectorNumbers').textContent = `[ ${head}, ... (384 normalized floats) ]`;
+      document.getElementById('activeVectorNumbers').textContent = `float[384] = [ ${head}, ... ]`;
 
-      // Compute top nearest neighbors in full 384-D space
       const scored = points3D
         .filter(p => p !== pt && p.isPrimary)
         .map(p => ({ point: p, score: cosineSim(pt.vec, p.vec) }))
@@ -1169,7 +1158,7 @@
         div.innerHTML = `
           <div class="neighbor-top">
             <span style="color:${item.point.color}; font-weight:700;">#${idx + 1} • ${item.point.clusterName}</span>
-            <span class="score-badge">${(item.score * 100).toFixed(1)}% Cosine</span>
+            <span class="score-badge">${(item.score * 100).toFixed(1)}% Match</span>
           </div>
           <div>${item.point.text}</div>
         `;
@@ -1184,26 +1173,14 @@
       const pos = projectVectorTo3D(vec, currentDatasetKey);
 
       liveDroppedPoint = {
-        id: 99999,
-        text: `LIVE INPUT: "${text}"`,
-        isPrimary: true,
-        isLive: true,
-        clusterId: -1,
-        clusterName: "Live Audience Query",
-        color: "#ffffff",
-        vec,
-        x: pos[0],
-        y: pos[1],
-        z: pos[2]
+        id: 99999, text: `LIVE INPUT: "${text}"`, isPrimary: true, isLive: true,
+        clusterId: -1, clusterName: "Live Audience Query", color: "#ffffff",
+        vec, x: pos[0], y: pos[1], z: pos[2]
       };
-
       selectPointForInspection(liveDroppedPoint);
       flyCameraTo(liveDroppedPoint);
     }
 
-    // ========================================================================
-    // 2. INTERACTIVE 3D WEBGL / HTML5 CANVAS ORBIT ENGINE
-    // ========================================================================
     const canvas3d = document.getElementById('universeCanvas');
     const ctx3d = canvas3d.getContext('2d');
     let camYaw = 0.65, camPitch = 0.32, camDist = 14.5;
@@ -1213,47 +1190,25 @@
     let isDragging3D = false, lastMouseX = 0, lastMouseY = 0;
     let projectedScreenPoints = [];
 
-    function flyCameraTo(pt) {
-      goalX = pt.x * 0.55;
-      goalY = pt.y * 0.55;
-      goalZ = pt.z * 0.55;
-    }
-
-    function resetCamera() {
-      goalX = 0; goalY = 0; goalZ = 0;
-      camDist = 14.5;
-    }
-
+    function flyCameraTo(pt) { goalX = pt.x * 0.55; goalY = pt.y * 0.55; goalZ = pt.z * 0.55; }
+    function resetCamera() { goalX = 0; goalY = 0; goalZ = 0; camDist = 14.5; }
     function toggleAutoRotate() {
       autoRotate = !autoRotate;
       document.getElementById('autoRotateBtn').textContent = `Auto-Orbit: ${autoRotate ? 'ON' : 'OFF'}`;
     }
-
     function toggleDistortionWarning() {
       showDistortionPairs = !showDistortionPairs;
       document.getElementById('distortionBanner').classList.toggle('visible', showDistortionPairs);
     }
+    function changeDataset(val) { liveDroppedPoint = null; resetCamera(); buildDataset(val); }
 
-    function changeDataset(val) {
-      liveDroppedPoint = null;
-      resetCamera();
-      buildDataset(val);
-    }
-
-    canvas3d.addEventListener('mousedown', e => {
-      isDragging3D = true;
-      lastMouseX = e.clientX;
-      lastMouseY = e.clientY;
-    });
+    canvas3d.addEventListener('mousedown', e => { isDragging3D = true; lastMouseX = e.clientX; lastMouseY = e.clientY; });
     window.addEventListener('mouseup', () => { isDragging3D = false; });
     window.addEventListener('mousemove', e => {
       if (isDragging3D) {
-        const dx = e.clientX - lastMouseX;
-        const dy = e.clientY - lastMouseY;
-        camYaw += dx * 0.007;
-        camPitch = Math.max(-1.35, Math.min(1.35, camPitch + dy * 0.007));
-        lastMouseX = e.clientX;
-        lastMouseY = e.clientY;
+        camYaw += (e.clientX - lastMouseX) * 0.007;
+        camPitch = Math.max(-1.35, Math.min(1.35, camPitch + (e.clientY - lastMouseY) * 0.007));
+        lastMouseX = e.clientX; lastMouseY = e.clientY;
       }
     });
     canvas3d.addEventListener('wheel', e => {
@@ -1263,8 +1218,7 @@
 
     canvas3d.addEventListener('mousemove', e => {
       const rect = canvas3d.getBoundingClientRect();
-      const mx = e.clientX - rect.left;
-      const my = e.clientY - rect.top;
+      const mx = e.clientX - rect.left, my = e.clientY - rect.top;
       let hit = null, bestD = 16;
       for (const sp of projectedScreenPoints) {
         const d = Math.hypot(sp.sx - mx, sp.sy - my);
@@ -1276,48 +1230,30 @@
         tip.style.left = Math.min(rect.width - 330, mx + 14) + 'px';
         tip.style.top = Math.max(10, my - 20) + 'px';
         tip.innerHTML = `<div style="color:${hit.pt.color}; font-weight:700; margin-bottom:3px;">${hit.pt.clusterName}</div><div>${hit.pt.text}</div>`;
-      } else {
-        tip.style.display = 'none';
-      }
+      } else { tip.style.display = 'none'; }
     });
 
     canvas3d.addEventListener('click', e => {
       const rect = canvas3d.getBoundingClientRect();
-      const mx = e.clientX - rect.left;
-      const my = e.clientY - rect.top;
+      const mx = e.clientX - rect.left, my = e.clientY - rect.top;
       let hit = null, bestD = 16;
       for (const sp of projectedScreenPoints) {
         const d = Math.hypot(sp.sx - mx, sp.sy - my);
         if (d < bestD) { bestD = d; hit = sp; }
       }
-      if (hit) {
-        selectPointForInspection(hit.pt);
-        flyCameraTo(hit.pt);
-      }
+      if (hit) { selectPointForInspection(hit.pt); flyCameraTo(hit.pt); }
     });
 
     function project3DPoint(x, y, z, w, h) {
-      const rx = x - targetX;
-      const ry = y - targetY;
-      const rz = z - targetZ;
-
+      const rx = x - targetX, ry = y - targetY, rz = z - targetZ;
       const cosY = Math.cos(camYaw), sinY = Math.sin(camYaw);
-      const x1 = rx * cosY - rz * sinY;
-      const z1 = rx * sinY + rz * cosY;
-
+      const x1 = rx * cosY - rz * sinY, z1 = rx * sinY + rz * cosY;
       const cosP = Math.cos(camPitch), sinP = Math.sin(camPitch);
-      const y2 = ry * cosP - z1 * sinP;
-      const z2 = ry * sinP + z1 * cosP + camDist;
-
+      const y2 = ry * cosP - z1 * sinP, z2 = ry * sinP + z1 * cosP + camDist;
       if (z2 <= 0.5) return null;
       const fov = Math.min(w, h) * 0.85;
       const scale = fov / z2;
-      return {
-        sx: w / 2 + x1 * scale,
-        sy: h / 2 - y2 * scale,
-        depth: z2,
-        scale
-      };
+      return { sx: w / 2 + x1 * scale, sy: h / 2 - y2 * scale, depth: z2, scale };
     }
 
     function render3DLoop() {
@@ -1338,47 +1274,19 @@
         targetY += (goalY - targetY) * 0.08;
         targetZ += (goalZ - targetZ) * 0.08;
 
-        // Draw subtle 3D coordinate axes through origin
-        const axes = [
-          { to: [5.5, 0, 0], label: "Latent Axis X", color: "rgba(56,189,248,0.22)" },
-          { to: [0, 5.5, 0], label: "Latent Axis Y", color: "rgba(167,139,250,0.22)" },
-          { to: [0, 0, 5.5], label: "Latent Axis Z", color: "rgba(52,211,153,0.22)" }
-        ];
-        const origP = project3DPoint(0, 0, 0, W, H);
-        if (origP) {
-          axes.forEach(ax => {
-            const endP = project3DPoint(ax.to[0], ax.to[1], ax.to[2], W, H);
-            if (endP) {
-              ctx3d.strokeStyle = ax.color;
-              ctx3d.lineWidth = 1.5;
-              ctx3d.beginPath();
-              ctx3d.moveTo(origP.sx, origP.sy);
-              ctx3d.lineTo(endP.sx, endP.sy);
-              ctx3d.stroke();
-            }
-          });
-        }
-
-        // Draw cluster centroids & halos
         CLUSTERS[currentDatasetKey].forEach(c => {
           const cp = project3DPoint(c.center[0], c.center[1], c.center[2], W, H);
           if (cp) {
             const r = Math.max(24, 1100 / cp.depth);
             const grad = ctx3d.createRadialGradient(cp.sx, cp.sy, 2, cp.sx, cp.sy, r);
-            grad.addColorStop(0, c.color + "28");
-            grad.addColorStop(1, c.color + "00");
+            grad.addColorStop(0, c.color + "28"); grad.addColorStop(1, c.color + "00");
             ctx3d.fillStyle = grad;
-            ctx3d.beginPath();
-            ctx3d.arc(cp.sx, cp.sy, r, 0, Math.PI * 2);
-            ctx3d.fill();
-
-            ctx3d.fillStyle = c.color;
-            ctx3d.font = "600 12px Inter, sans-serif";
+            ctx3d.beginPath(); ctx3d.arc(cp.sx, cp.sy, r, 0, Math.PI * 2); ctx3d.fill();
+            ctx3d.fillStyle = c.color; ctx3d.font = "600 12px Inter, sans-serif";
             ctx3d.fillText(c.name, cp.sx - 40, cp.sy - r * 0.55);
           }
         });
 
-        // Draw nearest-neighbor laser lines from selectedPoint
         if (selectedPoint && selectedPoint.nearest) {
           const sp0 = project3DPoint(selectedPoint.x, selectedPoint.y, selectedPoint.z, W, H);
           if (sp0) {
@@ -1387,16 +1295,12 @@
               if (spN) {
                 ctx3d.strokeStyle = idx === 0 ? "rgba(52, 211, 153, 0.85)" : "rgba(56, 189, 248, 0.42)";
                 ctx3d.lineWidth = idx === 0 ? 2.4 : 1.3;
-                ctx3d.beginPath();
-                ctx3d.moveTo(sp0.sx, sp0.sy);
-                ctx3d.lineTo(spN.sx, spN.sy);
-                ctx3d.stroke();
+                ctx3d.beginPath(); ctx3d.moveTo(sp0.sx, sp0.sy); ctx3d.lineTo(spN.sx, spN.sy); ctx3d.stroke();
               }
             });
           }
         }
 
-        // Project all points and sort back-to-front
         const allPts = liveDroppedPoint ? [...points3D, liveDroppedPoint] : points3D;
         projectedScreenPoints = [];
         allPts.forEach(pt => {
@@ -1404,149 +1308,30 @@
           if (proj) projectedScreenPoints.push({ pt, ...proj });
         });
         projectedScreenPoints.sort((a, b) => b.depth - a.depth);
-
-        const pulse = 0.5 + 0.5 * Math.sin( performance.now() * 0.006 );
+        const pulse = 0.5 + 0.5 * Math.sin(performance.now() * 0.006);
 
         projectedScreenPoints.forEach(item => {
           const { pt, sx, sy, depth } = item;
           const isSel = pt === selectedPoint;
           const baseRadius = pt.isLive ? 9 : (pt.isPrimary ? 5.5 : 3.2);
           const r = Math.max(2.2, baseRadius * (12.5 / depth));
-
           if (pt.isLive || isSel) {
             ctx3d.strokeStyle = pt.isLive ? `rgba(255,255,255,${0.4 + pulse * 0.5})` : pt.color;
             ctx3d.lineWidth = 2;
-            ctx3d.beginPath();
-            ctx3d.arc(sx, sy, r + 5 + pulse * 4, 0, Math.PI * 2);
-            ctx3d.stroke();
+            ctx3d.beginPath(); ctx3d.arc(sx, sy, r + 5 + pulse * 4, 0, Math.PI * 2); ctx3d.stroke();
           }
-
           ctx3d.fillStyle = pt.color;
           ctx3d.globalAlpha = pt.isPrimary ? 0.95 : 0.48;
-          ctx3d.beginPath();
-          ctx3d.arc(sx, sy, r, 0, Math.PI * 2);
-          ctx3d.fill();
+          ctx3d.beginPath(); ctx3d.arc(sx, sy, r, 0, Math.PI * 2); ctx3d.fill();
           ctx3d.globalAlpha = 1;
         });
-
         ctx3d.restore();
       }
       requestAnimationFrame(render3DLoop);
     }
 
     // ========================================================================
-    // 3. TAB 2: ACT 1 — 2D TASTE MAP & COSINE SIMILARITY GEOMETRY
-    // ========================================================================
-    let tasteItems = [];
-    function reset2dTasteMap() {
-      tasteItems = [
-        { name: "Apple 🍎", x: 7.5, y: 8.0, color: "#f87171" },
-        { name: "Crispy Pear 🍐", x: 7.0, y: 7.2, color: "#34d399" },
-        { name: "Potato Chip 🥔", x: 1.2, y: 9.2, color: "#fbbf24" },
-        { name: "Chocolate Cake 🍰", x: 9.4, y: 1.5, color: "#a78bfa" },
-        { name: "Raw Broccoli 🥦", x: 1.5, y: 6.8, color: "#4ade80" },
-        { name: "Caramel Popcorn 🍿", x: 8.2, y: 8.6, color: "#38bdf8" }
-      ];
-      populateTasteSelects(0, 1);
-      drawTasteMap();
-    }
-
-    function populateTasteSelects(idxA, idxB) {
-      const selA = document.getElementById('tasteItemA');
-      const selB = document.getElementById('tasteItemB');
-      selA.innerHTML = ''; selB.innerHTML = '';
-      tasteItems.forEach((it, idx) => {
-        selA.add(new Option(`${it.name} (${it.x.toFixed(1)}, ${it.y.toFixed(1)})`, idx, idx === idxA, idx === idxA));
-        selB.add(new Option(`${it.name} (${it.x.toFixed(1)}, ${it.y.toFixed(1)})`, idx, idx === idxB, idx === idxB));
-      });
-    }
-
-    function addCustomTasteItem() {
-      const name = document.getElementById('newTasteName').value.trim() || "Custom Item";
-      const x = Math.max(0.2, Math.min(10, parseFloat(document.getElementById('newTasteX').value) || 5));
-      const y = Math.max(0.2, Math.min(10, parseFloat(document.getElementById('newTasteY').value) || 5));
-      tasteItems.push({ name, x, y, color: "#f472b6" });
-      populateTasteSelects(0, tasteItems.length - 1);
-      drawTasteMap();
-    }
-
-    function drawTasteMap() {
-      const c = document.getElementById('tasteCanvas');
-      const ctx = c.getContext('2d');
-      const W = c.width, H = c.height;
-      const padL = 62, padB = 48, padT = 28, padR = 32;
-      const plotW = W - padL - padR, plotH = H - padT - padB;
-
-      ctx.clearRect(0, 0, W, H);
-      const toScreen = (x, y) => [padL + (x / 10) * plotW, H - padB - (y / 10) * plotH];
-
-      // Grid lines
-      ctx.strokeStyle = "rgba(148,163,184,0.12)";
-      ctx.lineWidth = 1;
-      for (let i = 0; i <= 10; i += 2) {
-        const [gx, gy] = toScreen(i, i);
-        ctx.beginPath(); ctx.moveTo(gx, padT); ctx.lineTo(gx, H - padB); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(padL, gy); ctx.lineTo(W - padR, gy); ctx.stroke();
-        ctx.fillStyle = "#94a3b8";
-        ctx.font = "11px Inter, sans-serif";
-        ctx.fillText(i.toString(), gx - 4, H - padB + 18);
-        ctx.fillText(i.toString(), padL - 24, gy + 4);
-      }
-
-      // Axis titles
-      ctx.fillStyle = "#cbd5e1";
-      ctx.font = "600 13px Inter, sans-serif";
-      ctx.fillText("X-Axis: Sweetness (0 → 10)", padL + plotW / 2 - 80, H - 12);
-      ctx.save();
-      ctx.translate(18, padT + plotH / 2 + 60);
-      ctx.rotate(-Math.PI / 2);
-      ctx.fillText("Y-Axis: Crunchiness (0 → 10)", 0, 0);
-      ctx.restore();
-
-      const idxA = parseInt(document.getElementById('tasteItemA').value) || 0;
-      const idxB = parseInt(document.getElementById('tasteItemB').value) || 1;
-      const itemA = tasteItems[idxA], itemB = tasteItems[idxB];
-      const [ox, oy] = toScreen(0, 0);
-
-      if (itemA && itemB) {
-        const [ax, ay] = toScreen(itemA.x, itemA.y);
-        const [bx, by] = toScreen(itemB.x, itemB.y);
-
-        // Vector arrows from Origin (0,0)
-        ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 2.5;
-        ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(ax, ay); ctx.stroke();
-
-        ctx.strokeStyle = "#a78bfa"; ctx.lineWidth = 2.5;
-        ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(bx, by); ctx.stroke();
-
-        // Compute angle and cosine similarity
-        const dot = itemA.x * itemB.x + itemA.y * itemB.y;
-        const magA = Math.hypot(itemA.x, itemA.y);
-        const magB = Math.hypot(itemB.x, itemB.y);
-        const cos = Math.min(1, Math.max(-1, dot / (magA * magB || 1)));
-        const angleDeg = Math.acos(cos) * (180 / Math.PI);
-        const dist = Math.hypot(itemA.x - itemB.x, itemA.y - itemB.y);
-
-        document.getElementById('tasteAngleVal').textContent = `${angleDeg.toFixed(1)}°`;
-        document.getElementById('tasteCosVal').textContent = cos.toFixed(3);
-        document.getElementById('tasteDistVal').textContent = dist.toFixed(2);
-      }
-
-      // Draw all items
-      tasteItems.forEach((it, idx) => {
-        const [sx, sy] = toScreen(it.x, it.y);
-        ctx.fillStyle = it.color;
-        ctx.beginPath();
-        ctx.arc(sx, sy, (idx === idxA || idx === idxB) ? 8 : 6, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = "#f8fafc";
-        ctx.font = "600 12px Inter, sans-serif";
-        ctx.fillText(it.name, sx + 11, sy + 4);
-      });
-    }
-
-    // ========================================================================
-    // 4. TAB 3: VECTOR ARITHMETIC LAB (A + B - C)
+    // TAB 3: VECTOR ARITHMETIC LAB
     // ========================================================================
     const MATH_PRESETS = [
       ["Database query latency", "Angry customer blocked at checkout", "Internal staging sandbox test"],
@@ -1564,13 +1349,9 @@
     }
 
     function runVectorMath() {
-      const textA = document.getElementById('mathVecA').value;
-      const textB = document.getElementById('mathVecB').value;
-      const textC = document.getElementById('mathVecC').value;
-
-      const vA = compute384Vector(textA, 'dev');
-      const vB = compute384Vector(textB, 'dev');
-      const vC = compute384Vector(textC, 'dev');
+      const vA = compute384Vector(document.getElementById('mathVecA').value, 'dev');
+      const vB = compute384Vector(document.getElementById('mathVecB').value, 'dev');
+      const vC = compute384Vector(document.getElementById('mathVecC').value, 'dev');
 
       const res = new Float32Array(384);
       let norm = 0;
@@ -1601,22 +1382,16 @@
         listEl.appendChild(div);
       });
 
-      // Draw 2D vector arithmetic diagram
       const mc = document.getElementById('mathCanvas');
       const mctx = mc.getContext('2d');
       mctx.clearRect(0, 0, mc.width, mc.height);
-      const ox = 90, oy = 250;
-      const ax = ox + 170, ay = oy - 40;
-      const bx = ax + 150, by = ay - 130;
-      const rx = bx + 95, ry = by + 35;
-
+      const ox = 90, oy = 250, ax = ox + 170, ay = oy - 40, bx = ax + 150, by = ay - 130, rx = bx + 95, ry = by + 35;
       const drawVecArrow = (x1, y1, x2, y2, color, label) => {
         mctx.strokeStyle = color; mctx.lineWidth = 3;
         mctx.beginPath(); mctx.moveTo(x1, y1); mctx.lineTo(x2, y2); mctx.stroke();
         mctx.fillStyle = color; mctx.font = "600 12px Inter, sans-serif";
         mctx.fillText(label, (x1 + x2) / 2 - 30, (y1 + y2) / 2 - 10);
       };
-
       drawVecArrow(ox, oy, ax, ay, "#38bdf8", "Vector A");
       drawVecArrow(ax, ay, bx, by, "#34d399", "+ Vector B");
       drawVecArrow(bx, by, rx, ry, "#f87171", "− Vector C");
@@ -1624,151 +1399,231 @@
     }
 
     // ========================================================================
-    // 5. TAB 4: WHERE EMBEDDINGS LIE & HYBRID SEARCH RRF
+    // TAB 4: DRAMATIC 3-SCENARIO NEGATION & HYBRID SEARCH DEMO
     // ========================================================================
-    const GOTCHA_PAIRS = [
-      [
-        "How do I ENABLE two-factor authentication (MFA) on my account?",
-        "How do I DISABLE two-factor authentication (MFA) on my account?",
-        "⚠ NEGATION TRAP: Both sentences share 90% of their topic tokens (MFA, two-factor, account). Dense vectors capture TOPIC, not boolean negation!"
-      ],
-      [
-        "Troubleshooting HTTP Error 503 Service Unavailable on payment gateway",
-        "Troubleshooting HTTP Error 504 Gateway Timeout on payment gateway",
-        "⚠ EXACT ID TRAP: Dense models treat '503' and '504' as nearly identical gateway error contexts!"
-      ],
-      [
-        "My laptop screen is flickering after waking from sleep",
-        "Troubleshooting display refresh glitches on external monitor",
-        "★ SYNONYM TRIUMPH: Zero shared words, yet high semantic similarity in meaning space!"
-      ]
+    const HYBRID_SCENARIOS = [
+      {
+        query: "I am allergic to peanuts — show me snacks WITHOUT peanuts",
+        vectorExplanation: `
+          <strong style="color:var(--danger);">❌ Why Pure Vector Search Failed Here:</strong><br/>
+          The embedding model sees the words <em>"allergic"</em>, <em>"peanuts"</em>, and <em>"snacks"</em> and maps the whole sentence into the <strong>Peanut Snacks neighborhood</strong>! It does not execute boolean <code>NOT</code> logic, so it puts <strong>Crunchy Peanut Butter Bars at #1 (94% match!)</strong> while burying the safe nut-free granola at #4.
+        `,
+        hybridExplanation: `
+          <strong style="color:var(--accent-3);">✅ How Hybrid Search Rescued #1:</strong><br/>
+          Hybrid Search combines <strong>Vector Meaning</strong> (user wants snacks/allergy-safe food) with <strong>Exact Keyword Matching</strong> (which matches <code>"Nut-Free"</code> / <code>"WITHOUT peanuts"</code> and penalizes items containing peanuts). Watch how <strong>Safe Nut-Free Berry Granola</strong> jumps from <strong>#4 → ★ #1 WINNER</strong>!
+        `,
+        docs: [
+          { title: "🥜 Crunchy Roasted Peanut Butter Bars (Contains Peanuts)", isCorrect: false, vecRank: 1, vecScore: 94, kwRank: 4, kwNote: "Penalized: contains 'Peanuts'", hybridRank: 4, hybridScore: 31 },
+          { title: "🥜 Honey Salted Virginia Peanuts Snack Pack", isCorrect: false, vecRank: 2, vecScore: 91, kwRank: 3, kwNote: "Penalized: contains 'Peanuts'", hybridRank: 3, hybridScore: 35 },
+          { title: "🥨 Classic Sea-Salt Pretzel Twists (Facility processes nuts)", isCorrect: false, vecRank: 3, vecScore: 82, kwRank: 2, kwNote: "Partial keyword match", hybridRank: 2, hybridScore: 68 },
+          { title: "🍓 Safe Nut-Free Oat & Berry Granola — 100% WITHOUT Peanuts", isCorrect: true, vecRank: 4, vecScore: 79, kwRank: 1, kwNote: "Exact match: 'WITHOUT Peanuts', 'Nut-Free'", hybridRank: 1, hybridScore: 96 }
+        ]
+      },
+      {
+        query: "How do I permanently DISABLE and turn off MFA on my account?",
+        vectorExplanation: `
+          <strong style="color:var(--danger);">❌ Why Pure Vector Search Failed Here:</strong><br/>
+          <code>"How to ENABLE MFA"</code> and <code>"How to DISABLE MFA"</code> are 95% identical in topic (account security, login, MFA). Because the "Enable MFA" guide is longer and uses more general account words, Pure Vector Search ranks <strong>ENABLE MFA at #1</strong> and buries the actual <strong>DISABLE MFA</strong> guide at #3!
+        `,
+        hybridExplanation: `
+          <strong style="color:var(--accent-3);">✅ How Hybrid Search Rescued #1:</strong><br/>
+          When we turn on Hybrid Search (Reciprocal Rank Fusion), the keyword engine spots the exact words <code>"DISABLE"</code>, <code>"permanently"</code>, and <code>"turn off"</code> in Document C—promoting it from <strong>#3 → ★ #1 WINNER</strong>!
+        `,
+        docs: [
+          { title: "DOC-101: Getting Started — How to ENABLE MFA on Your Account", isCorrect: false, vecRank: 1, vecScore: 95, kwRank: 3, kwNote: "Misses 'DISABLE' & 'turn off'", hybridRank: 2, hybridScore: 74 },
+          { title: "DOC-102: How to Reset Your MFA Authenticator Recovery Codes", isCorrect: false, vecRank: 2, vecScore: 91, kwRank: 4, kwNote: "Misses 'DISABLE' & 'turn off'", hybridRank: 3, hybridScore: 65 },
+          { title: "DOC-103: Danger Zone — Permanently DISABLE and Turn Off MFA", isCorrect: true, vecRank: 3, vecScore: 88, kwRank: 1, kwNote: "Exact match: 'DISABLE', 'turn off'", hybridRank: 1, hybridScore: 97 },
+          { title: "DOC-104: Configuring Single Sign-On (SSO) Password Policies", isCorrect: false, vecRank: 4, vecScore: 62, kwRank: 2, kwNote: "Low match", hybridRank: 4, hybridScore: 42 }
+        ]
+      },
+      {
+        query: "Fix payment gateway HTTP Error 504 timeout",
+        vectorExplanation: `
+          <strong style="color:var(--danger);">❌ Why Pure Vector Search Failed Here:</strong><br/>
+          To an embedding model, numbers like <code>502</code>, <code>503</code>, and <code>504</code> are all just "500-series gateway errors." Document A talks a lot about payment gateways, so Pure Vector Search ranks <strong>HTTP Error 503 at #1</strong> even though you specifically asked for <strong>Error 504</strong>!
+        `,
+        hybridExplanation: `
+          <strong style="color:var(--accent-3);">✅ How Hybrid Search Rescued #1:</strong><br/>
+          BM25 Keyword Search treats rare numbers and error codes (<code>"504"</code>) as high-value exact identifiers. Merging Vector + Keyword rankings immediately promotes the <strong>HTTP Error 504 Runbook from #3 → ★ #1 WINNER</strong>!
+        `,
+        docs: [
+          { title: "RUNBOOK-503: Payment Gateway HTTP Error 503 Service Unavailable", isCorrect: false, vecRank: 1, vecScore: 93, kwRank: 3, kwNote: "Wrong error number (503 != 504)", hybridRank: 2, hybridScore: 76 },
+          { title: "RUNBOOK-502: Checkout Credit Card HTTP Error 502 Bad Gateway", isCorrect: false, vecRank: 2, vecScore: 90, kwRank: 4, kwNote: "Wrong error number (502 != 504)", hybridRank: 3, hybridScore: 68 },
+          { title: "RUNBOOK-504: Upstream Database HTTP Error 504 Gateway Timeout", isCorrect: true, vecRank: 3, vecScore: 86, kwRank: 1, kwNote: "Exact code match: '504' + 'Timeout'", hybridRank: 1, hybridScore: 98 },
+          { title: "RUNBOOK-401: API Key Unauthorized HTTP 401 Token Expired", isCorrect: false, vecRank: 4, vecScore: 49, kwRank: 2, kwNote: "Low match", hybridRank: 4, hybridScore: 39 }
+        ]
+      }
     ];
 
-    function loadGotchaPair(idx) {
-      document.getElementById('simInputA').value = GOTCHA_PAIRS[idx][0];
-      document.getElementById('simInputB').value = GOTCHA_PAIRS[idx][1];
-      updatePairSimilarity(GOTCHA_PAIRS[idx][2]);
+    let currentScenIdx = 0;
+    let currentSearchMode = 'vector'; // 'vector' or 'hybrid'
+
+    function selectHybridScenario(idx) {
+      currentScenIdx = idx;
+      [0, 1, 2].forEach(i => document.getElementById('scen-btn-' + i).classList.toggle('active', i === idx));
+      setSearchMode('vector'); // Always start on Vector so speaker can show the failure first, then click Hybrid!
     }
 
-    function updatePairSimilarity(customNote) {
-      const a = document.getElementById('simInputA').value;
-      const b = document.getElementById('simInputB').value;
-      const vA = compute384Vector(a, 'dev');
-      const vB = compute384Vector(b, 'dev');
-      const sim = cosineSim(vA, vB);
+    function setSearchMode(mode) {
+      currentSearchMode = mode;
+      document.getElementById('modeBtnVector').classList.toggle('active-mode', mode === 'vector');
+      document.getElementById('modeBtnHybrid').classList.toggle('active-mode', mode === 'hybrid');
+      renderHybridScenario();
+    }
 
-      document.getElementById('simPairScore').textContent = `${(sim * 100).toFixed(1)}%`;
-      document.getElementById('simVerdictText').textContent = customNote || (
-        sim > 0.78 ? "High Semantic Similarity (Same Neighborhood in 384-D Space)" :
-        sim > 0.45 ? "Moderate Topical Similarity" : "Low Similarity (Nearly Orthogonal Vectors)"
+    function renderHybridScenario() {
+      const scen = HYBRID_SCENARIOS[currentScenIdx];
+      document.getElementById('scenQueryDisplay').textContent = `"${scen.query}"`;
+
+      const expBox = document.getElementById('scenExplanationBox');
+      if (currentSearchMode === 'vector') {
+        expBox.style.background = 'rgba(248, 113, 113, 0.1)';
+        expBox.style.border = '1px solid rgba(248, 113, 113, 0.45)';
+        expBox.innerHTML = scen.vectorExplanation;
+      } else {
+        expBox.style.background = 'rgba(52, 211, 153, 0.1)';
+        expBox.style.border = '1px solid rgba(52, 211, 153, 0.45)';
+        expBox.innerHTML = scen.hybridExplanation;
+      }
+
+      const sortedDocs = [...scen.docs].sort((a, b) =>
+        currentSearchMode === 'vector' ? (a.vecRank - b.vecRank) : (a.hybridRank - b.hybridRank)
       );
 
-      renderVectorBarcode(document.getElementById('stripCompareA'), vA, 48);
-      renderVectorBarcode(document.getElementById('stripCompareB'), vB, 48);
+      const container = document.getElementById('hybridCardsContainer');
+      container.innerHTML = '';
 
-      const prodEl = document.getElementById('stripCompareProd');
-      prodEl.innerHTML = '';
-      for (let i = 0; i < 48; i++) {
-        const p = vA[i] * vB[i];
-        const cell = document.createElement('div');
-        cell.className = 'vec-cell';
-        const intensity = Math.min(1, Math.abs(p) * 35);
-        cell.style.background = p >= 0
-          ? `rgba(52, 211, 153, ${0.15 + intensity * 0.85})`
-          : `rgba(248, 113, 113, ${0.15 + intensity * 0.85})`;
-        prodEl.appendChild(cell);
-      }
-    }
+      sortedDocs.forEach((doc, idx) => {
+        const rank = idx + 1;
+        const isTop = rank === 1;
+        const card = document.createElement('div');
+        card.className = 'doc-rank-card ' + (isTop ? (doc.isCorrect ? 'winner-good' : 'winner-bad') : '');
 
-    const HYBRID_KB = [
-      "DOC-101: How to ENABLE two-factor authentication (MFA) login security on your account",
-      "DOC-102: How to RESET your two-factor authentication (MFA) authenticator recovery codes",
-      "DOC-103: How to permanently DISABLE and turn off two-factor authentication (MFA)",
-      "DOC-201: Fixing payment checkout gateway HTTP Error 503 when credit card fails",
-      "DOC-202: Runbook for HTTP Error 504 upstream gateway timeout error code"
-    ];
-
-    function setHybridQuery(q) {
-      document.getElementById('hybridQueryInput').value = q;
-      runHybridDemo();
-    }
-
-    function runHybridDemo() {
-      const q = document.getElementById('hybridQueryInput').value;
-      const lexWeight = parseInt(document.getElementById('hybridWeightSlider').value) / 100;
-      const denseWeight = 1 - lexWeight;
-
-      document.getElementById('hybridSliderLabel').textContent =
-        `Hybrid Balance: ${Math.round(denseWeight * 100)}% Dense Vector + ${Math.round(lexWeight * 100)}% BM25 Keyword`;
-
-      const qVec = compute384Vector(q, 'dev');
-      const qTokens = (q.toLowerCase().match(/[a-z0-9]+/g) || []);
-
-      const rows = HYBRID_KB.map(doc => {
-        const dVec = compute384Vector(doc, 'dev');
-        const denseSim = Math.max(0, cosineSim(qVec, dVec));
-
-        // BM25 lexical score with exact code / rare keyword boost
-        const dTokens = (doc.toLowerCase().match(/[a-z0-9]+/g) || []);
-        let bm25 = 0;
-        qTokens.forEach(qt => {
-          if (dTokens.includes(qt)) {
-            const df = HYBRID_KB.filter(k => k.toLowerCase().includes(qt)).length;
-            const idf = Math.log(1 + (HYBRID_KB.length - df + 0.5) / (df + 0.5));
-            const exactBoost = (/^\d+$/.test(qt) || qt === 'disable' || qt === 'off') ? 2.2 : 1.0;
-            bm25 += idf * exactBoost;
+        let movementBadge = '';
+        if (currentSearchMode === 'hybrid') {
+          const diff = doc.vecRank - doc.hybridRank;
+          if (diff > 0) {
+            movementBadge = `<span style="background:rgba(52,211,153,0.2); color:var(--accent-3); padding:3px 8px; border-radius:6px; font-size:11.5px; font-weight:700;">▲ Jumped +${diff} spots to #1!</span>`;
+          } else if (diff < 0) {
+            movementBadge = `<span style="background:rgba(248,113,113,0.18); color:var(--danger); padding:3px 8px; border-radius:6px; font-size:11.5px; font-weight:700;">▼ Dropped ${diff} spots</span>`;
           }
-        });
-        const normBm25 = Math.min(1, bm25 / 4.5);
-        const combined = denseWeight * denseSim + lexWeight * normBm25;
-        return { doc, denseSim, normBm25, combined };
-      }).sort((a, b) => b.combined - a.combined);
+        } else if (isTop && !doc.isCorrect) {
+          movementBadge = `<span style="background:rgba(248,113,113,0.25); color:#fecaca; padding:3px 8px; border-radius:6px; font-size:11.5px; font-weight:700;">⚠ WRONG ANSWER AT #1!</span>`;
+        } else if (doc.isCorrect) {
+          movementBadge = `<span style="background:rgba(251,191,36,0.2); color:var(--warn); padding:3px 8px; border-radius:6px; font-size:11.5px; font-weight:700;">Buried at #${rank} in Vector Search</span>`;
+        }
 
-      const tbody = document.getElementById('hybridTableBody');
-      tbody.innerHTML = '';
-      rows.forEach((r, idx) => {
-        const tr = document.createElement('tr');
-        if (idx === 0) tr.className = 'rank-winner';
-        tr.innerHTML = `
-          <td><strong>${idx === 0 ? '★ #1 ' : '#' + (idx + 1) + ' '}</strong>${r.doc}</td>
-          <td class="mono">${(r.denseSim * 100).toFixed(0)}%</td>
-          <td class="mono">${(r.normBm25 * 100).toFixed(0)}%</td>
-          <td class="mono" style="color:${idx === 0 ? 'var(--accent-3)' : 'var(--text-1)'}; font-weight:700;">${(r.combined * 100).toFixed(1)}%</td>
+        const scoreShown = currentSearchMode === 'vector' ? `${doc.vecScore}% Vector Match` : `${doc.hybridScore}% Hybrid RRF Score`;
+
+        card.innerHTML = `
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div class="rank-circle" style="color:${isTop ? (doc.isCorrect ? 'var(--accent-3)' : 'var(--danger)') : 'var(--text-1)'}">
+              #${rank}
+            </div>
+            <div>
+              <div style="font-size:14.5px; font-weight:700; color:#fff;">${doc.title}</div>
+              <div style="font-size:12px; color:var(--text-2); margin-top:4px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                <span>Vector Rank: <strong>#${doc.vecRank}</strong></span>
+                <span>•</span>
+                <span>Keyword Check: <strong>${doc.kwNote}</strong></span>
+                ${movementBadge}
+              </div>
+            </div>
+          </div>
+          <div class="mono" style="font-size:13px; font-weight:700; color:${isTop ? (doc.isCorrect ? 'var(--accent-3)' : 'var(--danger)') : 'var(--text-1)'}; text-align:right; flex-shrink:0;">
+            ${scoreShown}
+          </div>
         `;
-        tbody.appendChild(tr);
+        container.appendChild(card);
       });
     }
 
     // ========================================================================
-    // 6. TAB 5: MATRYOSHKA (MRL) & QUANTIZATION CALCULATOR
+    // TAB 5: 4-STEP PROGRESSIVE RAM SHRINKER (MATRYOSHKA & QUANTIZATION)
     // ========================================================================
+    let currentMrlStep = 1;
+    const SAMPLE_FLOATS = [+0.1428, -0.0891, +0.2145, -0.1732, +0.0512, +0.1984];
+
+    function setMrlStep(step) {
+      currentMrlStep = step;
+      [1, 2, 3, 4].forEach(s => document.getElementById('mrl-step-' + s).classList.toggle('active', s === step));
+
+      const sliceCtrl = document.getElementById('mrlControlSlice');
+      const quantCtrl = document.getElementById('mrlControlQuant');
+      const sliceSlider = document.getElementById('mrlSliceSlider');
+      const quantSelect = document.getElementById('mrlPrecisionSelect');
+      const storyBox = document.getElementById('mrlStepStoryBox');
+
+      if (step === 1) {
+        sliceCtrl.style.display = 'none';
+        quantCtrl.style.display = 'none';
+        sliceSlider.value = 3072;
+        quantSelect.value = "4";
+        storyBox.innerHTML = `
+          <strong style="color:var(--danger); font-size:16px;">Step 1: Why Vector Databases Get Expensive Fast</strong><br/>
+          High-end AI models output <strong>3,072 decimal numbers</strong> per document chunk. Each <code>float32</code> number takes <strong>4 bytes</strong> of RAM.<br/>
+          At 10 million chunks, <code>10M × 3,072 × 4 bytes = 114.4 GB of raw RAM</code> just to hold the arrays!
+        `;
+      } else if (step === 2) {
+        sliceCtrl.style.display = 'block';
+        quantCtrl.style.display = 'none';
+        sliceSlider.value = 512;
+        quantSelect.value = "4";
+        storyBox.innerHTML = `
+          <strong style="color:var(--accent-3); font-size:16px;">Step 2: Trick #1 — Matryoshka Slicing (Chop the Array Length)</strong><br/>
+          <em>"Matryoshka"</em> means Russian Nesting Dolls. Modern models are trained to pack the <strong>most important meaning into the first 256–512 numbers</strong>, and tiny details into numbers 513..3072.<br/>
+          Drag the slider below to chop off the tail—we cut RAM <strong>6x</strong> while keeping <strong>96.8% accuracy</strong>!
+        `;
+      } else if (step === 3) {
+        sliceCtrl.style.display = 'none';
+        quantCtrl.style.display = 'block';
+        sliceSlider.value = 3072;
+        quantSelect.value = "1";
+        storyBox.innerHTML = `
+          <strong style="color:var(--warn); font-size:16px;">Step 3: Trick #2 — Quantization (Round Each Number)</strong><br/>
+          Do we really need 7 decimal places (<code>+0.1428571</code>, 32 bits) to know which way an arrow points?<br/>
+          If we round each decimal to a whole number between <code>-127 and +127</code> (<code>int8</code> = 1 byte), we immediately cut RAM <strong>4x</strong> with almost zero accuracy loss!
+        `;
+      } else {
+        sliceCtrl.style.display = 'block';
+        quantCtrl.style.display = 'block';
+        sliceSlider.value = 512;
+        quantSelect.value = "0.125";
+        storyBox.innerHTML = `
+          <strong style="color:var(--accent); font-size:16px;">Step 4: Combining Both Tricks (114 GB → 0.60 GB!)</strong><br/>
+          When you combine <strong>Matryoshka Slicing (512 numbers)</strong> + <strong>1-bit Binary Quantization</strong> (storing just <code>1</code> for positive and <code>0</code> for negative), your 114.4 GB database shrinks to <strong>610 MB (192x smaller!)</strong>—small enough to search 10 million items in RAM on a regular laptop!
+        `;
+      }
+
+      updateMrlCalculator();
+    }
+
     function updateMrlCalculator() {
       const countMillions = parseInt(document.getElementById('mrlCountSlider').value);
       const count = countMillions * 1_000_000;
-      const origDim = parseInt(document.getElementById('mrlOrigDimSelect').value);
-      const sliceSlider = document.getElementById('mrlSliceSlider');
-      sliceSlider.max = origDim;
-      let slicedDim = Math.min(origDim, parseInt(sliceSlider.value));
-      sliceSlider.value = slicedDim;
+      const origDim = 3072;
+      const slicedDim = parseInt(document.getElementById('mrlSliceSlider').value);
       const bytesPerDim = parseFloat(document.getElementById('mrlPrecisionSelect').value);
 
-      document.getElementById('mrlCountLabel').textContent = count.toLocaleString();
-      document.getElementById('mrlOrigDimLabel').textContent = `${origDim} dims`;
-      document.getElementById('mrlSliceDimLabel').textContent = `${slicedDim} dims (${Math.round(slicedDim / origDim * 100)}% kept)`;
+      document.getElementById('mrlCountLabel').textContent = `${count.toLocaleString()} documents`;
+      document.getElementById('mrlSliceDimLabel').textContent = `${slicedDim}`;
 
       const baseGb = (count * origDim * 4) / (1024 ** 3);
       const optGb = (count * slicedDim * bytesPerDim) / (1024 ** 3);
       const factor = baseGb / (optGb || 1e-9);
 
       const dimRatio = slicedDim / origDim;
-      const quantPenalty = bytesPerDim === 4 ? 0 : bytesPerDim === 2 ? 0.2 : bytesPerDim === 1 ? 0.8 : 3.2;
-      const recall = Math.min(99.9, Math.max(82.0, 100 - (1 - Math.pow(dimRatio, 0.22)) * 14 - quantPenalty));
+      const quantPenalty = bytesPerDim === 4 ? 0 : bytesPerDim === 1 ? 0.6 : 2.5;
+      const recall = (slicedDim === origDim && bytesPerDim === 4)
+        ? 100.0
+        : Math.min(99.8, Math.max(85.0, 100 - (1 - Math.pow(dimRatio, 0.22)) * 12 - quantPenalty));
 
-      document.getElementById('mrlBaselineRam').textContent = baseGb >= 1 ? `${baseGb.toFixed(1)} GB` : `${(baseGb * 1024).toFixed(0)} MB`;
+      document.getElementById('mrlBaselineRam').textContent = `${baseGb.toFixed(1)} GB`;
       document.getElementById('mrlOptRam').textContent = optGb >= 1 ? `${optGb.toFixed(2)} GB` : `${(optGb * 1024).toFixed(0)} MB`;
-      document.getElementById('mrlSavingsFactor').textContent = `${factor.toFixed(1)}x Smaller!`;
-      document.getElementById('mrlRecallEst').textContent = `~${recall.toFixed(1)}%`;
+      document.getElementById('mrlSavingsFactor').textContent = factor <= 1.05 ? "1.0x (Uncompressed)" : `${factor.toFixed(0)}x Smaller!`;
+      document.getElementById('mrlRecallEst').textContent = `${recall.toFixed(1)}%`;
 
+      // Render visual bar
       const bar = document.getElementById('mrlVisualBar');
       bar.innerHTML = '';
       const totalCells = 48;
@@ -1778,38 +1633,28 @@
         cell.className = 'vec-cell';
         const mrlWeight = 1 - (i / totalCells) * 0.65;
         cell.style.background = i < activeCells
-          ? `rgba(52, 211, 153, ${0.25 + mrlWeight * 0.75})`
-          : `rgba(51, 65, 85, 0.25)`;
+          ? `rgba(52, 211, 153, ${0.28 + mrlWeight * 0.72})`
+          : `rgba(51, 65, 85, 0.22)`;
         bar.appendChild(cell);
       }
-    }
 
-    // Optional live browser ONNX via @huggingface/transformers when online
-    async function tryLoadTransformersJs() {
-      const statusText = document.getElementById('engineStatusText');
-      statusText.textContent = "Checking WebGPU / Transformers.js ONNX...";
-      try {
-        const mod = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.0');
-        statusText.textContent = "Transformers.js ONNX Ready (Hybrid Mode)";
-      } catch {
-        statusText.textContent = "Offline Mode Active — Local 384-D Engine (Zero Wi-Fi Needed)";
+      // Render actual numbers transformation preview
+      const numPreview = document.getElementById('mrlLiveNumbersPreview');
+      if (bytesPerDim === 4) {
+        numPreview.innerHTML = `float32[${slicedDim}] = [ ${SAMPLE_FLOATS.map(n => (n>=0?'+':'') + n.toFixed(4)).join(', ')}, ... ] <span style="color:var(--text-2);">(32 bits each)</span>`;
+      } else if (bytesPerDim === 1) {
+        numPreview.innerHTML = `sbyte[${slicedDim}]   = [ ${SAMPLE_FLOATS.map(n => (n>=0?'+':'') + Math.round(n * 500)).join(', ')}, ... ] <span style="color:var(--warn);">(8-bit whole numbers, 4x smaller!)</span>`;
+      } else {
+        numPreview.innerHTML = `bits[${slicedDim}]    = [ ${SAMPLE_FLOATS.map(n => n >= 0 ? '1 (+)' : '0 (-)').join(', ')}, ... ] <span style="color:var(--accent-3);">(1 bit per number, 32x smaller!)</span>`;
       }
     }
 
-    function switchTab(tabId, btn) {
-      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById(tabId).classList.add('active');
-      btn.classList.add('active');
-    }
-
-    // Initialize all tabs on load
-    buildDataset('dev');
+    // Initialize everything on load
     reset2dTasteMap();
+    buildDataset('dev');
     runVectorMath();
-    loadGotchaPair(0);
-    runHybridDemo();
-    updateMrlCalculator();
+    selectHybridScenario(0);
+    setMrlStep(1);
     requestAnimationFrame(render3DLoop);
   </script>
 </body>

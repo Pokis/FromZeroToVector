@@ -4,27 +4,34 @@ using Embeddings.Core;
 using Microsoft.Extensions.AI;
 
 // ============================================================================
-// ACT 3 LIVE CODING DEMO: Semantic Search in ~25 Lines of Modern C#
+// C# DEMO 1: Semantic Search in ~25 Lines of Modern C#
 // ============================================================================
-// Key .NET Primitives Shown on Stage:
+// What this shows:
 //   1. IEmbeddingGenerator<string, Embedding<float>> (Microsoft.Extensions.AI)
-//   2. TensorPrimitives.CosineSimilarity (System.Numerics.Tensors — SIMD accelerated!)
+//      -> Official .NET interface that turns strings into float[384] coordinate arrays.
+//   2. TensorPrimitives.CosineSimilarity (System.Numerics.Tensors)
+//      -> Built-in .NET method that compares the angle between two float[] arrays.
 //
 // Usage:
-//   dotnet run                  -> Interactive live stage prompt
-//   dotnet run -- --demo        -> Auto-runs the 4 stage queries + Negation Gotcha
-//   dotnet run -- --onnx        -> Uses ElBruno.LocalEmbeddings ONNX model (all-MiniLM-L6-v2)
+//   dotnet run                  -> Step-by-step interactive stage walkthrough
+//   dotnet run -- --demo        -> Runs all 4 stage queries automatically
+//   dotnet run -- --onnx        -> Uses local .onnx model file via ElBruno.LocalEmbeddings
 // ============================================================================
 
 ConsoleUi.WriteBanner(
-    "ACT 3: SEMANTIC SEARCH IN MODERN C# (~25 LINES)",
-    "Microsoft.Extensions.AI (IEmbeddingGenerator) + System.Numerics.Tensors (SIMD)");
+    "C# DEMO 1: SEMANTIC SEARCH IN ~25 LINES",
+    "Turning English Strings into float[384] Coordinates & Comparing Angles");
 
-// 1. Create the embedding generator (swap Local ONNX / OpenAI / Ollama / Azure via 1 line of DI)
 var (embedder, engineInfo) = await EmbeddingGeneratorFactory.CreateAsync(args);
 Console.WriteLine($"  Engine : {engineInfo}");
 
-// 2. Our "database" of support tickets
+ConsoleUi.WriteCodeSnippet(
+    "How We Embed & Compare in C#",
+    "var ticketVectors = await embedder.GenerateAsync(tickets); // Strings -> float[384]",
+    "var queryVector   = await embedder.GenerateVectorAsync(query);",
+    "float similarity  = TensorPrimitives.CosineSimilarity(queryVector.Span, ticketVec.Span);");
+
+// Our "database" of support tickets
 string[] tickets =
 [
     "Payment gateway returns 502 error at checkout",
@@ -35,14 +42,13 @@ string[] tickets =
     "Laptop screen is flickering after waking from sleep"
 ];
 
-// 3. Turn strings into float[] coordinates in 384-dimensional meaning space
 var sw = Stopwatch.StartNew();
 var ticketVectors = await embedder.GenerateAsync(tickets);
 sw.Stop();
 
 ConsoleUi.WriteSectionHeader(
-    $"Indexed {tickets.Length} Support Tickets in {sw.Elapsed.TotalMilliseconds:F1} ms",
-    "Each ticket is now a normalized float[384] coordinate on a unit hypersphere:");
+    $"Step 1: Indexed {tickets.Length} Support Tickets in {sw.Elapsed.TotalMilliseconds:F1} ms",
+    "Every ticket is now stored as an array of 384 decimal coordinates:");
 
 for (int i = 0; i < tickets.Length; i++)
 {
@@ -52,18 +58,17 @@ for (int i = 0; i < tickets.Length; i++)
     Console.WriteLine($"-> \"{tickets[i]}\"");
 }
 
-// Helper function to execute & visualize a semantic search query
-async Task RunQueryAsync(string query, string? stageNote = null)
+async Task RunQueryAsync(string query, string? explanation = null)
 {
     Console.WriteLine();
-    if (!string.IsNullOrWhiteSpace(stageNote))
+    if (!string.IsNullOrWhiteSpace(explanation))
     {
         Console.ForegroundColor = ConsoleColor.Magenta;
-        Console.WriteLine($"  [Stage Cue] {stageNote}");
+        Console.WriteLine($"  ★ What to Watch: {explanation}");
     }
 
     Console.ForegroundColor = ConsoleColor.Cyan;
-    Console.WriteLine($"  Query  : \"{query}\"");
+    Console.WriteLine($"  User Searches  : \"{query}\"");
     Console.ResetColor();
 
     var querySw = Stopwatch.StartNew();
@@ -71,10 +76,9 @@ async Task RunQueryAsync(string query, string? stageNote = null)
     querySw.Stop();
 
     Console.ForegroundColor = ConsoleColor.DarkGray;
-    Console.WriteLine($"  Vector : {ConsoleUi.FormatVectorPreview(queryVector.Span, 4)} (embedded in {querySw.Elapsed.TotalMilliseconds:F2} ms)");
+    Console.WriteLine($"  Query Vector   : {ConsoleUi.FormatVectorPreview(queryVector.Span, 4)} ({querySw.Elapsed.TotalMilliseconds:F2} ms)");
     Console.ResetColor();
 
-    // 4. Search by MEANING, not exact keywords — using hardware SIMD TensorPrimitives!
     var rankedMatches = tickets
         .Zip(ticketVectors)
         .Select(x => (
@@ -85,16 +89,15 @@ async Task RunQueryAsync(string query, string? stageNote = null)
         .ToList();
 
     var best = rankedMatches[0];
-    Console.Write("  Best   : ");
+    Console.Write("  #1 Best Match  : ");
     ConsoleUi.WriteScoreBar(best.Score);
     Console.ForegroundColor = ConsoleColor.Green;
     Console.WriteLine($"  \"{best.Ticket}\"");
     Console.ResetColor();
 
-    // Show runner-ups for intuition
     foreach (var item in rankedMatches.Skip(1).Take(2))
     {
-        Console.Write("           ");
+        Console.Write("  Runner-up      : ");
         ConsoleUi.WriteScoreBar(item.Score);
         Console.ForegroundColor = ConsoleColor.DarkGray;
         Console.WriteLine($"  \"{item.Ticket}\"");
@@ -102,44 +105,51 @@ async Task RunQueryAsync(string query, string? stageNote = null)
     }
 }
 
-// Pre-scripted stage demo queries (triggered via --demo or pressing Enter)
-(string Query, string StageNote)[] stageQueries =
+(string Query, string Explanation)[] stageQueries =
 [
     ("credit card won't go through",
      "Zero shared words with 'Payment gateway returns 502 error at checkout', yet matches by meaning!"),
 
     ("troubleshooting display refresh glitches",
-     "Act 1 Callback: Matches 'Laptop screen is flickering...' without SQL LIKE '%flicker%'"),
+     "Matches 'Laptop screen is flickering...' without needing SQL LIKE '%flicker%'!"),
 
     ("my avatar photo freezes the mobile app",
-     "Maps 'avatar photo freezes' -> 'uploading a profile picture crashes'"),
+     "Understands that 'avatar photo freezes' means 'uploading a profile picture crashes'."),
 
     ("How do I DISABLE two-factor authentication?",
-     "ACT 5 GOTCHA (Negation Trap): Matches 'How do I RESET my two-factor authentication?' at ~90% because vectors capture TOPIC, not boolean negation!")
+     "CLIFFHANGER TRAP: Matches 'How do I RESET my two-factor authentication?' at 98% because vectors only see TOPIC, not 'DISABLE'! (We fix this in Demo 3!)")
 ];
 
-bool autoDemo = args.Any(a => a.Equals("--demo", StringComparison.OrdinalIgnoreCase)) || Console.IsInputRedirected;
+bool autoDemo = args.Any(a => a.Equals("--demo", StringComparison.OrdinalIgnoreCase) || a.Equals("--all", StringComparison.OrdinalIgnoreCase))
+                || Console.IsInputRedirected;
 
 if (autoDemo)
 {
-    ConsoleUi.WriteSectionHeader("Running Scripted Stage Queries (--demo)");
-    foreach (var (query, note) in stageQueries)
+    ConsoleUi.WriteSectionHeader("Step 2: Running 4 Stage Queries");
+    foreach (var (query, explanation) in stageQueries)
     {
-        await RunQueryAsync(query, note);
+        await RunQueryAsync(query, explanation);
     }
     return;
 }
 
-// 4. Interactive Stage Loop
 ConsoleUi.WriteSectionHeader(
-    "Live Interactive Search",
-    "Type any issue description, press [Enter] on empty line to run the 4 stage demo queries, or 'q' to exit.");
+    "Step 2: Interactive Stage Walkthrough",
+    "Just press [Enter] to step through the 4 prepared stage queries one at a time, or type any custom sentence! ('q' to quit)");
 
+int stageIdx = 0;
 while (true)
 {
     Console.WriteLine();
     Console.ForegroundColor = ConsoleColor.Yellow;
-    Console.Write("Describe your issue > ");
+    if (stageIdx < stageQueries.Length)
+    {
+        Console.Write($"[Press Enter for Stage Query #{stageIdx + 1}/{stageQueries.Length}: \"{stageQueries[stageIdx].Query}\"] or type custom > ");
+    }
+    else
+    {
+        Console.Write("Type a custom issue description (or 'q' to quit) > ");
+    }
     Console.ResetColor();
 
     var input = Console.ReadLine();
@@ -150,12 +160,19 @@ while (true)
 
     if (string.IsNullOrWhiteSpace(input))
     {
-        foreach (var (query, note) in stageQueries)
+        if (stageIdx < stageQueries.Length)
         {
-            await RunQueryAsync(query, note);
+            var (q, exp) = stageQueries[stageIdx++];
+            await RunQueryAsync(q, exp);
+        }
+        else
+        {
+            stageIdx = 0;
+            var (q, exp) = stageQueries[stageIdx++];
+            await RunQueryAsync(q, exp);
         }
         continue;
     }
 
-    await RunQueryAsync(input);
+    await RunQueryAsync(input, "Custom live audience query");
 }
