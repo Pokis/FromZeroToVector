@@ -1,6 +1,7 @@
 // ============================================================================
 // SHARED SLIDE DECK & SPEAKER PRESENTER DATA
 // Powers both slides/index.html (Audience Screen) and slides/presenter.html (Speaker Screen)
+// Every entry in `speakerNotes` is 100% pure spoken script (safe to read verbatim!).
 // ============================================================================
 
 window.TALK_SLIDES = [
@@ -23,7 +24,7 @@ window.TALK_SLIDES = [
           <div class="v-card step-item" data-step="1">
             <div class="v-icon">🗺️</div>
             <h3>1. Visual Intuition</h3>
-            <p>How computers turn fuzzy human ideas into GPS coordinates.</p>
+            <p>How computers turn fuzzy human ideas into simple GPS coordinates.</p>
           </div>
           <div class="v-card step-item" data-step="2">
             <div class="v-icon">⚡</div>
@@ -39,14 +40,14 @@ window.TALK_SLIDES = [
       </div>
     `,
     speakerNotes: [
-      "Welcome everyone! Today we are looking under the hood of one of the most useful building blocks in modern software: Vector Embeddings.",
-      "Click 1 (Visual Intuition): You don't need a math degree for this. By the end of the first 10 minutes, you'll be able to picture embeddings as simple GPS coordinates.",
-      "Click 2 (Practical C#): Then we'll build semantic search and 5 backend patterns in clean C# running 100% locally on this laptop.",
-      "Click 3 (Production Truths): And finally, we'll look at where embeddings fail in production—and how to fix them."
+      "Welcome everyone! Today we are looking under the hood of one of the most useful building blocks in modern AI and software engineering: Vector Embeddings.",
+      "First, we'll build pure visual intuition. You don't need a math degree for this—within 10 minutes, you'll picture embeddings as simple GPS coordinates for meaning.",
+      "Second, we'll write clean C# code running 100% locally on this laptop—showing not just search, but five backend patterns you can drop into regular microservices.",
+      "And third, we'll look at production reality: where embeddings fail, how to shrink a 120-gigabyte index down to 600 megabytes, and what happens when you switch models."
     ],
     glossary: [
       ["Embedding / Vector", "Simply an array of decimal numbers (like float[384]) that represents the meaning of a piece of text, image, or audio."],
-      ["Semantic", "Matching by *meaning and intent* rather than matching exact letters."]
+      ["Semantic", "Matching by meaning and intent rather than matching exact letters."]
     ]
   },
 
@@ -93,10 +94,10 @@ window.TALK_SLIDES = [
       </div>
     `,
     speakerNotes: [
-      "Think about the last time you used a help-center search bar on a website. You type a normal human sentence...",
-      "Click 1: Say a user types 'My laptop screen is flickering'. A traditional SQL LIKE query checks for the exact letters 'f-l-i-c-k-e-r'—and returns 0 results.",
-      "Click 2: What's frustrating is that the exact answer IS in the database! It's just titled 'Troubleshooting display refresh glitches'. Zero shared words.",
-      "Click 3: That is the core problem embeddings solve: moving from matching *spelling* to matching *location on a map of meaning*."
+      "Think about the last time you used a search bar on a support website. Computers are fantastic at exact matches, but humans describe the same problem in dozens of different ways.",
+      "Say a user types 'My laptop screen is flickering'. A traditional SQL LIKE query checks for the exact letters F-L-I-C-K-E-R, finds nothing, and tells the user: 0 Results Found.",
+      "What makes this painful is that the exact answer IS sitting right inside your database—it's just titled 'Troubleshooting display refresh glitches'. Notice those two sentences share zero words.",
+      "That is the exact gap embeddings bridge:instead of comparing spelling letter-by-letter, we convert both sentences into coordinates on a map of meaning."
     ],
     glossary: [
       ["Lexical / Keyword Search", "Searching by exact words or characters (like SQL LIKE or Ctrl+F). Fast, but blind to synonyms."]
@@ -116,30 +117,25 @@ window.TALK_SLIDES = [
       <div class="two-col-slide">
         <div class="visual-box">
           <svg viewBox="0 0 460 320" style="width:100%; height:auto;">
-            <!-- Axes -->
             <line x1="55" y1="270" x2="430" y2="270" stroke="#64748b" stroke-width="2" />
             <line x1="55" y1="270" x2="55" y2="25" stroke="#64748b" stroke-width="2" />
             <text x="160" y="302" fill="#cbd5e1" font-size="13" font-weight="bold">X-Axis: Sweetness (0 → 10)</text>
             <text x="16" y="190" fill="#cbd5e1" font-size="13" font-weight="bold" transform="rotate(-90 16,190)">Y-Axis: Crunchiness (0 → 10)</text>
 
-            <!-- Step 1: Apple -->
             <g class="step-svg" data-step="1">
               <circle cx="335" cy="70" r="9" fill="#f87171" />
               <text x="260" y="48" fill="#f8fafc" font-size="14" font-weight="bold">🍎 Apple [7.5, 8.0]</text>
             </g>
 
-            <!-- Step 2: Pear lands right next to Apple! -->
             <g class="step-svg" data-step="2">
               <circle cx="315" cy="90" r="9" fill="#34d399" />
               <text x="220" y="116" fill="#34d399" font-size="14" font-weight="bold">🍐 Crispy Pear [7.0, 7.5]</text>
               <circle cx="325" cy="80" r="34" fill="none" stroke="#34d399" stroke-dasharray="4 4" stroke-width="1.5" />
             </g>
 
-            <!-- Step 3: Potato Chip & Cake far away -->
             <g class="step-svg" data-step="3">
               <circle cx="100" cy="45" r="9" fill="#fbbf24" />
               <text x="115" y="50" fill="#fbbf24" font-size="13" font-weight="bold">🥔 Potato Chip [1.2, 9.2]</text>
-
               <circle cx="400" cy="235" r="9" fill="#a78bfa" />
               <text x="260" y="255" fill="#a78bfa" font-size="13" font-weight="bold">🍰 Chocolate Cake [9.4, 1.4]</text>
             </g>
@@ -167,11 +163,11 @@ window.TALK_SLIDES = [
       </div>
     `,
     speakerNotes: [
-      "Let's strip away all the AI buzzwords. Imagine a blank chart with two simple scores from 0 to 10: Sweetness on the bottom, Crunchiness on the side.",
-      "Click 1: Where do we put an Apple? It's sweet (7.5) and crunchy (8.0). So in code, an Apple is just a 2-number array: [7.5, 8.0].",
-      "Click 2: Now where does a Crispy Pear go? [7.0, 7.5]—right next to the Apple!",
-      "Click 3: Meanwhile, a Potato Chip (not sweet, super crunchy) and Chocolate Cake (super sweet, soft) land in totally different corners.",
-      "Click 4: Without doing any fancy math, you just created a 2-dimensional vector embedding! Closeness on the map equals similarity in meaning."
+      "Let's strip away all the AI jargon. Imagine a blank chart with two simple scores from 0 to 10: Sweetness across the bottom, and Crunchiness up the side.",
+      "Where do we place an Apple? It's sweet—around 7.5—and crunchy—around 8.0. So inside the computer, an Apple is stored as a 2-number array: [7.5, 8.0].",
+      "Now where does a Crispy Pear go? It's also sweet and crunchy, around [7.0, 7.5]. Notice how it naturally lands right next to the Apple!",
+      "Meanwhile, a salty Potato Chip at [1.2, 9.2] and a soft slice of Chocolate Cake at [9.4, 1.4] land in completely different corners of the chart.",
+      "Without doing any linear algebra, you just created a 2-dimensional vector embedding! An embedding is simply a list of trait scores where closeness on the map equals similarity in meaning."
     ],
     glossary: [
       ["2D Embedding", "An array of 2 numbers [X, Y] representing two traits (here: Sweetness and Crunchiness)."],
@@ -180,35 +176,36 @@ window.TALK_SLIDES = [
   },
 
   // --------------------------------------------------------------------------
-  // SLIDE 4: DEMO 1 — INTERACTIVE 2D TASTE MAP & ANGLE PLAYGROUND
+  // SLIDE 4: DEMO 1 — INTERACTIVE 2D TASTE MAP & WHY ANGLE BEATS RULER
   // --------------------------------------------------------------------------
   {
     id: "demo-2d-map",
     type: "demo",
-    title: "🎬 Live Interactive Demo: The 2D Taste Map & Angle vs. Ruler",
-    subtitle: "Why AI measures the compass angle between arrows instead of ruler distance",
+    title: "🎬 Live Demo: The 2D Taste Map & Why Angle Beats Ruler Distance",
+    subtitle: "Comparing Cosine Angle vs. Straight-Line Ruler Distance in practice",
     stepsCount: 1,
     demoUrl: "../visualizer/index.html?tab=tab-2d",
+    stageCue: "Click the button on the slide (or Tab 1 in the Visualizer) to open the 2D Taste Map. Hover the 3 metric cards, then click '⚡ Demo: Why Angle Beats Ruler'.",
     html: `
       <div class="demo-hero">
         <div class="demo-badge">🎬 INTERACTIVE VISUALIZER • TAB 1</div>
-        <h2>Let's Test Coordinates & Angles Live</h2>
-        <p style="max-width:760px; margin: 12px auto 24px; color:var(--text-1); font-size:18px; line-height:1.55;">
-          We'll plot items on the 2D Taste Map, inspect the 3 similarity metrics (<strong>Cosine Similarity</strong>, <strong>Angle</strong>, and <strong>Ruler Distance</strong>), and see why a <em>Short Tweet</em> and a <em>Long Book</em> point at the exact same angle!
+        <h2>Why Do We Measure the Angle Instead of Using a Ruler?</h2>
+        <p style="max-width:820px; margin: 12px auto 24px; color:var(--text-1); font-size:17.5px; line-height:1.55;">
+          Imagine a <strong>1-cup recipe</strong> (1 cup sugar, 1 cup flour = <code>[1, 1]</code>) vs. a <strong>5-cup batch of the exact same recipe</strong> (<code>[5, 5]</code>). A <strong>ruler</strong> says they are far apart just because one batch is bigger! The <strong>compass angle</strong> sees they have the exact same ratio (<code>0° angle = 100% match</code>).
         </p>
         <div class="demo-actions">
           <a class="btn-launch" href="../visualizer/index.html?tab=tab-2d" target="_blank">
             🚀 Open 2D Taste Map (Visualizer Tab 1) ↗
           </a>
         </div>
-        <div class="cards-3" style="margin-top:28px; text-align:left;">
+        <div class="cards-3" style="margin-top:26px; text-align:left;">
           <div class="v-card">
             <h3>1. Plot a Custom Food</h3>
-            <p>Enter a Sweetness (0–10) and Crunchiness (0–10) score to drop a new dot onto the map.</p>
+            <p>Enter a Sweetness (0–10) and Crunchiness (0–10) score to create a live <code>float[2]</code> coordinate.</p>
           </div>
           <div class="v-card">
             <h3>2. Hover the 3 Metrics</h3>
-            <p>Compare <strong>Cosine %</strong> vs <strong>Angle °</strong> vs <strong>Ruler Distance</strong> in plain English.</p>
+            <p>See what <strong>Cosine Similarity %</strong>, <strong>Angle °</strong>, and <strong>Ruler Distance</strong> mean in plain English.</p>
           </div>
           <div class="v-card">
             <h3>3. Click "Why Angle Beats Ruler"</h3>
@@ -218,14 +215,11 @@ window.TALK_SLIDES = [
       </div>
     `,
     speakerNotes: [
-      "Click the button to switch to Tab 1 of our Visualizer ('1. 2D Taste Map').",
-      "1. Show how Apple and Crispy Pear point in almost the exact same direction from (0,0) -> 99.9% Cosine Similarity.",
-      "2. Hover over the 3 metric boxes (Cosine Similarity, Angle, Ruler Distance) to show the audience what they mean.",
-      "3. Click the button 'Demo: Why Angle Beats Ruler' at the top of the chart! Point out that a Short Tweet about Apples [3.5, 4.0] and a Long Book about Apples [7.0, 8.0] look far apart by ruler distance (4.95), but their arrows point in the EXACT same compass direction (0.0° angle = 100% Cosine match)!"
+      "Let's open Tab 1 of our Visualizer to see how computers actually measure distance on this map, and why AI measures the angle between arrows instead of using a straight ruler."
     ],
     glossary: [
-      ["Cosine Similarity", "Measures whether two arrows from (0,0) point in the same compass direction (100% = same direction, 0% = 90° apart)."],
-      ["Euclidean (Ruler) Distance", "Straight tape-measure distance between two dots' tips. Easily tricked when one document is longer than another."]
+      ["Why Angle Beats Ruler Distance", "A 1-sentence tweet about Apples has fewer words, so its arrow is shorter [3.5, 4.0]. A 10-page book about Apples repeats apple traits many times, making its arrow longer [7.0, 8.0]. A straight ruler says their tips are far apart—getting tricked by length! Measuring the angle from (0,0) ignores length and sees they point in the exact same compass direction (0° = 100% match)."],
+      ["Why We Normalize Vectors (Scale Length to 1.0)", "If we shrink the long book's arrow and stretch the short tweet's arrow so every arrow has length 1.0, both dots land on the exact same spot on a unit circle!"]
     ]
   },
 
@@ -272,14 +266,13 @@ window.TALK_SLIDES = [
       </div>
     `,
     speakerNotes: [
-      "So how do we go from apples and pears to real software engineering?",
-      "Click 1: On our food chart, we had 2 human-named axes: Sweetness and Crunchiness.",
-      "Click 2: If we want to map support tickets or code, 2 axes aren't enough. We need traits like 'Is this about billing?', 'Is it an urgent outage?', 'Is it about authentication?'.",
-      "Click 3: An AI embedding model is simply a function that takes any text and returns an array of 384 (or up to 3,072) decimal numbers—each number scoring one learned trait."
+      "So how do we go from a 2-number food chart to real software engineering?",
+      "On our food map, we only had 2 traits: Sweetness and Crunchiness.",
+      "If we want to represent support tickets, documentation, or code, 2 traits aren't enough. We need traits like: Is this about billing? Is the user angry? Is it a login issue? Is it on mobile?",
+      "An AI embedding model is simply a function that takes any piece of text and outputs an array of 384 (or up to 3,072) decimal numbers—where each number scores one learned trait."
     ],
     glossary: [
-      ["float[384]", "A standard C# array of 384 single-precision decimal numbers. This *is* the embedding."],
-      ["Latent Trait / Axis", "Because the AI learns these 384 traits on its own by reading the internet, no human manually names Axis #42—the model discovers the most useful traits automatically."]
+      ["float[384]", "A standard C# array of 384 decimal numbers. That array *is* the vector embedding."]
     ]
   },
 
@@ -290,14 +283,14 @@ window.TALK_SLIDES = [
     id: "four-stage-pipeline",
     type: "concept",
     title: "Under the Hood: How Are Embeddings Generated?",
-    subtitle: "It's not a giant dictionary lookup—it's a 4-step conveyor belt",
+    subtitle: "How a whole paragraph becomes one clean coordinate array without turning into mush",
     stepsCount: 4,
     html: `
       <div class="cards-4">
         <div class="v-card step-item" data-step="1">
           <div class="step-badge">Step 1</div>
           <h3>🔪 Chop (Tokenize)</h3>
-          <p>Chop the input into small puzzle pieces (tokens):</p>
+          <p>Split the sentence into sub-word puzzle pieces (tokens):</p>
           <div class="mini-code">
             "unbelievable"<br/>
             ↓<br/>
@@ -310,73 +303,67 @@ window.TALK_SLIDES = [
         <div class="v-card step-item" data-step="2">
           <div class="step-badge">Step 2</div>
           <h3>👀 Context Check</h3>
-          <p>Words look at their neighbors to figure out what they mean right now:</p>
+          <p>Every word absorbs meaning from its neighbors in the sentence:</p>
           <div class="mini-code">
             "cracked my <strong>apple</strong> screen" → 📱 Tech<br/><br/>
-            "ate a crisp <strong>apple</strong>" → 🍎 Fruit
+            "swiped my card and <strong>it</strong> failed" → <strong>"it"</strong> absorbs 💳 Card!
           </div>
         </div>
 
         <div class="v-card step-item" data-step="3">
           <div class="step-badge">Step 3</div>
-          <h3>🗜️ Squash (Pool)</h3>
-          <p>Average all the word vectors in the sentence into <strong>one single array</strong>:</p>
+          <h3>🗜️ Squash (Average)</h3>
+          <p>Average all word vectors into <strong>1 paragraph vector</strong>:</p>
           <div class="mini-code">
-            50 word vectors<br/>
-            ↓ (Average / Mean Pool)<br/>
-            <strong>1 × float[384]</strong>
+            • Filler words (<em>"the", "yesterday"</em>) cancel out.<br/>
+            • Key words (<em>"card", "checkout", "502"</em>) pull together!
           </div>
         </div>
 
         <div class="v-card step-item" data-step="4">
           <div class="step-badge">Step 4</div>
-          <h3>🎯 Scale to 1.0</h3>
-          <p>Scale the arrow so its length is exactly <code>1.0</code> (put every dot on the same circle).</p>
+          <h3>🎯 Scale Length to 1.0</h3>
+          <p>Shrink or stretch the arrow so its length is exactly <code>1.0</code> (a unit circle).</p>
           <div class="mini-code" style="color:var(--accent-3);">
-            Bonus: Once length = 1.0,<br/>
-            <strong>Angle == Dot Product!</strong>
+            Why? Eliminates document length so <strong>short tweets == long docs</strong>!
           </div>
         </div>
       </div>
     `,
     speakerNotes: [
-      "A common question people ask is: 'Is an embedding model just a giant dictionary lookup table?' No! What if you type a sentence nobody has ever written before? Here is the 4-step conveyor belt inside every model:",
-      "Click 1 (Chop / Tokenize): First, the model chops text into sub-word pieces called tokens and turns them into integer IDs.",
-      "Click 2 (Context Check / Self-Attention): Next, every word looks at the words around it. That's how the word 'apple' moves toward iPhones when you say 'cracked my apple screen', and toward bananas when you say 'ate a crisp apple'.",
-      "Click 3 (Squash / Mean Pooling): If your paragraph had 50 tokens, you now have 50 vectors. The pooling layer averages them together into ONE single float[384] coordinate for the whole paragraph.",
-      "Click 4 (Scale to 1.0 / Normalize): Finally, it scales the arrow to length 1.0 so short tweets and long docs live on the same unit sphere. How did it learn where to put things? By playing a billion rounds of 'Hot or Cold' (Contrastive Learning) on matching vs non-matching pairs!"
+      "People often wonder: is an embedding model just a giant dictionary lookup table? No! What if you feed it a paragraph nobody has ever written before? Every input goes through this 4-step conveyor belt.",
+      "Step 1 is Chop (Tokenization): The model splits text into word pieces called tokens and turns them into integer IDs.",
+      "Step 2 is the Context Check (Self-Attention): Before we combine anything, every word looks at the words around it. That's how 'apple' knows it's an iPhone in 'cracked my apple screen'. Even better: in 'I swiped my card and it failed', the word 'it' absorbs the meaning of 'credit card' from earlier in the sentence!",
+      "Step 3 is Squash (Mean Pooling): Now we average all 50 word vectors into one single float[384] array. People often ask: 'Wait—if you average 50 words together, why don't random filler words like yesterday, the, or weirdly ruin the paragraph's meaning?' Two reasons! First, Step 2 already aligned the words in context. Second, filler words point in tiny, neutral directions that cancel each other out like ripples on water, while domain words like 'payment', 'credit', 'card', and '502' all pull strongly in the exact same direction!",
+      "Step 4 is Scale to 1.0 (L2 Normalization): Remember on our 2D map how a 10-page book had a much longer arrow than a 1-sentence tweet just because it had more words? Step 4 divides the vector by its length so every single arrow has a length of exactly 1.0. Now every dot sits on the same circle of radius 1.0—so document length never tricks our search, and checking the angle becomes a fast 1-step multiplication!"
     ],
     glossary: [
-      ["Tokenization", "Splitting text into sub-word chunks (roughly 3/4 of an English word per token)."],
-      ["Self-Attention (Transformer)", "The neural network layer where words exchange context with surrounding words in the sentence."],
-      ["Mean Pooling", "Averaging all the individual word vectors in a sentence to get a single summary vector."],
-      ["Contrastive Learning", "Training the model by feeding it matching pairs (Query + Right Answer) and pushing them together, while pushing random wrong answers apart."]
+      ["Why Filler Words Don't Ruin Paragraph Averages", "1) Transformer self-attention gives strong magnitude to meaningful words and near-zero or context-aligned values to filler words. 2) Random/unrelated noise across 384 dimensions cancels out toward zero when averaged, while repeated topic signals ('card', 'checkout', '502') add up constructively."],
+      ["Why Scale to 1.0 (L2 Normalization)?", "Scaling every arrow to length 1.0 puts short queries and long articles on the exact same footing. Mathematically, once length = 1.0, `CosineSimilarity(A, B)` is just `A[0]*B[0] + A[1]*B[1] + ...` (the Dot Product)."]
     ]
   },
 
   // --------------------------------------------------------------------------
-  // SLIDE 7: DEMO 2 — 3D MEANING UNIVERSE & VECTOR ARITHMETIC
+  // SLIDE 7: DEMO 2A — 3D MEANING UNIVERSE
   // --------------------------------------------------------------------------
   {
     id: "demo-3d-universe",
     type: "demo",
     title: "🎬 Live Demo: Flying Through the 3D Meaning Universe",
-    subtitle: "Watching clusters form & doing live math on concepts (A + B − C)",
+    subtitle: "Watching 180 support tickets self-organize into clusters in 3D space",
     stepsCount: 1,
     demoUrl: "../visualizer/index.html?tab=tab-3d",
+    stageCue: "Open Visualizer Tab 2 ('2. 3D Meaning Universe'). Rotate the 3D space, type a live sentence in the input box, click 'Embed & Fly', and click '⚠ 3D Shadow Warning'.",
     html: `
       <div class="demo-hero">
-        <div class="demo-badge">🎬 INTERACTIVE VISUALIZER • TABS 2 & 3</div>
+        <div class="demo-badge">🎬 INTERACTIVE VISUALIZER • TAB 2</div>
         <h2>Step Inside 384-Dimensional Space</h2>
         <p style="max-width:760px; margin: 12px auto 24px; color:var(--text-1); font-size:18px; line-height:1.55;">
-          Let's rotate a live cloud of 180 support tickets, drop a brand-new sentence from the audience into 3D space, and add/subtract concepts using vector arithmetic!
+          Let's project 384 coordinates down to 3D so we can rotate the clusters, drop a live sentence from the audience into space, and see which neighborhood it lands in!
         </p>
         <div class="demo-actions">
           <a class="btn-launch" href="../visualizer/index.html?tab=tab-3d" target="_blank">
-            🌌 Open 3D Meaning Universe (Tab 2) ↗
-          </a>
-          <a class="btn-launch btn-alt" href="../visualizer/index.html?tab=tab-math" target="_blank">
-            ➕ Open Vector Arithmetic Lab (Tab 3) ↗
+            🌌 Open 3D Meaning Universe (Visualizer Tab 2) ↗
           </a>
         </div>
         <div class="cards-3" style="margin-top:28px; text-align:left;">
@@ -386,29 +373,83 @@ window.TALK_SLIDES = [
           </div>
           <div class="v-card">
             <h3>2. Audience Live Drop</h3>
-            <p>Type any weird sentence—watch the camera fly to where it lands and connect to its top 5 matches.</p>
+            <p>Type any phrase—watch the camera fly to its landing spot and draw laser lines to its top 5 matches.</p>
           </div>
           <div class="v-card">
-            <h3>3. Vector Math (Tab 3)</h3>
-            <p><code>"Database latency" + "Angry customer" − "Internal test" = "P1 Production Outage!"</code></p>
+            <h3>3. The 3D Shadow Warning</h3>
+            <p>Why squashing 384 numbers to 3D for a human screen is like casting a shadow on a wall.</p>
           </div>
         </div>
       </div>
     `,
     speakerNotes: [
-      "Click the button to open Tab 2 ('2. 3D Meaning Universe') in the Visualizer.",
-      "1. Drag to rotate the 3D cloud. Point out that nobody tagged these tickets—the model grouped Billing, MFA, and Outages by meaning alone.",
-      "2. Ask someone in the audience for a bug description (or click a quick chip like 'credit card won't go through at checkout') and click 'Embed & Fly'.",
-      "3. Click the yellow '3D Shadow Warning' button in the top-right to remind them: squashing 384 numbers to 3D is like a shadow on a wall—always compute similarity in full 384D!",
-      "4. Switch to Tab 3 ('3. Vector Arithmetic') and click Preset 1: 'Database latency + Angry customer - Internal test' -> lands right on 'P1 Production database outage!'."
+      "Let's jump into Tab 2 of our Visualizer and fly through a 3D projection of 180 real support tickets, movies, and developer questions."
     ],
     glossary: [
-      ["UMAP / Dimensionality Reduction", "An algorithm that squashes 384 dimensions down to 3D (X, Y, Z) so humans can visualize clusters on a screen—like flattening a 3D globe into a 2D map."]
+      ["UMAP (384D → 3D Projection)", "Humans can't see in 384 dimensions. UMAP is an algorithm that squashes 384 coordinates down to 3D (X, Y, Z) while trying to keep neighboring dots together—just like flattening a 3D globe into a 2D world map."]
     ]
   },
 
   // --------------------------------------------------------------------------
-  // SLIDE 8: LIVE C# CODE DEMO 1 — SEMANTIC SEARCH IN ~25 LINES
+  // SLIDE 8: DEMO 2B — VECTOR ARITHMETIC (DOING MATH ON MEANING)
+  // --------------------------------------------------------------------------
+  {
+    id: "demo-vector-arithmetic",
+    type: "demo",
+    title: "🎬 Live Demo: Doing Math on Meaning (Vector Arithmetic)",
+    subtitle: "What happens when you add and subtract concept coordinates? (A + B − C)",
+    stepsCount: 2,
+    demoUrl: "../visualizer/index.html?tab=tab-math",
+    stageCue: "Reveal the two steps on this slide, then click the button to open Visualizer Tab 3 ('3. Vector Arithmetic') and click through the 4 presets!",
+    html: `
+      <div class="flow-vertical">
+        <div class="cards-2">
+          <div class="v-card step-item" data-step="1">
+            <div class="step-badge">The Classic Textbook Example</div>
+            <h3>👑 Royal Meaning Math</h3>
+            <div class="mini-code" style="font-size:15px;">
+              Vector(<strong>"King"</strong>)<br/>
+              − Vector(<strong>"Man"</strong>)<br/>
+              + Vector(<strong>"Woman"</strong>)<br/>
+              ────────────────────────<br/>
+              ≈ Vector(<strong style="color:var(--accent-3);">"Queen"</strong>)
+            </div>
+            <p style="margin-top:8px;">Because gender and royalty are directions on the map, you can add and subtract them!</p>
+          </div>
+
+          <div class="v-card step-item" data-step="2" style="border-color:var(--accent);">
+            <div class="step-badge">The Software Engineering Version</div>
+            <h3>🚨 Incident Escalation Math</h3>
+            <div class="mini-code" style="font-size:15px;">
+              Vector(<strong>"Database query latency"</strong>)<br/>
+              + Vector(<strong>"Angry customer blocked"</strong>)<br/>
+              − Vector(<strong>"Internal staging test"</strong>)<br/>
+              ────────────────────────────────────<br/>
+              ≈ Vector(<strong style="color:var(--danger);">"P1 Production Database Outage!"</strong>)
+            </div>
+            <p style="margin-top:8px;">Let's test this live in Tab 3 of our Visualizer!</p>
+          </div>
+        </div>
+
+        <div style="text-align:center; margin-top:12px;">
+          <a class="btn-launch" href="../visualizer/index.html?tab=tab-math" target="_blank">
+            ➕ Open Vector Arithmetic Lab (Visualizer Tab 3) ↗
+          </a>
+        </div>
+      </div>
+    `,
+    speakerNotes: [
+      "Because concepts are represented as coordinates, directions in space also have meaning—which means we can literally add and subtract ideas using plus and minus!",
+      "You might have heard of the famous textbook example: if you take the coordinate for 'King', subtract 'Man', and add 'Woman', the resulting arrow lands right next to 'Queen'.",
+      "What does that look like in software engineering? Take 'Database query latency', add 'Angry customer blocked at checkout', and subtract 'Internal staging sandbox test'—and let's open Tab 3 of our Visualizer to see where that coordinate lands!"
+    ],
+    glossary: [
+      ["Vector Addition / Subtraction", "Literally looping through the 384 numbers and doing `Result[i] = A[i] + B[i] - C[i]`, then re-normalizing the arrow to length 1.0."]
+    ]
+  },
+
+  // --------------------------------------------------------------------------
+  // SLIDE 9: LIVE C# CODE DEMO 1 — SEMANTIC SEARCH IN ~25 LINES
   // --------------------------------------------------------------------------
   {
     id: "code-demo-semantic-search",
@@ -416,6 +457,7 @@ window.TALK_SLIDES = [
     title: "💻 Live C# Code: Semantic Search in ~25 Lines",
     subtitle: "Running 100% locally in .NET 10 — zero cloud API keys or Python needed",
     stepsCount: 4,
+    stageCue: "After revealing Step 4, switch to your terminal/IDE and run `dotnet run --project src/01-LiveCoding-SemanticSearch` (press Enter 4 times to walk through the 4 queries).",
     html: `
       <div class="two-col-slide">
         <div>
@@ -471,27 +513,27 @@ window.TALK_SLIDES = [
       </div>
     `,
     speakerNotes: [
-      "Let's see how this looks in real C# code. We don't need Python, we don't need a massive framework, and we don't even need an internet connection.",
-      "Click 1: First, we create an IEmbeddingGenerator. That's the official standard interface in Microsoft.Extensions.AI. Here we load a local ONNX model file—think of ONNX like a PDF or MP3 file, but for a trained neural network.",
-      "Click 2: Next, we have 4 support tickets as plain strings, and we call GenerateAsync(tickets). That turns each string into a float[384] coordinate array.",
-      "Click 3: When a user types 'credit card won't go through', we embed their query and use LINQ + TensorPrimitives.CosineSimilarity—which is built right into .NET and uses fast parallel CPU math—to sort by the best match.",
-      "Click 4: Switch to your terminal and run `dotnet run --project src/01-LiveCoding-SemanticSearch`! Press Enter at each step to walk the audience through the 4 live queries—including the final 'DISABLE MFA' cliffhanger!"
+      "Let's see how this looks in real C# code. You don't need Python, you don't need a massive framework, and you don't even need an internet connection.",
+      "First, we create an IEmbeddingGenerator. That is the official standard interface in Microsoft.Extensions.AI. Here we load a local ONNX model file—think of an ONNX file like a PDF or MP3 file, except it holds a trained neural network that runs right on your laptop CPU.",
+      "Second, we have our support tickets as plain C# strings, and we call GenerateAsync. That turns each sentence into a float[384] array of coordinates.",
+      "Third, when a user searches 'credit card won't go through', we turn their query into a vector and use LINQ plus TensorPrimitives.CosineSimilarity—which is built directly into .NET and uses parallel CPU math—to sort our tickets by the closest angle.",
+      "Let's run this project in the terminal and test four queries live!"
     ],
     glossary: [
       ["ONNX (Open Neural Network Exchange)", "A universal file format for AI models (like a .pdf for neural networks). Lets you download a model once and run it directly inside C# on your CPU with zero Python or cloud APIs."],
-      ["Microsoft.Extensions.AI", "Microsoft's official .NET library that gives standard interfaces (like IEmbeddingGenerator and IChatClient) so you can swap AI providers without rewriting code."],
-      ["TensorPrimitives / SIMD", "Built-in .NET class (`System.Numerics.Tensors`) that uses your CPU's wide math registers to multiply 8 to 16 numbers in a single clock tick instead of 1 by 1 in a slow loop."]
+      ["Microsoft.Extensions.AI", "Microsoft's official .NET library that provides standard interfaces (like IEmbeddingGenerator) so you can swap AI providers via dependency injection without rewriting your app."],
+      ["TensorPrimitives", "Built-in .NET class (`System.Numerics.Tensors`) that uses your CPU's wide math registers to multiply 8 to 16 numbers in a single clock tick instead of 1 by 1 in a slow loop."]
     ]
   },
 
   // --------------------------------------------------------------------------
-  // SLIDE 9: ARCHITECTURAL PATTERNS #1 & #2 BEYOND CHATBOTS
+  // SLIDE 10: ARCHITECTURAL PATTERNS #1 & #2 BEYOND CHATBOTS (WITH EXPANDABLE EXAMPLES)
   // --------------------------------------------------------------------------
   {
     id: "patterns-routing-and-caching",
     type: "concept",
     title: "Beyond Chatbots: Fast Backend Building Blocks",
-    subtitle: "You don't need an LLM chatbot to get massive value from embeddings",
+    subtitle: "Using embeddings as sub-millisecond microservice primitives—zero LLM needed",
     stepsCount: 2,
     html: `
       <div class="cards-2">
@@ -499,7 +541,7 @@ window.TALK_SLIDES = [
           <div class="step-badge">Pattern #1 • &lt; 1 Millisecond</div>
           <h3>🧭 Zero-Shot Ticket & Webhook Routing</h3>
           <p>How do you route incoming tickets to 5 teams without training a custom ML model?</p>
-          <div class="diagram-box" style="margin-top:12px;">
+          <div class="diagram-box" style="margin-top:10px;">
             <div class="d-node">Incoming Ticket: <em>"Visa card declined on checkout"</em></div>
             <div class="d-arrow">↓ Compare angle against 5 Team Descriptions</div>
             <div class="d-row">
@@ -508,42 +550,57 @@ window.TALK_SLIDES = [
               <span class="d-pill">📱 Mobile (11%)</span>
             </div>
           </div>
-          <p style="margin-top:10px; font-size:14px; color:var(--accent-3);">
-            <strong>Why engineers love it:</strong> Adding a 6th team is just adding 1 string to your config!
-          </p>
+
+          <details class="slide-expand">
+            <summary>🔍 Click to Expand Concrete Example (How Team Descriptions Look)</summary>
+            <div class="expand-body mono" style="font-size:12px;">
+              <strong>// 1. Embed 1 description per team at startup:</strong><br/>
+              BillingVec  = Embed("Credit card, invoice, VAT tax, checkout 502, refund");<br/>
+              SecurityVec = Embed("Two-factor MFA reset, locked account, SSO password");<br/>
+              MobileVec   = Embed("iOS Android app crash, avatar photo upload freeze");<br/><br/>
+              <strong>// 2. Compare incoming ticket against those 3 vectors:</strong><br/>
+              Dot(TicketVec, BillingVec)  → <span style="color:var(--accent-3);">0.86 (Route to Billing!)</span>
+            </div>
+          </details>
         </div>
 
         <div class="v-card step-item" data-step="2">
           <div class="step-badge">Pattern #2 • Save 40%+ API Cost</div>
           <h3>⚡ Semantic Cache & Duplicate Blocker</h3>
           <p>Before creating a duplicate Jira bug or paying for a slow 3-second LLM call, check if a similar coordinate already exists:</p>
-          <div class="diagram-box" style="margin-top:12px;">
+          <div class="diagram-box" style="margin-top:10px;">
             <div class="d-node">New Bug: <em>"Checkout fails with 502 on credit card"</em></div>
             <div class="d-arrow">↓ Check Cosine Similarity against recent items</div>
             <div class="d-node" style="border-color:var(--warn); color:var(--warn);">
-              🎯 <strong>94% Match Found!</strong> Existing Jira #1042<br/>
+              🎯 <strong>95% Match Found!</strong> Existing Jira #1042<br/>
               <em>"Payment gateway returns 502 error at checkout"</em>
             </div>
           </div>
-          <p style="margin-top:10px; font-size:14px; color:var(--accent-3);">
-            <strong>Rule of thumb:</strong> If similarity <code>&gt;= 90%</code>, return the cached answer immediately!
-          </p>
+
+          <details class="slide-expand">
+            <summary>🔍 Click to Expand Concrete Example (LLM Cache & Jira Dedup)</summary>
+            <div class="expand-body mono" style="font-size:12px;">
+              <strong>User 1 asks chatbot:</strong> "How do I reset my 2FA token?" → Calls LLM (2.8s, $0.02)<br/>
+              <strong>User 2 asks chatbot:</strong> "Lost my phone, how to reset two-factor?"<br/>
+              → CosineSimilarity = <strong>94% (&gt;= 90% threshold)</strong><br/>
+              → <span style="color:var(--accent-3);">Returns cached answer in 0.4 milliseconds for $0.00!</span>
+            </div>
+          </details>
         </div>
       </div>
     `,
     speakerNotes: [
-      "Most people hear 'embeddings' and only think of RAG—stuffing text into a ChatGPT prompt. But some of the coolest uses of embeddings don't use an LLM at all! They are fast, deterministic backend building blocks.",
-      "Click 1 (Pattern #1 — Zero-Shot Routing): Suppose you need to route incoming support webhooks to Billing, Security, or Mobile. Instead of training a classifier, embed 1 sentence describing each team at startup. When a ticket arrives, check which team vector it's closest to. Takes under 1 millisecond!",
-      "Click 2 (Pattern #2 — Semantic Caching & Dedup): Before filing a duplicate Jira ticket or calling a slow $0.03 LLM API, check if a query with >90% similarity is already in your cache."
+      "Most people hear 'embeddings' and only think of chatbots and RAG. But some of the highest-ROI ways to use embeddings in software engineering don't involve a chatbot at all!",
+      "Pattern #1 is Zero-Shot Ticket Routing. Suppose your backend receives customer support tickets or webhooks and needs to route them to Billing, Security, or the Mobile team. Instead of collecting 10,000 labeled tickets to train a classifier, you just write one descriptive sentence for each team when your service starts up: for example, Billing is 'credit card declined, invoice VAT rate, checkout 502, refund'. You embed those team descriptions once. When a ticket comes in saying 'My Visa card keeps getting rejected', you compare its vector against your team vectors. It matches Billing at 86% in under a millisecond—and adding a new team tomorrow is just adding one string to appsettings.json!",
+      "Pattern #2 is Semantic Caching and Deduplication. Users file the exact same bug report in slightly different words, or ask your AI assistant the same question 500 different ways. By keeping recent vectors in memory or Redis, if a new request has over 90% similarity to an existing one, you immediately link the duplicate Jira ticket or return the cached answer in under a millisecond."
     ],
     glossary: [
-      ["Zero-Shot Classification", "Categorizing data into buckets without training a custom machine learning model on labeled examples—just measuring distance to category descriptions."],
-      ["RAG (Retrieval-Augmented Generation)", "Searching a database for relevant paragraphs and pasting them into an LLM prompt so the chatbot can answer using your private data."]
+      ["Zero-Shot Routing", "Categorizing incoming items into queues without training a custom ML model—just by measuring similarity to 1-sentence descriptions of each queue."]
     ]
   },
 
   // --------------------------------------------------------------------------
-  // SLIDE 10: ARCHITECTURAL PATTERNS #3 & #4 (ANOMALIES & RECOMMENDATIONS)
+  // SLIDE 11: ARCHITECTURAL PATTERNS #3 & #4 (WITH EXPANDABLE EXAMPLES)
   // --------------------------------------------------------------------------
   {
     id: "patterns-anomaly-and-recs",
@@ -557,23 +614,36 @@ window.TALK_SLIDES = [
           <div class="step-badge">Pattern #3 • Catch Unknown Bugs</div>
           <h3>🚨 Anomaly & Log Drift Detection</h3>
           <p>Regex alerts only catch errors you already know how to spell. Embeddings catch <strong>anything weird</strong>:</p>
-          <div class="diagram-box" style="margin-top:12px; text-align:center;">
-            <div style="display:inline-block; padding:14px 22px; border:2px dashed var(--accent-3); border-radius:999px; color:var(--accent-3);">
-              🟢 Normal Logs Cluster<br/>
+          <div class="diagram-box" style="margin-top:10px; text-align:center;">
+            <div style="display:inline-block; padding:10px 18px; border:2px dashed var(--accent-3); border-radius:999px; color:var(--accent-3);">
+              🟢 Normal Logs Cluster Center<br/>
               <span style="font-size:12px; color:var(--text-1);">(CI builds, healthchecks, routine deploys)</span>
             </div>
-            <div style="margin:10px 0; color:var(--danger); font-weight:700;">← Distance &gt; Threshold! →</div>
+            <div style="margin:6px 0; color:var(--danger); font-weight:700;">← Distance = 0.95 (Far Outside!) →</div>
             <div class="d-node" style="border-color:var(--danger); color:#fecaca;">
               🔴 <strong>OUTLIER ALERT:</strong> Novel payment failure log landed far outside the normal circle!
             </div>
           </div>
+
+          <details class="slide-expand">
+            <summary>🔍 Click to Expand Concrete Example (How Log Averaging Works)</summary>
+            <div class="expand-body mono" style="font-size:12px;">
+              <strong>1. Average 1,000 healthy logs into 1 "Normal Center" coordinate:</strong><br/>
+              Normal1: "INFO Healthcheck passed on node-3"   → [+0.41, +0.38, ...]<br/>
+              Normal2: "INFO CI build #482 deployed to k8s"  → [+0.43, +0.40, ...]<br/>
+              <strong>NormalCenter</strong> = Average(Normal1..N)            → <strong>[+0.42, +0.39, ...]</strong><br/><br/>
+              <strong>2. Check distance of new log line:</strong><br/>
+              NewLog: "URGENT Checkout Stripe 502 failing!" → <strong>[-0.51, -0.28, ...]</strong><br/>
+              Distance from NormalCenter = <strong>0.95 (&gt; 0.55 cutoff) → Trigger Alert!</strong>
+            </div>
+          </details>
         </div>
 
         <div class="v-card step-item" data-step="2">
           <div class="step-badge">Pattern #4 • Zero User-Tracking DB</div>
           <h3>🎯 Stateless "More Like This" Recommendations</h3>
           <p>How do you recommend articles without building a massive collaborative-filtering pipeline?</p>
-          <div class="diagram-box" style="margin-top:12px;">
+          <div class="diagram-box" style="margin-top:10px;">
             <div class="d-node">User just read 3 articles → <code>Vec1, Vec2, Vec3</code></div>
             <div class="d-arrow">↓ Average the 3 arrays together: <code>(Vec1 + Vec2 + Vec3) / 3</code></div>
             <div class="d-node" style="border-color:var(--accent); color:var(--accent);">
@@ -581,116 +651,146 @@ window.TALK_SLIDES = [
               Query nearest unread articles to that average point!
             </div>
           </div>
+
+          <details class="slide-expand">
+            <summary>🔍 Click to Expand Concrete Example (Averaging 3 Read Articles)</summary>
+            <div class="expand-body mono" style="font-size:12px;">
+              Read #1: "SIMD Vector Math in C#"     → [+0.60, +0.10, ...]<br/>
+              Read #2: "Local ONNX Models in .NET"  → [+0.55, +0.20, ...]<br/>
+              Read #3: "Replacing SQL LIKE Queries" → [+0.50, +0.15, ...]<br/>
+              <strong>UserTaste = Average(Read 1..3)      → [+0.55, +0.15, ...]</strong><br/>
+              Closest Unread Article → <span style="color:var(--accent-3);">"Quantization &amp; Hybrid Search in C#" (85% Match!)</span>
+            </div>
+          </details>
         </div>
       </div>
     `,
     speakerNotes: [
-      "Here are two more patterns that just use simple averages of float arrays:",
-      "Click 1 (Pattern #3 — Anomaly Detection): Average 100 normal application logs to find the center of 'normal behavior'. Whenever a new log line lands far away from that center circle, trigger an alert—catching brand-new failure modes that regex rules would never match.",
-      "Click 2 (Pattern #4 — Stateless Recommendations): Want a 'Recommended For You' feed? Just average the vectors of the last 3 or 5 items the user clicked on! That average coordinate *is* their taste profile. Find the closest unread articles to that spot."
+      "Here are two more patterns that rely on one simple trick: averaging arrays of numbers together.",
+      "Pattern #3 is Log Anomaly Detection. Traditional monitoring relies on regex rules for errors you already anticipate. With embeddings, you take 1,000 healthy logs from a normal Tuesday—things like healthchecks, routine deployments, and CI builds—and average their vectors together to find the center point of 'Normal Operations'. When a new log line comes in, you measure how far it sits from that normal center. If a weird third-party payment outage starts happening, its vector lands way outside the normal circle at a distance of 0.95, triggering an alert even if the log message doesn't contain the word 'Exception'!",
+      "Pattern #4 is a Stateless Recommendation Engine. If a user just read three articles on your site—say one about C# performance, one about ONNX models, and one about semantic search—you just average those three float[384] arrays together. That average coordinate IS the user's current taste profile! Then you query which unread article sits closest to that spot."
     ],
     glossary: [
-      ["Centroid", "The center point of a cluster—calculated simply by averaging all the vectors in that group (`(v1 + v2 + ... + vN) / N`)."]
+      ["Cluster Centroid (Normal Center)", "The average coordinate of a group of vectors—calculated by adding all vectors in the group together and dividing by the count (`(v1 + v2 + ... + vN) / N`)."]
     ]
   },
 
   // --------------------------------------------------------------------------
-  // SLIDE 11: PATTERN #5 — MULTIMODAL SHARED SPACE (TEXT + IMAGE + AUDIO)
+  // SLIDE 12: PATTERN #5 — MULTIMODAL SHARED SPACE (CONCRETE CONSTRUCTION EXAMPLES)
   // --------------------------------------------------------------------------
   {
     id: "multimodal-shared-space",
     type: "concept",
     title: "How Text, Images & Audio Share the Exact Same Map",
-    subtitle: "Searching untagged screenshots and audio clips with plain English text",
+    subtitle: "How a JPG photo and a WAV sound file get chopped into numbers just like text",
     stepsCount: 3,
     html: `
       <div class="flow-vertical">
         <div class="cards-3 step-item" data-step="1">
           <div class="v-card">
-            <h3>📝 Text Input</h3>
-            <p><code>"golden retriever puppy"</code><br/>Chopped into word tokens.</p>
+            <h3>📝 1. Text Construction</h3>
+            <p><strong>Input:</strong> <code>"golden retriever"</code></p>
+            <div class="mini-code">
+              1. Split into words:<br/>
+                 <code>["golden", "retriever"]</code><br/>
+              2. Lookup Token IDs:<br/>
+                 <code>[4812, 9021]</code><br/>
+              3. Pass through Text Encoder:<br/>
+                 → <strong style="color:var(--accent-3);">[ +0.21, -0.44, +0.79 ]</strong>
+            </div>
           </div>
+
           <div class="v-card">
-            <h3>🖼️ Image Input</h3>
-            <p><code>IMG_0042.jpg</code> (Untagged photo)<br/>Sliced into <strong>16×16 pixel puzzle patches</strong>.</p>
+            <h3>🖼️ 2. Image Construction</h3>
+            <p><strong>Input:</strong> <code>dog_photo.jpg</code></p>
+            <div class="mini-code">
+              1. Slice photo into a grid of<br/>
+                 <strong>16×16 pixel puzzle squares</strong>.<br/>
+              2. Read each square's RGB colors<br/>
+                 <code>[Red:240, Green:190, Blue:80]</code><br/>
+              3. Vision Encoder reads squares<br/>
+                 just like words in a sentence!<br/>
+                 → <strong style="color:var(--accent-3);">[ +0.20, -0.43, +0.78 ]</strong>
+            </div>
           </div>
+
           <div class="v-card">
-            <h3>🔊 Audio Input</h3>
-            <p><code>barking.wav</code><br/>Converted into a <strong>visual sound wave image</strong> (spectrogram).</p>
+            <h3>🔊 3. Audio Construction</h3>
+            <p><strong>Input:</strong> <code>dog_bark.wav</code></p>
+            <div class="mini-code">
+              1. Plot sound wave as a 2D picture<br/>
+                 called a <strong>Spectrogram</strong><br/>
+                 (X=Time, Y=Pitch, Color=Loudness).<br/>
+              2. Slice that picture into<br/>
+                 <strong>16×16 squares</strong> just like a photo!<br/>
+              3. Pass through Audio Encoder:<br/>
+                 → <strong style="color:var(--accent-3);">[ +0.19, -0.42, +0.77 ]</strong>
+            </div>
           </div>
         </div>
 
         <div class="v-card step-item" data-step="2" style="border-color:var(--accent-3); text-align:center;">
-          <h3 style="color:var(--accent-3);">🎯 Trained Side-by-Side Into ONE Shared Coordinate Space!</h3>
-          <p>Models like <strong>CLIP</strong>, <strong>SigLIP</strong>, and <strong>Gemini Embedding 2</strong> force the photo of a dog, the sound of a bark, and the text <em>"golden retriever"</em> to output the <strong>exact same coordinates</strong>: <code>[ +0.21, -0.44, +0.79, ... ]</code></p>
+          <h3 style="color:var(--accent-3);">🎯 Trained Together so All 3 Land on the Exact Same Spot!</h3>
+          <p>During training, models like <strong>CLIP</strong>, <strong>SigLIP</strong>, and <strong>Gemini Embedding 2</strong> are shown millions of photos with their captions and audio—pulling all 3 encoders to output the <strong>exact same coordinates</strong>!</p>
         </div>
 
         <div class="v-card step-item" data-step="3" style="border-color:var(--warn); background:rgba(251,191,36,0.08);">
           <h3 style="color:var(--warn);">💡 Pro Nuance: "The Modality Gap" (Oil & Water)</h3>
-          <p>Even in a shared space, image dots and text dots hover in slightly offset clouds (like oil and water). Newer models (SigLIP / Gemini Embedding 2) shrink this gap so you can search untagged bug screenshots, PDFs, and docs in a single query!</p>
+          <p>Even in a shared map, image vectors and text vectors hover in slightly offset clouds (like oil and water). Newer unified models shrink this gap so one text query searches screenshots, PDFs, audio, and docs at once!</p>
         </div>
       </div>
     `,
     speakerNotes: [
-      "What about images, PDFs, and audio? How can you type 'diagram with red arrows' or 'golden retriever' and search a folder of untagged JPG files?",
-      "Click 1: First, how do images and audio turn into tokens? An image is sliced into a grid of 16x16 pixel puzzle pieces. Audio is turned into a visual frequency heatmap (spectrogram) and sliced the exact same way.",
-      "Click 2: Multimodal models (like CLIP, SigLIP, or Gemini Embedding 2) train the Text, Image, and Audio encoders together on millions of captioned photos and videos—forcing all three to output the exact same coordinate neighborhood!",
-      "Click 3: One cool engineering subtlety called 'The Modality Gap': even in shared models, image vectors and text vectors tend to hover in slightly separated sub-clouds, like oil and water. Now let's run all 5 of these patterns in C#!"
+      "What about images and audio? How can a raw JPG photo of a dog and a WAV audio file of a bark produce the exact same float[384] coordinate array as the English text 'golden retriever'?",
+      "Look at the three columns here to see how each one is constructed. For text, we chop the sentence into words and token IDs. For an image, a Vision Transformer literally chops the photo into a grid of 16-by-16 pixel puzzle squares! Each square has Red, Green, and Blue brightness numbers, and the model reads those squares left-to-right just like words in a sentence. And for audio? We convert the sound wave into a visual heatmap of pitch over time called a spectrogram—which is just a 2D picture—and chop that picture into 16-by-16 squares too!",
+      "During training, multimodal models like CLIP, SigLIP, and Gemini Embedding 2 are shown millions of paired photos, captions, and audio clips, and punished whenever the photo arrow and the text arrow point in different directions. So all three end up at [+0.21, -0.44, +0.79]!",
+      "One practical nuance called The Modality Gap: even in a shared space, image vectors and text vectors still hover in slightly offset sub-clouds, like oil and water. Newer models shrink that gap dramatically, letting your vector database search untagged screenshots, architecture diagrams, and text in a single query."
     ],
     glossary: [
-      ["Multimodal Model (CLIP / SigLIP / Gemini Embedding 2)", "An AI model that embeds different media types (text, images, audio, PDFs) into the exact same coordinate space so you can search images using text."],
-      ["ViT (Vision Transformer) Patches", "Chopping an image into small 16x16 pixel squares and feeding them into a Transformer just like words in a sentence."],
-      ["The Modality Gap", "The tendency for image embeddings and text embeddings to sit in slightly offset sub-regions of the shared space."]
+      ["How Images Become Tokens (ViT Patches)", "A 224×224 pixel image is sliced into 196 little squares of 16×16 pixels. Each square is flattened into a list of RGB numbers and fed into the Transformer just like a word token."],
+      ["How Audio Becomes Tokens (Spectrogram)", "Sound waves are plotted as a 2D image where X is time, Y is frequency/pitch, and brightness is volume—then sliced into 16×16 squares just like a photograph."]
     ]
   },
 
   // --------------------------------------------------------------------------
-  // SLIDE 12: LIVE C# CODE DEMO 2 — 5 PATTERNS BEYOND RAG
+  // SLIDE 13: LIVE C# CODE DEMO 2 — 5 PATTERNS BEYOND RAG
   // --------------------------------------------------------------------------
   {
     id: "code-demo-5-patterns",
     type: "code",
-    title: "💻 Live C# Demo: 5 Backend Patterns in Action",
-    subtitle: "Step-by-step interactive console walkthrough (src/02-PatternsBeyondRag)",
+    title: "💻 Live C# Demo: 5 Backend Patterns in Separate Files",
+    subtitle: "Modular, step-by-step C# demos you can run or debug individually (src/02-PatternsBeyondRag)",
     stepsCount: 1,
+    stageCue: "Open `src/02-PatternsBeyondRag/Program.cs` in your IDE (or run `dotnet run --project src/02-PatternsBeyondRag`). Each pattern is in its own separate `.cs` file in `Demos/` and pauses at each sub-step!",
     html: `
       <div class="demo-hero">
-        <div class="demo-badge">💻 STEP-BY-STEP C# CONSOLE DEMO</div>
-        <h2>Run All 5 Patterns One by One</h2>
-        <p style="max-width:760px; margin: 12px auto 20px; color:var(--text-1); font-size:17px;">
-          Our second C# project pauses cleanly between each pattern so we can inspect the code and live output one step at a time:
+        <div class="demo-badge">💻 MODULAR STEP-BY-STEP C# DEMOS</div>
+        <h2>Clean, Separate Demo Files Ready for Live Walkthrough</h2>
+        <p style="max-width:780px; margin: 10px auto 18px; color:var(--text-1); font-size:16.5px;">
+          In <code>src/02-PatternsBeyondRag/Program.cs</code>, each pattern is a clean 1-line call into its own file under <code>Demos/</code>—so you can comment/uncomment any demo, set breakpoints, or step through in the console with <code>[Enter]</code>:
         </p>
-        <div class="mono" style="font-size:16px; background:#050811; border:1px solid var(--accent); padding:14px 22px; border-radius:10px; display:inline-block; color:var(--accent-3);">
+        <pre class="code-box" style="text-align:left; max-width:780px; margin:0 auto 18px; font-size:13px;">
+<span class="cm">// src/02-PatternsBeyondRag/Program.cs — Uncomment any pattern to run solo!</span>
+<span class="kw">await</span> <span class="ty">Demo1_ZeroShotTicketRouting</span>.RunAsync(embedder, stepByStep);
+<span class="kw">await</span> <span class="ty">Demo2_SemanticCacheAndDedup</span>.RunAsync(embedder, stepByStep);
+<span class="kw">await</span> <span class="ty">Demo3_LogAnomalyRadar</span>.RunAsync(embedder, stepByStep);
+<span class="kw">await</span> <span class="ty">Demo4_StatelessRecommendations</span>.RunAsync(embedder, stepByStep);
+<span class="kw">await</span> <span class="ty">Demo5_MultimodalSearch</span>.RunAsync(embedder, stepByStep);</pre>
+        <div class="mono" style="font-size:15px; background:#050811; border:1px solid var(--accent); padding:12px 20px; border-radius:10px; display:inline-block; color:var(--accent-3);">
           dotnet run --project src/02-PatternsBeyondRag
-        </div>
-        <div class="cards-3" style="margin-top:24px; text-align:left;">
-          <div class="v-card">
-            <h3>Patterns 1 & 2</h3>
-            <p><strong>Zero-Shot Webhook Router</strong> (&lt;1ms) + <strong>Duplicate Jira Bug Catcher</strong>.</p>
-          </div>
-          <div class="v-card">
-            <h3>Patterns 3 & 4</h3>
-            <p><strong>Production Log Anomaly Radar</strong> + <strong>Stateless Article Recommender</strong>.</p>
-          </div>
-          <div class="v-card">
-            <h3>Pattern 5</h3>
-            <p><strong>Cross-Modal Vault Search</strong> (Searching untagged images, audio & PDFs with text).</p>
-          </div>
         </div>
       </div>
     `,
     speakerNotes: [
-      "Switch to your terminal and run `dotnet run --project src/02-PatternsBeyondRag`.",
-      "Because we updated it to be step-by-step, it will show you Pattern #1 (Zero-Shot Routing) and wait for you to press Enter before clearing/moving to Pattern #2, #3, #4, and #5!",
-      "You only need to spend ~45 seconds on each pattern—point out the tiny C# snippet printed at the top of each step and the green result bars below it."
+      "Let's switch to our IDE and terminal to run our second C# project, where each of these five backend patterns is in its own clean, self-contained C# file."
     ],
     glossary: [
-      ["TensorPrimitives.Add / Divide", "Built-in .NET methods that add or divide entire float[] arrays in one line—used here to average vectors into a cluster centroid or user taste profile."]
+      ["CLI Tip: Running a Single Pattern", "You can either comment out lines in `Program.cs` OR run `dotnet run --project src/02-PatternsBeyondRag -- --demo 1` (or `2`, `3`, `4`, `5`) to run just one pattern!"]
     ]
   },
 
   // --------------------------------------------------------------------------
-  // SLIDE 13: WHY EMBEDDING MODELS DIFFER (5 SIMPLE QUESTIONS)
+  // SLIDE 14: WHY EMBEDDING MODELS DIFFER (5 SIMPLE QUESTIONS)
   // --------------------------------------------------------------------------
   {
     id: "how-models-differ",
@@ -700,48 +800,48 @@ window.TALK_SLIDES = [
     stepsCount: 5,
     html: `
       <div class="flow-vertical" style="gap:10px;">
-        <div class="v-card step-item" data-step="1" style="padding:14px 18px;">
+        <div class="v-card step-item" data-step="1" style="padding:13px 18px;">
           <h3>1. Short Question vs. Long Answer (Symmetric vs. Asymmetric)</h3>
           <p>A 4-word search query doesn't look like a 500-word manual page. Retrieval models trained for Q&A often require adding <code>"query: "</code> before user searches and <code>"passage: "</code> before documents.</p>
         </div>
 
-        <div class="v-card step-item" data-step="2" style="padding:14px 18px; border-color:rgba(248,113,113,0.4);">
+        <div class="v-card step-item" data-step="2" style="padding:13px 18px; border-color:rgba(248,113,113,0.4);">
           <h3 style="color:var(--danger);">2. The Silent Cutoff Trap (Context Window: 512 vs. 8,000+ Words)</h3>
           <p>Older models cap at <strong>512 tokens (~1 page)</strong> and <strong>silently delete</strong> pages 2–10 without throwing an error! Always check the model's max token limit.</p>
         </div>
 
-        <div class="v-card step-item" data-step="3" style="padding:14px 18px;">
+        <div class="v-card step-item" data-step="3" style="padding:13px 18px;">
           <h3>3. Coordinate Array Size (384 vs. 3,072 Numbers)</h3>
           <p><code>384 numbers</code> (like local MiniLM) is tiny and fast. <code>3,072 numbers</code> (like OpenAI large / Gemini) captures subtle nuance, but takes <strong>8x more RAM</strong>.</p>
         </div>
 
-        <div class="v-card step-item" data-step="4" style="padding:14px 18px;">
+        <div class="v-card step-item" data-step="4" style="padding:13px 18px;">
           <h3>4. Language & Domain (English vs. 100 Languages vs. Code)</h3>
           <p>An English-only model maps Lithuanian, Spanish, or C# code almost randomly. Pick a multilingual (<code>BGE-M3</code>, <code>Qwen3</code>) or code-specific (<code>Voyage-Code</code>) model when needed.</p>
         </div>
 
-        <div class="v-card step-item" data-step="5" style="padding:14px 18px; border-color:var(--accent-3);">
+        <div class="v-card step-item" data-step="5" style="padding:13px 18px; border-color:var(--accent-3);">
           <h3 style="color:var(--accent-3);">5. Local <code>.onnx</code> File (Free & Private) vs. Cloud API</h3>
           <p>Local ONNX models run inside your .NET process in <code>&lt;2ms</code> for <code>$0</code> and never send sensitive data outside your server. Cloud APIs save you from managing CPU/GPU batch jobs.</p>
         </div>
       </div>
     `,
     speakerNotes: [
-      "If you look online, there are hundreds of embedding models. How do they actually differ? Walk through these 5 quick points one click at a time:",
-      "Click 1 (Short Query vs Long Doc): Matching two short sentences is different from matching a 3-word query against a 2-page article. Many Q&A models expect you to prefix queries with 'query: ' and docs with 'passage: '.",
-      "Click 2 (The Silent Cutoff Trap): This burns so many teams! Older models stop reading after 512 tokens (about 350 words) and silently throw away the rest of your document without raising an exception!",
-      "Click 3 (Array Size): Models output anywhere from 384 numbers to 3,072 numbers. More numbers = finer nuance, but 8x more memory.",
-      "Click 4 (Language & Code): Don't use an English-only model on multilingual text or source code.",
-      "Click 5 (Local ONNX vs Cloud API): You can run great 384- to 768-dimension models 100% locally in C# for free, or call OpenAI/Gemini/Voyage via the exact same IEmbeddingGenerator interface."
+      "When you go to pick an embedding model for your own project, you'll see hundreds of options on HuggingFace and cloud providers. You only need to care about five practical differences.",
+      "First: Is it matching similar things, or short questions against long answers? Models designed for Q&A retrieval often expect you to prefix user searches with 'query: ' and documents with 'passage: ' so they align properly.",
+      "Second: Watch out for the Silent Cutoff Trap! Older models have a maximum context window of 512 tokens—about one page of text. If you feed a 10-page PDF into a 512-token model, it doesn't throw an exception; it silently deletes pages 2 through 10!",
+      "Third: How many numbers does it output? A 384-number model is super fast and light on RAM; a 3,072-number model captures finer nuance but costs 8 times more memory.",
+      "Fourth: What languages and domains was it trained on? An English-only model will map other languages or source code almost randomly, whereas multilingual or code-specialized models understand them natively.",
+      "And fifth: Do you want to run a local ONNX file inside your .NET app for zero dollars and complete data privacy, or call a hosted API like OpenAI, Gemini, or Voyage?"
     ],
     glossary: [
-      ["Context Window", "The maximum number of words/tokens a model can read at once before it chops off the rest."],
+      ["Context Window", "The maximum number of words/tokens a model can read at once before it silently chops off the rest."],
       ["Asymmetric Retrieval", "Matching a very short search query against a long document passage."]
     ]
   },
 
   // --------------------------------------------------------------------------
-  // SLIDE 14: ACT 5 — WHERE EMBEDDINGS LIE (NEGATION & EXACT CODES)
+  // SLIDE 15: ACT 5 — WHERE EMBEDDINGS LIE (NEGATION & EXACT CODES)
   // --------------------------------------------------------------------------
   {
     id: "gotcha-negation-and-codes",
@@ -780,99 +880,99 @@ window.TALK_SLIDES = [
       </div>
     `,
     speakerNotes: [
-      "Remember in our first C# demo when we asked 'How do I DISABLE two-factor authentication?' and it matched 'How do I RESET MFA' at 98%? Here is why—and this is the #1 gotcha in production.",
-      "Click 1: Dense vectors are blind to negation ('without', 'disable') and exact numbers ('Error 503' vs 'Error 504'). If someone says 'I am allergic to peanuts, show me snacks WITHOUT peanuts', pure vector search sees the word 'peanuts' and happily recommends Crunchy Peanut Butter Bars at #1!",
-      "Click 2: Why? Because embeddings only measure general topic neighborhood ('this is about peanuts' or 'this is about MFA').",
-      "Click 3: The fix is Hybrid Search: always combine Vector Search (which understands synonyms) with classic Keyword Search (which checks exact words like 'DISABLE' or '504'), and merge their rankings!"
+      "Remember in our first C# demo when we asked 'How do I DISABLE two-factor authentication?' and it matched 'How do I RESET MFA' at 98%? That brings us to the number-one production gotcha.",
+      "Dense embeddings are blind to negation—words like NOT, WITHOUT, or DISABLE—and blind to exact alphanumeric codes like Error 503 versus Error 504. If a user searches 'I am allergic to peanuts, show me snacks WITHOUT peanuts', pure vector search sees the word 'peanuts' and puts Crunchy Peanut Butter Bars at number one!",
+      "Why does that happen? Because an embedding only measures the general topic neighborhood—it sees that both sentences are about peanuts or about MFA settings. It does not execute boolean logic.",
+      "The production fix is Hybrid Search: never rely on vectors alone! Always run Vector Search alongside classic Keyword Search (BM25), and merge their rankings."
     ],
     glossary: [
-      ["BM25 (Best Match 25)", "The gold-standard keyword search algorithm used by Elasticsearch and PostgreSQL full-text search. Counts exact word matches and gives extra weight to rare words like '504'."],
-      ["Hybrid Search + RRF (Reciprocal Rank Fusion)", "Running Vector Search and Keyword Search together, then combining their rank positions (#1, #2, #3) so a document that scores well in both wins #1."]
+      ["BM25 (Best Match 25)", "The classic keyword search algorithm used by Elasticsearch and PostgreSQL full-text search. Counts exact word matches and gives high weight to rare words like '504' or 'DISABLE'."],
+      ["Hybrid Search + RRF (Reciprocal Rank Fusion)", "Running Vector Search and Keyword Search in parallel, then combining their rank positions (`1/(60 + VectorRank) + 1/(60 + KeywordRank)`) so a document that scores well in both wins #1."]
     ]
   },
 
   // --------------------------------------------------------------------------
-  // SLIDE 15: DEMO 3 — BREAKING VECTORS & FIXING THEM WITH HYBRID SEARCH
+  // SLIDE 16: DEMO 3 — BREAKING VECTORS & FIXING THEM WITH HYBRID SEARCH
   // --------------------------------------------------------------------------
   {
     id: "demo-hybrid-search",
     type: "demo",
     title: "🎬 Live Demo: Watching Hybrid Search Rescue #1",
-    subtitle: "Testing the Peanut Allergy, Disable MFA, and Error 504 traps live",
+    subtitle: "Interactive slider, rank animations & C# / Postgres code snippet",
     stepsCount: 1,
     demoUrl: "../visualizer/index.html?tab=tab-gotchas",
+    stageCue: "Open Visualizer Tab 4 ('4. Where Vectors Fail & Hybrid Fix'). Drag the Hybrid Slider from 0% (Pure Vector) to 50%+ (Hybrid) to watch #1 flip live, and toggle the 'Show C# & SQL Code' drawer if someone asks how it's coded!",
     html: `
       <div class="demo-hero">
         <div class="demo-badge">🎬 INTERACTIVE VISUALIZER • TAB 4</div>
-        <h2>See Pure Vectors Fail — Then Flip On Hybrid Search</h2>
-        <p style="max-width:760px; margin: 12px auto 24px; color:var(--text-1); font-size:18px; line-height:1.55;">
-          In Tab 4 of the Visualizer, we can test 3 real-world traps and watch the right document jump from <strong>#3 or #4 straight to ★ #1 WINNER</strong> the moment we switch from <em>Pure Vector Search</em> to <em>Hybrid Search</em>!
+        <h2>See Pure Vectors Fail — Then Drag the Hybrid Search Slider</h2>
+        <p style="max-width:780px; margin: 12px auto 24px; color:var(--text-1); font-size:17.5px; line-height:1.55;">
+          In Tab 4 of the Visualizer, we can test the <strong>Peanut Allergy</strong>, <strong>Disable MFA</strong>, and <strong>Error 504</strong> traps, drag the <strong>Hybrid Balance Slider</strong> to see the exact point where the right answer takes ★ #1, and inspect the C# &amp; Postgres code!
         </p>
         <div class="demo-actions">
           <a class="btn-launch" href="../visualizer/index.html?tab=tab-gotchas" target="_blank">
-            🛡️ Open Negation & Hybrid Search Lab (Tab 4) ↗
+            🛡️ Open Negation &amp; Hybrid Search Lab (Visualizer Tab 4) ↗
           </a>
         </div>
-        <div class="cards-3" style="margin-top:28px; text-align:left;">
+        <div class="cards-3" style="margin-top:26px; text-align:left;">
           <div class="v-card">
-            <h3>🥜 Trap 1: Peanut Allergy</h3>
-            <p>Watch Pure Vector rank <em>Peanut Butter Bars #1</em>, then watch Hybrid Search promote <em>Safe Nut-Free Granola</em> from #4 to ★ #1!</p>
+            <h3>1. Pick Any of 3 Traps</h3>
+            <p>See why Pure Vector Search (0% slider) puts the wrong document at #1.</p>
           </div>
           <div class="v-card">
-            <h3>🔐 Trap 2: Disable MFA</h3>
-            <p>Watch <em>"Permanently DISABLE MFA"</em> jump past <em>"How to ENABLE MFA"</em> to ★ #1.</p>
+            <h3>2. Drag the Hybrid Slider</h3>
+            <p>Watch live as adding Keyword (BM25) weight promotes the right answer to <strong>★ #1 WINNER</strong>.</p>
           </div>
           <div class="v-card">
-            <h3>🚨 Trap 3: HTTP Error 504</h3>
-            <p>Watch exact keyword matching rescue the <em>Error 504 Runbook</em> over <em>Error 503</em>.</p>
+            <h3>3. Built-In Code View</h3>
+            <p>Click <em>"Show How This Is Coded in C# &amp; SQL"</em> right inside the demo tab!</p>
           </div>
         </div>
       </div>
     `,
     speakerNotes: [
-      "Click the button to open Tab 4 ('4. Where Vectors Fail & Hybrid Fix') in the Visualizer.",
-      "1. Start on Trap #1 ('Peanut Allergy — Snacks WITHOUT Peanuts'). Point out the big red #1 card: Pure Vector Search puts Crunchy Peanut Butter Bars at #1 while Safe Nut-Free Granola is buried at #4!",
-      "2. Now click the button '✅ 2. Hybrid Search (Vector + Keyword)'. Watch Safe Nut-Free Granola jump +3 spots to ★ #1 WINNER!",
-      "3. Click Trap #2 ('Disable MFA') and Trap #3 ('Error 504') and flip between Pure Vector and Hybrid Search to show how consistent this pattern is."
+      "Let's open Tab 4 of the Visualizer and watch what happens when we drag the search slider from Pure Vector Search over to Hybrid Search."
     ],
     glossary: [
-      ["Reciprocal Rank Fusion (RRF)", "Instead of trying to add a percentage score to a keyword score, RRF just uses rank positions: `1/(60 + VectorRank) + 1/(60 + KeywordRank)`."]
+      ["How Hybrid Search Is Used in Practice", "In PostgreSQL (pgvector) or Azure AI Search / Qdrant, you run one query that fetches the Top 20 by vector cosine distance and Top 20 by full-text keyword search, and merges them with RRF in 3 milliseconds."]
     ]
   },
 
   // --------------------------------------------------------------------------
-  // SLIDE 16: THE 120 GB RAM BILL SHOCK & STEP-BY-STEP SHRINKER DEMO
+  // SLIDE 17: THE 120 GB RAM BILL SHOCK & STEP-BY-STEP SHRINKER DEMO
   // --------------------------------------------------------------------------
   {
     id: "demo-ram-shrinker",
     type: "demo",
     title: "🎬 Step-by-Step Demo: Shrinking 120 GB of RAM Down to 600 MB",
-    subtitle: "Two clever tricks: Matryoshka Slicing (Chop Length) & Quantization (Round Numbers)",
+    subtitle: "Matryoshka Slicing, Quantization & what '96% Recall Retention' actually means",
     stepsCount: 3,
     demoUrl: "../visualizer/index.html?tab=tab-mrl",
+    stageCue: "Reveal the 3 cards on this slide, then open Visualizer Tab 5 ('5. Step-by-Step RAM Shrinker') and click through Steps 1, 2, 3, and 4.",
     html: `
       <div class="flow-vertical">
         <div class="cards-3">
           <div class="v-card step-item" data-step="1" style="border-color:var(--danger);">
-            <div class="step-badge">Step 1 • The Problem</div>
+            <div class="step-badge">1 • The Problem</div>
             <h3 style="color:var(--danger);">💸 The 120 GB RAM Cliff</h3>
-            <p>10 million documents × 3,072 decimal numbers × 4 bytes each = <strong>~120 GB of RAM</strong> just to hold the vectors!</p>
+            <p>10M docs × 3,072 numbers × 4 bytes each = <strong>~120 GB of RAM</strong> just to hold the vectors!</p>
           </div>
 
           <div class="v-card step-item" data-step="2" style="border-color:var(--accent-3);">
-            <div class="step-badge">Step 2 • Trick #1 (Length)</div>
-            <h3 style="color:var(--accent-3);">🪆 Matryoshka Slicing</h3>
-            <p>Like Russian Nesting Dolls, modern models put the <strong>big picture in the first 256–512 numbers</strong>. Chop off the tail → <strong>6x–12x smaller</strong>!</p>
+            <div class="step-badge">2 • Trick #1 &amp; #2</div>
+            <h3 style="color:var(--accent-3);">🪆 Chop Length + 🗜️ Round Numbers</h3>
+            <p><strong>Matryoshka Slicing:</strong> Keep first 512 of 3,072 numbers (6x smaller).<br/>
+            <strong>Quantization:</strong> Round 32-bit floats to 8-bit ints (4x) or 1-bit signs (32x)!</p>
           </div>
 
           <div class="v-card step-item" data-step="3" style="border-color:var(--warn);">
-            <div class="step-badge">Step 3 • Trick #2 (Size)</div>
-            <h3 style="color:var(--warn);">🗜️ Quantization (Rounding)</h3>
-            <p>Round 32-bit decimals (<code>+0.142857</code>) to 8-bit whole numbers (<code>+18</code>, <strong>4x smaller</strong>) or 1-bit signs (<code>+ / -</code>, <strong>32x smaller</strong>)!</p>
+            <div class="step-badge">3 • What Does "96% Recall" Mean?</div>
+            <h3 style="color:var(--warn);">🎯 What Is That 4% Difference?</h3>
+            <p>It does <strong>not</strong> mean answers become 4% garbled! It means <strong>96 out of 100 searches return the exact same Top-10 list</strong>, and in 4 borderline cases #1 and #2 swap places!</p>
           </div>
         </div>
 
-        <div style="text-align:center; margin-top:18px;">
+        <div style="text-align:center; margin-top:14px;">
           <a class="btn-launch" href="../visualizer/index.html?tab=tab-mrl" target="_blank">
             🪆 Open 4-Step Interactive RAM Shrinker (Visualizer Tab 5) ↗
           </a>
@@ -880,114 +980,73 @@ window.TALK_SLIDES = [
       </div>
     `,
     speakerNotes: [
-      "What happens when your database grows to 10 million chunks? Let's reveal this step by step, and then walk through our 4-step wizard in Tab 5 of the Visualizer.",
-      "Click 1 (The Problem): 10 million documents times 3,072 numbers times 4 bytes per float equals 120 Gigabytes of RAM! Cloud RAM is expensive.",
-      "Click 2 (Trick #1 — Matryoshka Slicing): Matryoshka means Russian nesting dolls. Modern models are trained to put the most important meaning in the first 256 or 512 numbers, and tiny details at the end. So you can literally take scissors and chop a 3,072-number array down to 512 numbers—cutting RAM 6x while keeping ~96% accuracy!",
-      "Click 3 (Trick #2 — Quantization): Second, instead of storing 32-bit decimals with 7 decimal places, round each number to a 1-byte integer (-127 to +127) or even a single bit (1 for positive, 0 for negative). Now click the button to open Tab 5 ('5. Step-by-Step RAM Shrinker') and click through Steps 1, 2, 3, and 4 live!"
+      "What happens when your system grows to 10 million documents? Let's look at the memory math.",
+      "10 million documents times 3,072 numbers times 4 bytes per float equals 120 Gigabytes of RAM! Because vector indexes need to live in RAM for fast search, that gets expensive fast.",
+      "Engineers use two tricks to shrink that bill. First, Matryoshka Slicing: modern models pack the big picture into the first 256 to 512 numbers, so you can chop off the remaining 2,500 numbers! Second, Quantization: rounding each 4-byte decimal number down to a 1-byte integer or a single plus/minus bit.",
+      "People always ask: 'When the chart says 96% Recall Retention, what is the 4% we lose in practice?' It does NOT mean the text comes back corrupted! It simply means that out of 100 user searches, 96 times the compressed vector returns the exact same Top-10 results as the huge 120-gigabyte index, and in 4 borderline searches, rank #2 and rank #3 might trade places. Even better, if you grab the top 25 compressed matches and re-check just those 25 with full numbers from disk, you get 99.5% identical results! Let's walk through this in Tab 5 of the Visualizer."
     ],
     glossary: [
-      ["Matryoshka Representation Learning (MRL)", "Training an embedding model so the early numbers in the array hold the main topic and later numbers hold fine details—allowing you to truncate the array to any shorter length."],
-      ["Quantization (int8 / 1-bit)", "Compressing each number in the vector from a 4-byte float32 down to a 1-byte integer (int8, 4x smaller) or a 1-bit sign (binary, 32x smaller)."]
+      ["What '96% Recall@10' Means in Practice", "If the uncompressed 3,072-float search returns a specific Top-10 list of documents, a 96% recall compressed index still includes 9.6 out of those 10 exact documents in its Top-10 list—while using 20x to 100x less RAM!"]
     ]
   },
 
   // --------------------------------------------------------------------------
-  // SLIDE 17: TWO FINAL PRODUCTION TRAPS (CHUNKING & MODEL MIGRATION)
+  // SLIDE 18: TWO FINAL PRODUCTION TRAPS & C# DEMO 3
   // --------------------------------------------------------------------------
   {
     id: "chunking-and-migration",
-    type: "concept",
-    title: "Two Final Production Rules Before You Ship",
-    subtitle: "Context-Preserving Chunking & What Happens When You Change Models",
-    stepsCount: 2,
-    html: `
-      <div class="cards-2">
-        <div class="v-card step-item" data-step="1">
-          <div class="step-badge">Trap #3 • Orphaned Pronouns</div>
-          <h3>📄 Never Embed a Paragraph Without Its Header</h3>
-          <p>If you chop a PDF every 500 characters, you get orphaned chunks like:</p>
-          <div class="mini-code" style="border-color:var(--danger); color:#fecaca;">
-            ❌ <em>"It returns a 502 error when payload exceeds 4MB."</em><br/>
-            (Wait—what is <strong>"It"</strong>?! Score = <strong>16%</strong>)
-          </div>
-          <p style="margin-top:8px;"><strong>The Fix:</strong> Prepend the document & section title before embedding:</p>
-          <div class="mini-code" style="border-color:var(--accent-3); color:var(--accent-3);">
-            ✅ <em>"[Doc: Stripe Checkout &gt; Limits] It returns a 502 error..."</em><br/>
-            (Score jumps to <strong>78%</strong>!)
-          </div>
-        </div>
-
-        <div class="v-card step-item" data-step="2">
-          <div class="step-badge">Trap #4 • Model Upgrade Lock-In</div>
-          <h3>🔄 Vector Spaces Are 100% Incompatible Across Models!</h3>
-          <p>Even if <strong>Model A</strong> and <strong>Model B</strong> both output <code>float[384]</code>, Axis #1 in Model A might mean <em>"Urgency"</em> while Axis #1 in Model B means <em>"Food"</em>!</p>
-          <div class="mini-code" style="border-color:var(--warn); color:#fde68a;">
-            ⚠️ Comparing a Model B query against Model A database rows gives <strong>~0% random noise!</strong>
-          </div>
-          <p style="margin-top:8px;"><strong>The Fix (Blue/Green Columns):</strong> Store <code>model_version</code> on every row. When upgrading, backfill a new column <code>embedding_v2</code> in the background before switching live traffic!</p>
-        </div>
-      </div>
-    `,
-    speakerNotes: [
-      "Two final engineering lessons from real production systems—and these are directly from our docs and third C# demo:",
-      "Click 1 (Orphaned Chunks): When you split a long document into paragraphs, a paragraph might say 'It fails when the payload exceeds 4MB.' What is 'It'?! The word 'Stripe Checkout' was in the heading at the top of the page! Always prepend `[Document Title > Section Heading]` to every chunk before you embed it.",
-      "Click 2 (Changing Models): What happens next year when a better embedding model comes out and you swap your model in code? Total disaster if you don't re-index! Every model invents its own coordinate system. Comparing Model B's query vector against Model A's database vectors gives 0% random noise. Always store `model_id` in your table and use Blue/Green columns (`embedding_v1`, `embedding_v2`) to backfill before flipping traffic!"
-    ],
-    glossary: [
-      ["Chunking", "Splitting a long document (like a 20-page PDF) into smaller paragraph-sized pieces before embedding each piece."],
-      ["Blue/Green Vector Migration", "Keeping your existing `embedding_v1` column serving live users while a background worker computes `embedding_v2` with the new model, then switching over with zero downtime."]
-    ]
-  },
-
-  // --------------------------------------------------------------------------
-  // SLIDE 18: LIVE C# CODE DEMO 3 & TAKE-HOME CHEAT SHEET
-  // --------------------------------------------------------------------------
-  {
-    id: "final-code-and-cheatsheet",
     type: "code",
-    title: "💻 Live C# Gotchas Demo & Take-Home Cheat Sheet",
-    subtitle: "Everything in this repository is ready to run on your laptop today",
-    stepsCount: 2,
+    title: "Two Final Production Rules & Live C# Fixes",
+    subtitle: "Orphaned Paragraphs, Model Upgrade Lock-In & Take-Home Cheat Sheet",
+    stepsCount: 3,
+    stageCue: "After revealing Step 3, run `dotnet run --project src/03-ProductionGotchasAndFixes` (or open `src/03-ProductionGotchasAndFixes/Program.cs` to run any of the 4 separate Gotcha files).",
     html: `
-      <div class="two-col-slide">
-        <div class="v-card step-item" data-step="1" style="border-color:var(--accent);">
-          <h3>▶ Run C# Demo #3 (All 4 Gotchas & Fixes Step-by-Step)</h3>
-          <div class="mono" style="font-size:14px; background:#050811; padding:12px; border-radius:8px; margin:10px 0; color:var(--accent-3);">
+      <div class="flow-vertical">
+        <div class="cards-2">
+          <div class="v-card step-item" data-step="1">
+            <div class="step-badge">Trap #3 • Orphaned Pronouns</div>
+            <h3>📄 Never Embed a Paragraph Without Its Header</h3>
+            <p>Splitting a document every 500 characters creates orphaned chunks:</p>
+            <div class="mini-code" style="border-color:var(--danger); color:#fecaca;">
+              ❌ <em>"It rejects the request whenever payload exceeds 4MB."</em> (What is <strong>"It"</strong>?! Score = <strong>16%</strong>)
+            </div>
+            <div class="mini-code" style="border-color:var(--accent-3); color:var(--accent-3);">
+              ✅ <strong>Fix:</strong> Prepend <code>[Doc: Stripe Checkout &gt; Limits]</code> before embedding → Score jumps to <strong>78%</strong>!
+            </div>
+          </div>
+
+          <div class="v-card step-item" data-step="2">
+            <div class="step-badge">Trap #4 • Model Upgrade Lock-In</div>
+            <h3>🔄 Vector Spaces Are Incompatible Across Models!</h3>
+            <p>Axis #1 in <strong>Model A</strong> might mean <em>"Urgency"</em> while Axis #1 in <strong>Model B</strong> means <em>"Food"</em>!</p>
+            <div class="mini-code" style="border-color:var(--warn); color:#fde68a;">
+              ⚠️ Comparing a Model B query against Model A database rows gives <strong>~5% random noise!</strong>
+            </div>
+            <div class="mini-code" style="border-color:var(--accent);">
+              ✅ <strong>Fix (Blue/Green Columns):</strong> Keep <code>embedding_v1</code> live while backfilling <code>embedding_v2</code> in the background!
+            </div>
+          </div>
+        </div>
+
+        <div class="v-card step-item" data-step="3" style="border-color:var(--accent-3); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+          <div>
+            <h3 style="color:var(--accent-3); margin-bottom:4px;">💻 Run C# Demo #3 (4 Separate Files in <code>src/03-ProductionGotchasAndFixes</code>)</h3>
+            <p style="font-size:14px;">Step-by-step console &amp; debugger walkthrough of Hybrid RRF, Matryoshka Slicing, Header Chunking, and Model v1 vs v2.</p>
+          </div>
+          <div class="mono" style="font-size:14px; background:#050811; border:1px solid var(--accent-3); padding:10px 16px; border-radius:8px; color:var(--accent-3);">
             dotnet run --project src/03-ProductionGotchasAndFixes
           </div>
-          <p style="font-size:14.5px;">Walks step-by-step through:</p>
-          <ul style="padding-left:20px; margin-top:8px; color:var(--text-1); line-height:1.65;">
-            <li><strong>Step 1:</strong> Hybrid Search (Vector + BM25 + RRF) in C#</li>
-            <li><strong>Step 2:</strong> Matryoshka Slicing & <code>int8</code> / <code>1-bit</code> Quantization</li>
-            <li><strong>Step 3:</strong> Contextual Breadcrumb Chunking (<code>16%</code> → <code>78%</code>)</li>
-            <li><strong>Step 4:</strong> Model v1 vs Model v2 Incompatibility & Blue/Green Flip</li>
-          </ul>
-        </div>
-
-        <div class="v-card step-item" data-step="2" style="border-color:var(--accent-3);">
-          <h3 style="color:var(--accent-3);">🏆 Where Should You Store Vectors?</h3>
-          <div class="mini-code" style="margin-top:8px;">
-            <strong>• Up to 25,000 items:</strong><br/>
-            Just use in-memory C# <code>TensorPrimitives</code> (&lt; 2ms, $0 infra!)
-          </div>
-          <div class="mini-code" style="margin-top:8px;">
-            <strong>• 25,000 to 25 Million items:</strong><br/>
-            <strong>PostgreSQL + <code>pgvector</code></strong> (Keep SQL + vectors in one DB)
-          </div>
-          <div class="mini-code" style="margin-top:8px;">
-            <strong>• 50 Million to 1 Billion+ items:</strong><br/>
-            Dedicated Vector DB (<strong>Qdrant, Milvus, Weaviate</strong>)
-          </div>
         </div>
       </div>
     `,
     speakerNotes: [
-      "Click 1: Switch to your terminal and run `dotnet run --project src/03-ProductionGotchasAndFixes` to step through the 4 fixes in C#.",
-      "Click 2: Leave this final slide up during Q&A! It answers the #1 question architects ask: 'Do I need to buy a specialized Vector Database?' Under 25K items, C# in-memory is <2ms. Up to 25M items, Postgres with pgvector is all you need. Above 50M+, look at Qdrant or Milvus. Thank you, and let's open it up for questions!"
+      "Before we wrap up with our final C# demo, here are two last production lessons that will save you a weekend outage.",
+      "First: Never embed an orphaned paragraph without its heading! If you split a PDF every 500 characters, a chunk might say 'It rejects the request whenever the payload exceeds 4MB.' What is 'It'?! The words 'Stripe Checkout' were in the title at the top of the page! Always prepend the document title and section heading in brackets to every chunk before calling GenerateAsync.",
+      "Second: What happens next year when you want to switch from Model A to a newer Model B? Every model invents its own coordinate axes from scratch. Even if both models output 384 numbers, comparing a query from Model B against database rows from Model A produces total random noise! Always store the model version in your database table, and when upgrading, add a second column—embedding_v2—backfill it in the background while embedding_v1 serves live traffic, and flip over when complete.",
+      "Let's run our third C# project to see all four of these production fixes in code, and then open up for questions!"
     ],
     glossary: [
-      ["pgvector", "The open-source PostgreSQL extension that adds a `vector(N)` column type and fast HNSW vector search indexes directly inside regular Postgres."],
-      ["HNSW (Hierarchical Navigable Small World)", "The standard graph index used by pgvector, Qdrant, and Milvus to find nearest neighbors among millions of vectors in milliseconds without scanning every row."]
+      ["Where to Store Vectors (Quick Rule of Thumb)", "• Under 25,000 items: In-memory C# array + TensorPrimitives (<2ms, $0 infra).\n• 25,000 to 25M items: PostgreSQL + pgvector extension.\n• 50M to 1B+ items: Dedicated Vector DB (Qdrant, Milvus, Weaviate)."]
     ]
   }
 ];

@@ -541,27 +541,51 @@
             </div>
 
             <div style="background:var(--bg-0); border:1px solid var(--border); border-radius:10px; padding:16px;">
-              <label>Step 2: Switch Search Engine Mode</label>
+              <label>Step 2: Switch Mode or Drag the Hybrid Weight Slider</label>
               <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:10px;">
-                <button class="btn btn-secondary active-mode" id="modeBtnVector" onclick="setSearchMode('vector')" style="padding:14px; font-size:14px; border-width:2px;">
-                  ❌ 1. Pure Vector Search Only<br/>
+                <button class="btn btn-secondary active-mode" id="modeBtnVector" onclick="setHybridSliderValue(0)" style="padding:12px; font-size:13.5px; border-width:2px;">
+                  ❌ 1. Pure Vector Search (0% Keyword)<br/>
                   <span style="font-size:11px; font-weight:400; color:var(--text-2);">(Looks at general topic only)</span>
                 </button>
-                <button class="btn btn-secondary" id="modeBtnHybrid" onclick="setSearchMode('hybrid')" style="padding:14px; font-size:14px; border-width:2px;">
+                <button class="btn btn-secondary" id="modeBtnHybrid" onclick="setHybridSliderValue(55)" style="padding:12px; font-size:13.5px; border-width:2px;">
                   ✅ 2. Hybrid Search (Vector + Keyword)<br/>
                   <span style="font-size:11px; font-weight:400; color:var(--text-2);">(Combines Meaning + Exact Words)</span>
                 </button>
               </div>
+
+              <div style="margin-top:14px; padding-top:12px; border-top:1px solid var(--border);">
+                <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:700;">
+                  <span style="color:var(--danger);">0% (Pure Vector)</span>
+                  <span style="color:var(--accent-3);" id="hybridMixLabel">Current Mix: 100% Vector + 0% Keyword</span>
+                  <span style="color:var(--warn);">100% (Keyword Only)</span>
+                </div>
+                <input type="range" id="hybridMixSlider" min="0" max="100" value="0" oninput="onHybridSliderChange(this.value)" style="width:100%; margin-top:6px;" />
+              </div>
             </div>
 
-            <div id="scenExplanationBox" style="border-radius:10px; padding:16px; font-size:14px; line-height:1.6;"></div>
+            <div id="scenExplanationBox" style="border-radius:10px; padding:15px; font-size:13.5px; line-height:1.58;"></div>
+
+            <details style="background:var(--bg-0); border:1px solid rgba(56,189,248,0.35); border-radius:10px; padding:12px 14px;">
+              <summary style="cursor:pointer; font-weight:700; font-size:13px; color:var(--accent);">
+                💻 Click to Show How Hybrid Search Is Coded in C# &amp; Postgres (If Asked)
+              </summary>
+              <pre class="mono" style="font-size:12px; color:#e2e8f0; margin-top:10px; line-height:1.5; overflow-x:auto;">
+// 1. Run Vector Search (Meaning) + Keyword Search (BM25 Exact Words)
+// 2. Merge their rank positions (#1, #2, #3...) using Reciprocal Rank Fusion (RRF):
+double vectorWeight  = 1.0 - keywordSlider;
+double keywordWeight = keywordSlider;
+
+double hybridScore = (vectorWeight  / (60 + doc.VectorRank))
+                   + (keywordWeight / (60 + doc.KeywordRank));
+// In Postgres (pgvector + tsvector), Elastic, or Azure AI Search, this is built-in!</pre>
+            </details>
           </div>
 
           <!-- RIGHT COLUMN: ANIMATED SEARCH RESULTS RANKING -->
           <div>
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
               <label id="resultsHeaderLabel">Search Results Ranking</label>
-              <span style="font-size:12px; color:var(--text-2);">Watch how the #1 result changes!</span>
+              <span style="font-size:12px; color:var(--text-2);">Drag slider or click mode buttons to watch #1 flip!</span>
             </div>
             <div id="hybridCardsContainer"></div>
           </div>
@@ -664,6 +688,11 @@
             <div style="background:var(--bg-1); border:1px solid var(--border); border-radius:10px; padding:12px;">
               <label>What the Numbers Inside the Array Actually Look Like Right Now:</label>
               <div class="mono" style="font-size:13px; color:var(--accent); margin-top:6px; line-height:1.5;" id="mrlLiveNumbersPreview"></div>
+            </div>
+
+            <div style="background:rgba(56,189,248,0.08); border:1px solid rgba(56,189,248,0.3); border-radius:10px; padding:12px 14px; font-size:13px; line-height:1.55;">
+              <strong style="color:var(--accent);">💡 What Does "96% Search Accuracy (Recall)" Mean in Practice? What Is the 4%?</strong><br/>
+              It does <strong>not</strong> mean answers come back 4% corrupted! It means: <strong>out of 100 user searches, 96 times the shrunken vector returns the exact same Top-10 results as the massive 114 GB database.</strong> In the 4 borderline searches, rank #2 and #3 might swap places—and if you re-check the top 25 matches from disk, you get <strong>99.5%+ identical results</strong>!
             </div>
           </div>
         </div>
@@ -776,9 +805,10 @@
         `;
       } else {
         box.innerHTML = `
-          <strong style="color:var(--accent);">3. What Ruler / Euclidean Distance (${dstText}) Means — And Its Trap:</strong><br/>
-          This is a straight tape-measure between the two dots' tips.<br/>
-          • <strong>The Trap (Try clicking "Demo: Why Angle Beats Ruler" on the left!):</strong> A 1-sentence tweet about Apples <code>[3.5, 4.0]</code> and a 10-page book about Apples <code>[7.0, 8.0]</code> have a huge Ruler Distance (<code>${dstText}</code>) just because the book has more words—yet their <strong>Angle is 0.0° (100% Cosine match)</strong>! That's why we normalize vectors or measure angle.
+          <strong style="color:var(--accent);">3. Why Angle Beats Ruler Distance — And Why We Normalize Vectors:</strong><br/>
+          • <strong>Why Ruler Distance Fails on Text:</strong> A 1-sentence tweet about Apples <code>[3.5, 4.0]</code> has fewer words (shorter arrow). A 10-page book about Apples <code>[7.0, 8.0]</code> repeats apple traits many times (longer arrow). A straight ruler measures tip-to-tip (<code>${dstText}</code>) and falsely thinks they are different topics just because one is longer!<br/>
+          • <strong>Why Angle Wins:</strong> Measuring the compass angle from <code>(0, 0)</code> ignores arrow length and only checks the <strong>ratio of traits</strong> (<code>3.5:4.0 == 7.0:8.0 → 0.0° angle = 100% match</code>).<br/>
+          • <strong>Why We Normalize Vectors (Scale Length to 1.0):</strong> If we shrink the long book's arrow and stretch the short tweet's arrow so every arrow has length <code>1.0</code>, both land on the <strong>exact same spot</strong> on a circle of radius 1.0!
         `;
       }
     }
@@ -1456,18 +1486,26 @@
     ];
 
     let currentScenIdx = 0;
-    let currentSearchMode = 'vector'; // 'vector' or 'hybrid'
+    let currentKeywordWeightPct = 0; // 0 = Pure Vector, 55 = Hybrid, 100 = Pure Keyword
 
     function selectHybridScenario(idx) {
       currentScenIdx = idx;
       [0, 1, 2].forEach(i => document.getElementById('scen-btn-' + i).classList.toggle('active', i === idx));
-      setSearchMode('vector'); // Always start on Vector so speaker can show the failure first, then click Hybrid!
+      setHybridSliderValue(0); // Start on 0% (Pure Vector) so speaker shows failure first, then slides/clicks Hybrid!
     }
 
-    function setSearchMode(mode) {
-      currentSearchMode = mode;
-      document.getElementById('modeBtnVector').classList.toggle('active-mode', mode === 'vector');
-      document.getElementById('modeBtnHybrid').classList.toggle('active-mode', mode === 'hybrid');
+    function setHybridSliderValue(val) {
+      document.getElementById('hybridMixSlider').value = val;
+      onHybridSliderChange(val);
+    }
+
+    function onHybridSliderChange(val) {
+      currentKeywordWeightPct = parseInt(val) || 0;
+      const vecPct = 100 - currentKeywordWeightPct;
+      document.getElementById('modeBtnVector').classList.toggle('active-mode', currentKeywordWeightPct < 25);
+      document.getElementById('modeBtnHybrid').classList.toggle('active-mode', currentKeywordWeightPct >= 25);
+      document.getElementById('hybridMixLabel').textContent =
+        `Current Mix: ${vecPct}% Vector Meaning + ${currentKeywordWeightPct}% Exact Keyword`;
       renderHybridScenario();
     }
 
@@ -1475,8 +1513,9 @@
       const scen = HYBRID_SCENARIOS[currentScenIdx];
       document.getElementById('scenQueryDisplay').textContent = `"${scen.query}"`;
 
+      const isHybridActive = currentKeywordWeightPct >= 25;
       const expBox = document.getElementById('scenExplanationBox');
-      if (currentSearchMode === 'vector') {
+      if (!isHybridActive) {
         expBox.style.background = 'rgba(248, 113, 113, 0.1)';
         expBox.style.border = '1px solid rgba(248, 113, 113, 0.45)';
         expBox.innerHTML = scen.vectorExplanation;
@@ -1486,34 +1525,40 @@
         expBox.innerHTML = scen.hybridExplanation;
       }
 
-      const sortedDocs = [...scen.docs].sort((a, b) =>
-        currentSearchMode === 'vector' ? (a.vecRank - b.vecRank) : (a.hybridRank - b.hybridRank)
-      );
+      const kwW = currentKeywordWeightPct / 100;
+      const vecW = 1 - kwW;
+
+      const scoredDocs = scen.docs.map(doc => {
+        // Interpolate smoothly between pure vector score (vecScore) and full hybrid/keyword target score
+        const kwTargetScore = doc.isCorrect ? 99 : Math.max(15, doc.hybridScore - 25);
+        const liveScore = Math.round(vecW * doc.vecScore + kwW * kwTargetScore);
+        return { ...doc, liveScore };
+      }).sort((a, b) => b.liveScore - a.liveScore);
 
       const container = document.getElementById('hybridCardsContainer');
       container.innerHTML = '';
 
-      sortedDocs.forEach((doc, idx) => {
+      scoredDocs.forEach((doc, idx) => {
         const rank = idx + 1;
         const isTop = rank === 1;
         const card = document.createElement('div');
         card.className = 'doc-rank-card ' + (isTop ? (doc.isCorrect ? 'winner-good' : 'winner-bad') : '');
 
         let movementBadge = '';
-        if (currentSearchMode === 'hybrid') {
-          const diff = doc.vecRank - doc.hybridRank;
-          if (diff > 0) {
-            movementBadge = `<span style="background:rgba(52,211,153,0.2); color:var(--accent-3); padding:3px 8px; border-radius:6px; font-size:11.5px; font-weight:700;">▲ Jumped +${diff} spots to #1!</span>`;
-          } else if (diff < 0) {
-            movementBadge = `<span style="background:rgba(248,113,113,0.18); color:var(--danger); padding:3px 8px; border-radius:6px; font-size:11.5px; font-weight:700;">▼ Dropped ${diff} spots</span>`;
-          }
+        const diff = doc.vecRank - rank;
+        if (currentKeywordWeightPct > 0 && diff > 0) {
+          movementBadge = `<span style="background:rgba(52,211,153,0.2); color:var(--accent-3); padding:3px 8px; border-radius:6px; font-size:11.5px; font-weight:700;">▲ Jumped +${diff} spots!</span>`;
+        } else if (currentKeywordWeightPct > 0 && diff < 0) {
+          movementBadge = `<span style="background:rgba(248,113,113,0.18); color:var(--danger); padding:3px 8px; border-radius:6px; font-size:11.5px; font-weight:700;">▼ Dropped ${diff} spots</span>`;
         } else if (isTop && !doc.isCorrect) {
           movementBadge = `<span style="background:rgba(248,113,113,0.25); color:#fecaca; padding:3px 8px; border-radius:6px; font-size:11.5px; font-weight:700;">⚠ WRONG ANSWER AT #1!</span>`;
-        } else if (doc.isCorrect) {
+        } else if (doc.isCorrect && !isTop) {
           movementBadge = `<span style="background:rgba(251,191,36,0.2); color:var(--warn); padding:3px 8px; border-radius:6px; font-size:11.5px; font-weight:700;">Buried at #${rank} in Vector Search</span>`;
         }
 
-        const scoreShown = currentSearchMode === 'vector' ? `${doc.vecScore}% Vector Match` : `${doc.hybridScore}% Hybrid RRF Score`;
+        const scoreLabel = currentKeywordWeightPct === 0
+          ? `${doc.vecScore}% Vector Match`
+          : `${doc.liveScore}% Combined Score`;
 
         card.innerHTML = `
           <div style="display:flex; align-items:center; gap:12px;">
@@ -1523,7 +1568,7 @@
             <div>
               <div style="font-size:14.5px; font-weight:700; color:#fff;">${doc.title}</div>
               <div style="font-size:12px; color:var(--text-2); margin-top:4px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-                <span>Vector Rank: <strong>#${doc.vecRank}</strong></span>
+                <span>Pure Vector Rank: <strong>#${doc.vecRank} (${doc.vecScore}%)</strong></span>
                 <span>•</span>
                 <span>Keyword Check: <strong>${doc.kwNote}</strong></span>
                 ${movementBadge}
@@ -1531,7 +1576,7 @@
             </div>
           </div>
           <div class="mono" style="font-size:13px; font-weight:700; color:${isTop ? (doc.isCorrect ? 'var(--accent-3)' : 'var(--danger)') : 'var(--text-1)'}; text-align:right; flex-shrink:0;">
-            ${scoreShown}
+            ${scoreLabel}
           </div>
         `;
         container.appendChild(card);

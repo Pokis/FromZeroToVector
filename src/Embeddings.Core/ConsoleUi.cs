@@ -30,6 +30,16 @@ public static class ConsoleUi
         Console.WriteLine();
     }
 
+    public static void WriteSubStepHeader(string stepLabel, string explanation)
+    {
+        Console.WriteLine();
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.Write($"  [{stepLabel}] ");
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.WriteLine(explanation);
+        Console.ResetColor();
+    }
+
     public static void WriteCodeSnippet(string caption, params string[] lines)
     {
         Console.ForegroundColor = ConsoleColor.DarkCyan;
@@ -44,7 +54,6 @@ public static class ConsoleUi
         Console.ForegroundColor = ConsoleColor.DarkCyan;
         Console.WriteLine("  └──────────────────────────────────────────────────────────────────────────────");
         Console.ResetColor();
-        Console.WriteLine();
     }
 
     public static bool WaitForNextStep(string nextStepPrompt, bool autoRunAll = false)
@@ -64,6 +73,19 @@ public static class ConsoleUi
             return false;
         }
         return true;
+    }
+
+    public static void PauseForSubStep(string whatHappensNext, bool autoRunAll = false)
+    {
+        if (autoRunAll || Console.IsInputRedirected)
+        {
+            return;
+        }
+
+        Console.ForegroundColor = ConsoleColor.DarkGray;
+        Console.Write($"\n    [Press Enter to {whatHappensNext}...] ");
+        Console.ResetColor();
+        Console.ReadLine();
     }
 
     public static void WriteScoreBar(float score, int width = 20)
